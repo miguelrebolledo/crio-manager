@@ -134,7 +134,7 @@ export default function DashboardPage() {
   const [projects, setProjects]     = useState<Project[]>([])
   const [alerts, setAlerts]         = useState<Alert[]>([])
   const [monitoringStats, setMonitoringStats] = useState({ total:0, completed:0, scheduled:0, openFindings:0, criticalFindings:0, respondedFindings:0 })
-  const [recruitmentHistory, setRecruitmentHistory] = useState<{month:string;total:number}[]>([])
+  const [recruitmentHistory, setRecruitmentHistory] = useState<{label:string;value:number}[]>([])
   const [closingSoon, setClosingSoon] = useState<Project[]>([])
   const [loading, setLoading]       = useState(true)
 
@@ -234,10 +234,10 @@ export default function DashboardPage() {
 
       // ── 4. Historial reclutamiento últimos 6 meses ──
       const now = new Date()
-      const months: {month:string;total:number}[] = []
+      const months: {label:string;value:number}[] = []
       for (let i = 5; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-        months.push({ month: MONTH_NAMES[d.getMonth()], total: 0 })
+        months.push({ label: MONTH_NAMES[d.getMonth()], value: 0 })
       }
       const { data: recHistory } = await supabase
         .from('recruitment_updates')
@@ -247,7 +247,7 @@ export default function DashboardPage() {
         const d = new Date(r.period_year, r.period_month - 1, 1)
         const diffMonths = (now.getFullYear()-d.getFullYear())*12 + now.getMonth()-d.getMonth()
         if (diffMonths >= 0 && diffMonths < 6) {
-          months[5 - diffMonths].total += (r.new_this_period ?? 0)
+          months[5 - diffMonths].value += (r.new_this_period ?? 0)
         }
       })
       setRecruitmentHistory(months)
@@ -282,7 +282,7 @@ export default function DashboardPage() {
   const greeting = hour<12?'Buenos días':hour<19?'Buenas tardes':'Buenas noches'
   const firstName = user?.full_name?.split(' ')[0] ?? ''
 
-  const maxRec = Math.max(...recruitmentHistory.map(m=>m.total), 1)
+  const maxRec = Math.max(...recruitmentHistory.map(m=>m.value), 1)
 
   return (
     <Layout>
@@ -379,7 +379,7 @@ export default function DashboardPage() {
             <div style={{ padding:'14px 16px' }}>
               {loading ? (
                 <div style={{ fontSize:12, color:'#9C9A92' }}>Cargando...</div>
-              ) : recruitmentHistory.every(m=>m.total===0) ? (
+              ) : recruitmentHistory.every(m=>m.value===0) ? (
                 <div style={{ fontSize:13, color:'#9C9A92', textAlign:'center', padding:'16px 0' }}>
                   Sin reportes de reclutamiento aún.<br/>
                   <span style={{ fontSize:11 }}>Los datos aparecerán cuando las coordinadoras envíen sus reportes mensuales.</span>
@@ -390,7 +390,7 @@ export default function DashboardPage() {
               <div style={{ borderTop:'0.5px solid #E8E6DE', marginTop:12, paddingTop:10, display:'flex', justifyContent:'space-between', fontSize:11, color:'#9C9A92' }}>
                 <span>Últimos 6 meses — todos los estudios</span>
                 <span style={{ fontWeight:500, color:'#185FA5' }}>
-                  {recruitmentHistory.reduce((s,m)=>s+m.total,0)} total
+                  {recruitmentHistory.reduce((s,m)=>s+m.value,0)} total
                 </span>
               </div>
             </div>

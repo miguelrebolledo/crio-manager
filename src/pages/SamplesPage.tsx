@@ -68,7 +68,7 @@ export default function SamplesPage() {
     if (fType)   q = q.eq('sample_type', fType)
 
     const { data } = await q
-    let rows = (data ?? []) as Sample[]
+    let rows = (data ?? []) as unknown as Sample[]
 
     if (search) {
       const s = search.toLowerCase()

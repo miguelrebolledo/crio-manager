@@ -42,6 +42,7 @@ interface Project {
   client_org: { id: string; name: string; contact_name: string | null; contact_email: string | null } | null
   principal_investigator: { id: string; full_name: string; email: string } | null
   co_investigator: { id: string; full_name: string; email: string } | null
+  recruitment_last_updated: string | null
 }
 
 interface TeamMember {

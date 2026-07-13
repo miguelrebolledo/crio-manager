@@ -127,9 +127,9 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
           }, { onConflict: 'id' })
 
           // Confirmar email via SQL (requiere ejecutar manualmente si falla)
-          await supabase.rpc('confirm_user_email', { user_id: signData.user.id })
-            .then(() => {})
-            .catch(() => {})
+          try {
+            await supabase.rpc('confirm_user_email', { user_id: signData.user.id })
+            } catch {}
         }
       } else if (data.user) {
         await supabase.from('users').upsert({

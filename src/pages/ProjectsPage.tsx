@@ -410,7 +410,7 @@ export default function ProjectsPage() {
     if (search)    q = q.or(`codigo_proyecto.ilike.%${search}%,titulo.ilike.%${search}%`)
 
     const { data } = await q
-    setProjects((data ?? []) as Project[])
+    setProjects((data ?? []) as unknown as Project[])
     setLoading(false)
   }, [search, fStatus, fType, fPriority, fDisease])
 

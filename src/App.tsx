@@ -10,6 +10,7 @@ import MonitoringPage from './pages/MonitoringPage'
 import SamplesPage from './pages/SamplesPage'
 import ClientsPage from './pages/ClientsPage'
 import SettingsPage from './pages/SettingsPage'
+import MonitoringQAPage from './pages/MonitoringQAPage'
 
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
@@ -40,6 +41,7 @@ export default function App() {
       <Route path="/proyectos"         element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
       <Route path="/proyectos/:id"     element={<PrivateRoute><ProjectDetailPage /></PrivateRoute>} />
       <Route path="/monitoreo"         element={<PrivateRoute><MonitoringPage /></PrivateRoute>} />
+      <Route path="/monitoreo-qa" element={<PrivateRoute><MonitoringQAPage /></PrivateRoute>} />
       <Route path="/muestras"          element={<PrivateRoute><SamplesPage /></PrivateRoute>} />
       <Route path="/efectos-adversos"  element={<PrivateRoute><AdverseEventsPage /></PrivateRoute>} />
       <Route path="/clientes"          element={<PrivateRoute><ClientsPage /></PrivateRoute>} />

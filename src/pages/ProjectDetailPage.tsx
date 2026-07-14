@@ -9,7 +9,7 @@ import TabAdverseEvents from '../components/project/TabAdverseEvents'
 import TabMonitoring from '../components/project/TabMonitoring'
 import TabSamples from '../components/project/TabSamples'
 import TabNotes from '../components/project/TabNotes'
-
+import TabMonitoringQA from '../components/project/TabMonitoringQA'
 
 
 // ── Types ────────────────────────────────────────────────────
@@ -788,15 +788,16 @@ function TabMilestones({ projectId }: { projectId: string }) {
 
 // ── MAIN PAGE ─────────────────────────────────────────────────
 const TABS = [
-  { key:'info',        label:'Información',    icon:'ti-info-circle'   },
-  { key:'team',        label:'Equipo',         icon:'ti-users'         },
-  { key:'recruitment', label:'Reclutamiento',  icon:'ti-users-group'   },
-  { key:'milestones',  label:'Hitos',          icon:'ti-flag'          },
-  { key:'monitoring',  label:'Monitoreo',      icon:'ti-eye'           },
-  { key:'adverse',     label:'Ef. adversos',   icon:'ti-alert-triangle'},
-  { key:'samples',     label:'Muestras',       icon:'ti-test-pipe'     },
-  { key:'documents',   label:'Documentos',     icon:'ti-files'         },
-  { key:'notes',       label:'Notas',          icon:'ti-notes'         },
+  { key:'info',          label:'Información',    icon:'ti-info-circle'   },
+  { key:'team',          label:'Equipo',         icon:'ti-users'         },
+  { key:'recruitment',   label:'Reclutamiento',  icon:'ti-users-group'   },
+  { key:'milestones',    label:'Hitos',          icon:'ti-flag'          },
+  { key:'monitoring',    label:'Monitoreo',      icon:'ti-eye'           },
+  { key:'monitoring_qa', label:'Monitoreo QA',   icon:'ti-shield-check'  },
+  { key:'adverse',       label:'Ef. adversos',   icon:'ti-alert-triangle'},
+  { key:'samples',       label:'Muestras',       icon:'ti-test-pipe'     },
+  { key:'documents',     label:'Documentos',     icon:'ti-files'         },
+  { key:'notes',         label:'Notas',          icon:'ti-notes'         },
 ]
 
 const PRIORITY_DOT: Record<string,string> = {
@@ -900,15 +901,16 @@ export default function ProjectDetailPage() {
 
       {/* ── Tab content ── */}
       <div style={{ padding:'20px 28px', maxWidth:1000 }}>
-        {activeTab === 'info'        && <TabInfo        project={project} onUpdate={load} />}
-        {activeTab === 'team'        && <TabTeam        projectId={project.id} />}
-        {activeTab === 'recruitment' && <TabRecruitment project={project} onUpdate={load} />}
-        {activeTab === 'milestones'  && <TabMilestones  projectId={project.id} />}
-        {activeTab === 'documents'  && <TabDocuments projectId={project.id} />}
-        {activeTab === 'adverse'    && <TabAdverseEvents projectId={project.id} />}
-        {activeTab === 'monitoring' && <TabMonitoring projectId={project.id} />}
-        {activeTab === 'samples' && <TabSamples projectId={project.id} />}
-        {activeTab === 'notes' && <TabNotes projectId={project.id} />}
+        {activeTab === 'info'           && <TabInfo          project={project} onUpdate={load} />}
+        {activeTab === 'team'           && <TabTeam          projectId={project.id} />}
+        {activeTab === 'recruitment'    && <TabRecruitment   project={project} onUpdate={load} />}
+        {activeTab === 'milestones'     && <TabMilestones    projectId={project.id} />}
+        {activeTab === 'documents'      && <TabDocuments     projectId={project.id} />}
+        {activeTab === 'adverse'        && <TabAdverseEvents projectId={project.id} />}
+        {activeTab === 'monitoring'     && <TabMonitoring    projectId={project.id} />}
+        {activeTab === 'monitoring_qa'  && <TabMonitoringQA  projectId={project.id} />}
+        {activeTab === 'samples'        && <TabSamples       projectId={project.id} />}
+        {activeTab === 'notes'          && <TabNotes         projectId={project.id} />}
           
       </div>
     </Layout>

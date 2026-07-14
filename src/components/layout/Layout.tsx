@@ -14,6 +14,8 @@ const NAV_ITEMS = [
   { to: '/clientes',        icon: 'ti-building',          label: 'Clientes' },
   { to: '/usuarios',        icon: 'ti-users',             label: 'Usuarios' },
   { to: '/configuracion',   icon: 'ti-settings',          label: 'Configuración' },
+  { to: '/monitoreo-qa',    icon: 'ti-shield-check',    label: 'Calidad (QA)' },
+
 ]
 
 const ROLE_LABELS: Record<string, string> = {

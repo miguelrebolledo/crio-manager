@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/index'
 import Layout from '../components/layout/Layout'
+import { CoordinatorDashboard } from './DashboardCoordinator'
 
 // ── Types ────────────────────────────────────────────────────
 interface Project {
@@ -284,6 +285,14 @@ export default function DashboardPage() {
 
   const maxRec = Math.max(...recruitmentHistory.map(m=>m.value), 1)
 
+  // Si es coordinadora, mostrar su dashboard específico
+if (user?.role === 'COORDINATOR') {
+  return (
+    <Layout>
+      <CoordinatorDashboard />
+    </Layout>
+  )
+}
   return (
     <Layout>
       <div style={{ padding:'24px 28px', maxWidth:1160 }}>

@@ -90,7 +90,7 @@ if (fPending) {
 
     setSamples(rows)
     setLoading(false)
-  }, [fStatus, fType, search])
+  }, [fStatus, fType, search, fMonth, fPending])
 
   useEffect(() => { load() }, [load])
 

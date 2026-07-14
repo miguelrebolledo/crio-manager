@@ -39,6 +39,7 @@ interface Project {
   budget_total: number | null
   budget_executed: number | null
   primary_endpoint: string | null
+  client_org_id: string | null
   client_org: { id: string; name: string; contact_name: string | null; contact_email: string | null } | null
   principal_investigator: { id: string; full_name: string; email: string } | null
   co_investigator: { id: string; full_name: string; email: string } | null
@@ -163,6 +164,7 @@ function TabInfo({ project, onUpdate }: { project: Project; onUpdate: () => void
     disease:          project.disease ?? 'OTHER',
     therapeutic_area: project.therapeutic_area ?? '',
     primary_endpoint: project.primary_endpoint ?? '',
+    client_org_id: project.client_org?.id ?? '',
     start_date:       project.start_date,
     estimated_end_date: project.estimated_end_date ?? '',
     first_patient_recruited_date: project.first_patient_recruited_date ?? '',
@@ -171,7 +173,15 @@ function TabInfo({ project, onUpdate }: { project: Project; onUpdate: () => void
     ethics_committee:     project.ethics_committee ?? '',
     ethics_code:          project.ethics_code ?? '',
   })
+const [orgs, setOrgs] = useState<{id:string; name:string}[]>([])
 
+useEffect(() => {
+  supabase.from('organizations')
+    .select('id, name')
+    .eq('is_active', true)
+    .order('name')
+    .then(({ data }) => setOrgs(data ?? []))
+}, [])
   const inp: React.CSSProperties = {
     width:'100%', padding:'6px 9px', border:'0.5px solid #D3D1C7',
     borderRadius:7, fontSize:13, background:'#F8F7F4', color:'#3D3D3A',
@@ -189,6 +199,7 @@ function TabInfo({ project, onUpdate }: { project: Project; onUpdate: () => void
     if (!payload.ethics_code)                 delete payload.ethics_code
     if (!payload.therapeutic_area)            delete payload.therapeutic_area
     if (!payload.primary_endpoint)            delete payload.primary_endpoint
+    if (payload.client_org_id === '') payload.client_org_id = null
 
     await supabase.from('projects').update(payload).eq('id', project.id)
     setSaving(false)
@@ -273,6 +284,17 @@ function TabInfo({ project, onUpdate }: { project: Project; onUpdate: () => void
               <div style={{ gridColumn:'span 2' }}>
                 <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:3 }}>Endpoint primario</label>
                 <input style={inp} value={form.primary_endpoint} onChange={e=>setForm(f=>({...f,primary_endpoint:e.target.value}))} placeholder="Ej: Tasa de respuesta global (ORR) a 6 meses" />
+              </div>
+              <div style={{ gridColumn: 'span 2' }}>
+                <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:3 }}>
+                  Sponsor / Cliente externo
+                </label>
+                <select style={inp}
+                  value={form.client_org_id ?? ''}
+                  onChange={e => setForm(f => ({ ...f, client_org_id: e.target.value || null }))}>
+                  <option value="">Sin sponsor asignado</option>
+                  {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                </select>
               </div>
               <div>
                 <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:3 }}>Fecha inicio</label>

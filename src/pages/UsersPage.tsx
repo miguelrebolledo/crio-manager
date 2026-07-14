@@ -27,6 +27,7 @@ const ROLE_LABELS: Record<string, string> = {
   EXTERNAL_MONITOR: 'Monitor Externo',
   FINANCE:          'Finanzas',
   LAB:              'Laboratorio',
+  QA:               'Calidad (QA)',
 }
 
 const ROLE_STYLE: Record<string, { bg: string; color: string }> = {
@@ -38,6 +39,7 @@ const ROLE_STYLE: Record<string, { bg: string; color: string }> = {
   EXTERNAL_MONITOR: { bg: '#F1EFE8', color: '#444441' },
   FINANCE:          { bg: '#E1F5EE', color: '#085041' },
   LAB:              { bg: '#E6F1FB', color: '#0C447C' },
+  QA:               { bg: '#E1F5EE', color: '#085041' },
 }
 
 const AVATAR_COLORS = [

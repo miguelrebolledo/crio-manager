@@ -113,7 +113,7 @@ function SectionProfile() {
             <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A' }}>{form.full_name || 'Sin nombre'}</div>
             <div style={{ fontSize: 12, color: '#9C9A92', marginTop: 2 }}>{user?.email}</div>
             <div style={{ fontSize: 11, color: '#185FA5', marginTop: 2, fontWeight: 500 }}>
-              {{ ADMIN:'Administrador', PM_CRIO:'PM / Gestor CRO', INVESTIGATOR:'Investigador', COORDINATOR:'Coordinadora', SPONSOR:'Sponsor', EXTERNAL_MONITOR:'Monitor Externo', FINANCE:'Finanzas', LAB:'Laboratorio' }[user?.role ?? ''] ?? user?.role}
+              {{ ADMIN:'Administrador', PM_CRIO:'PM / Gestor CRO', INVESTIGATOR:'Investigador', COORDINATOR:'Coordinadora', SPONSOR:'Sponsor', EXTERNAL_MONITOR:'Monitor Externo', FINANCE:'Finanzas', LAB:'Laboratorio', QA:'Calidad (QA)' }[user?.role ?? ''] ?? user?.role}
             </div>
           </div>
         </div>
@@ -399,7 +399,7 @@ function SectionCatalogs() {
     {
       title: 'Roles de usuario',
       icon: 'ti-users',
-      items: ['Administrador', 'PM / Gestor CRO', 'Investigador', 'Coordinadora', 'Sponsor', 'Monitor Externo', 'Finanzas', 'Laboratorio'],
+      items: ['Administrador', 'PM / Gestor CRO', 'Investigador', 'Coordinadora', 'Sponsor', 'Monitor Externo', 'Finanzas', 'Laboratorio', 'Calidad (QA)'],
       note: 'Controlan el acceso mediante Row Level Security en Supabase.',
     },
   ]

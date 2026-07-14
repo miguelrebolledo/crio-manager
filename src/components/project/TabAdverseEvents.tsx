@@ -28,6 +28,7 @@ const GRADE_LABELS: Record<string, string> = {
   GRADE_2: 'Grado 2 — Moderado',
   GRADE_3: 'Grado 3 — Grave',
   GRADE_4: 'Grado 4 — Riesgo vital',
+  GRADE_5: 'Grado 5 — Muerte',
 }
 const RELATION_LABELS: Record<string, string> = {
   DEFINITELY_RELATED:  'Definitivamente relacionado',
@@ -47,6 +48,7 @@ const GRADE_STYLE: Record<string, { bg: string; color: string }> = {
   GRADE_2: { bg: '#FAEEDA', color: '#633806' },
   GRADE_3: { bg: '#FCEBEB', color: '#791F1F' },
   GRADE_4: { bg: '#791F1F', color: '#fff'    },
+  GRADE_5: { bg: '#3D3D3A', color: '#fff'    },
 }
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   REPORTED:  { bg: '#E6F1FB', color: '#0C447C' },

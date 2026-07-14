@@ -56,7 +56,8 @@ export default function SamplesPage() {
   const [fStatus, setFStatus]   = useState('')
   const [fType,   setFType]     = useState('')
   const [search,  setSearch]    = useState('')
-
+  const [fMonth, setFMonth]     = useState('')
+  const [fPending, setFPending] = useState(false)
   const load = useCallback(async () => {
     setLoading(true)
     let q = supabase
@@ -66,6 +67,15 @@ export default function SamplesPage() {
 
     if (fStatus) q = q.eq('status', fStatus)
     if (fType)   q = q.eq('sample_type', fType)
+      if (fMonth) {
+  const [year, month] = fMonth.split('-')
+  const start = `${year}-${month}-01`
+  const end   = new Date(parseInt(year), parseInt(month), 0).toISOString().split('T')[0]
+  q = q.gte('scheduled_date', start).lte('scheduled_date', end)
+}
+if (fPending) {
+  q = q.eq('status', 'PENDING')
+}
 
     const { data } = await q
     let rows = (data ?? []) as unknown as Sample[]
@@ -90,7 +100,7 @@ export default function SamplesPage() {
   const urgentOm  = samples.filter(s => s.status === 'OMISSION' && hoursOpen(s.created_at) >= 72).length
   const completed = samples.filter(s => ['STORED','SHIPPED'].includes(s.status)).length
 
-  const hasFilters = fStatus || fType || search
+  const hasFilters = fStatus || fType || search || fMonth || fPending
 
   const selStyle: React.CSSProperties = {
     padding: '6px 10px', border: '0.5px solid #D3D1C7', borderRadius: 8,
@@ -146,8 +156,29 @@ export default function SamplesPage() {
             <option value="">Todos los tipos</option>
             {Object.entries(SAMPLE_TYPE_LABELS).map(([k,v]) => <option key={k} value={k}>{v}</option>)}
           </select>
+          <input
+            type="month"
+             value={fMonth}
+              onChange={e => setFMonth(e.target.value)}
+              style={selStyle}
+          />
+
+          <button
+  onClick={() => setFPending(p => !p)}
+  style={{
+    padding: '6px 12px', borderRadius: 8, fontSize: 13, cursor: 'pointer',
+    background: fPending ? '#FAEEDA' : '#fff',
+    border: `0.5px solid ${fPending ? '#FAC775' : '#D3D1C7'}`,
+    color: fPending ? '#633806' : '#73726C',
+    fontWeight: fPending ? 500 : 400,
+    display: 'flex', alignItems: 'center', gap: 5,
+  }}
+>
+  <i className="ti ti-clock" style={{ fontSize: 13 }} />
+  {fPending ? 'Solo pendientes ✓' : 'Solo pendientes'}
+</button>
           {hasFilters && (
-            <button onClick={() => { setFStatus(''); setFType(''); setSearch('') }}
+            <button onClick={() => { setFStatus(''); setFType(''); setSearch('');setFMonth(''); setFPending(false) }}
               style={{ background: '#E6F1FB', color: '#0C447C', border: 'none', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
               <i className="ti ti-x" style={{ fontSize: 12 }} /> Limpiar
             </button>

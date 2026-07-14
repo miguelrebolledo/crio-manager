@@ -70,6 +70,7 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
     visit_timepoint:     '',
     scheduled_date:      new Date().toISOString().split('T')[0],
     volume_quantity:     '',
+    collected_by_name:   '',
     cold_chain_required: false,
     processing_required: false,
     notes:               '',
@@ -98,7 +99,7 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
       volume_quantity:     form.volume_quantity || null,
       cold_chain_required: form.cold_chain_required,
       processing_required: form.processing_required,
-      notes:               form.notes || null,
+      notes:               form.notes || (form.collected_by_name ? `Recolectada por: ${form.collected_by_name}` : null),
       status:              'PENDING',
     })
     setSaving(false)
@@ -156,6 +157,14 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
             <div>
               <label style={{ fontSize: 11, color: '#9C9A92', fontWeight: 500, display: 'block', marginBottom: 4 }}>Volumen / cantidad</label>
               <input style={inp} value={form.volume_quantity} onChange={e => setForm(f => ({ ...f, volume_quantity: e.target.value }))} placeholder="Ej: 10 mL, 3 tubos, biopsia 2 cilindros" />
+            </div>
+            <div>
+              <label style={{ fontSize: 11, color: '#9C9A92', fontWeight: 500, display: 'block', marginBottom: 4 }}>Tomado por (quién recolectó)
+              </label>
+              <input style={inp}
+                value={form.collected_by_name ?? ''}
+                onChange={e => setForm(f => ({ ...f, collected_by_name: e.target.value }))}
+                placeholder="Nombre de quien recolectó la muestra" />
             </div>
             <div style={{ display: 'flex', gap: 16 }}>
               {[
@@ -334,6 +343,7 @@ function SampleRow({ sample, onUpdate, canEdit }: { sample: Sample; onUpdate: ()
               {' · '}{formatDate(sample.scheduled_date)}
               {sample.volume_quantity && ` · ${sample.volume_quantity}`}
             </div>
+
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
             {canEdit && (

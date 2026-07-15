@@ -11,6 +11,8 @@ import TabSamples from '../components/project/TabSamples'
 import TabNotes from '../components/project/TabNotes'
 import TabMonitoringQA from '../components/project/TabMonitoringQA'
 import TabSampleProcessing from '../components/project/TabSampleProcessing'
+import TabFinance from '../components/project/TabFinance'
+
 
 
 
@@ -820,9 +822,10 @@ const TABS = [
   { key:'monitoring_qa', label:'Monitoreo QA',   icon:'ti-shield-check'  },
   { key:'adverse',       label:'Ef. adversos',   icon:'ti-alert-triangle'},
   { key:'samples',       label:'Muestras',       icon:'ti-test-pipe'     },
-  { key:'processing',    label:'Procesamiento', icon:'ti-flask' },
+  { key:'processing',    label:'Procesamiento',  icon:'ti-flask'         },
   { key:'documents',     label:'Documentos',     icon:'ti-files'         },
   { key:'notes',         label:'Notas',          icon:'ti-notes'         },
+  { key:'finance',       label:'Finanzas',       icon:'ti-cash'          },
 ]
 
 const PRIORITY_DOT: Record<string,string> = {
@@ -926,17 +929,20 @@ export default function ProjectDetailPage() {
 
       {/* ── Tab content ── */}
       <div style={{ padding:'20px 28px', maxWidth:1000 }}>
-        {activeTab === 'info'           && <TabInfo          project={project} onUpdate={load} />}
-        {activeTab === 'team'           && <TabTeam          projectId={project.id} />}
-        {activeTab === 'recruitment'    && <TabRecruitment   project={project} onUpdate={load} />}
-        {activeTab === 'milestones'     && <TabMilestones    projectId={project.id} />}
-        {activeTab === 'documents'      && <TabDocuments     projectId={project.id} />}
-        {activeTab === 'adverse'        && <TabAdverseEvents projectId={project.id} />}
-        {activeTab === 'monitoring'     && <TabMonitoring    projectId={project.id} />}
-        {activeTab === 'monitoring_qa'  && <TabMonitoringQA  projectId={project.id} />}
-        {activeTab === 'samples'        && <TabSamples       projectId={project.id} />}
+        {activeTab === 'info'           && <TabInfo             project={project} onUpdate={load} />}
+        {activeTab === 'team'           && <TabTeam             projectId={project.id} />}
+        {activeTab === 'recruitment'    && <TabRecruitment      project={project} onUpdate={load} />}
+        {activeTab === 'milestones'     && <TabMilestones       projectId={project.id} />}
+        {activeTab === 'documents'      && <TabDocuments        projectId={project.id} />}
+        {activeTab === 'adverse'        && <TabAdverseEvents    projectId={project.id} />}
+        {activeTab === 'monitoring'     && <TabMonitoring       projectId={project.id} />}
+        {activeTab === 'monitoring_qa'  && <TabMonitoringQA     projectId={project.id} />}
+        {activeTab === 'samples'        && <TabSamples          projectId={project.id} />}
         {activeTab === 'processing'     && <TabSampleProcessing projectId={project.id} />}
-        {activeTab === 'notes'          && <TabNotes         projectId={project.id} />}
+        {activeTab === 'notes'          && <TabNotes            projectId={project.id} />}
+        {activeTab === 'finance'        && <TabFinance          projectId={project.id} project={project} />}
+
+
           
       </div>
     </Layout>

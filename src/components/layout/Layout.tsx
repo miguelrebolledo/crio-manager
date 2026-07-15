@@ -11,10 +11,12 @@ const NAV_ITEMS = [
   { to: '/muestras',        icon: 'ti-test-pipe',         label: 'Muestras' },
   { to: '/efectos-adversos',icon: 'ti-alert-triangle',    label: 'Ef. adversos' },
   { section: 'Gestión' },
+  { to: '/monitoreo-qa',    icon: 'ti-shield-check',      label: 'Calidad (QA)' },
   { to: '/clientes',        icon: 'ti-building',          label: 'Clientes' },
+  { to: '/finanzas',        icon: 'ti-cash',              label: 'Finanzas' },
   { to: '/usuarios',        icon: 'ti-users',             label: 'Usuarios' },
   { to: '/configuracion',   icon: 'ti-settings',          label: 'Configuración' },
-  { to: '/monitoreo-qa',    icon: 'ti-shield-check',    label: 'Calidad (QA)' },
+  
 
 ]
 

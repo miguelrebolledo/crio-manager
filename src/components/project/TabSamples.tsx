@@ -24,8 +24,16 @@ interface Sample {
 
 // ── Label maps ───────────────────────────────────────────────
 const SAMPLE_TYPE_LABELS: Record<string, string> = {
-  BLOOD: 'Sangre', URINE: 'Orina', TISSUE: 'Tejido',
-  BONE_MARROW: 'Médula ósea', CSF: 'LCR', OTHER: 'Otro',
+  BLOOD: 'Sangre', 
+  URINE: 'Orina', 
+  TISSUE: 'Tejido',
+  BONE_MARROW: 'Médula ósea', 
+  CSF: 'LCR', 
+  PLACENTA:       'Placenta',
+  CORD_BLOOD:     'Sangre de cordón',
+  UMBILICAL_CORD: 'Cordón umbilical',
+  SALIVA:         'Saliva', 
+  OTHER: 'Otro',
 }
 const STATUS_LABELS: Record<string, string> = {
   PENDING: 'Pendiente', COLLECTED: 'Recolectada',
@@ -41,12 +49,16 @@ const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   OMISSION:   { bg: '#FCEBEB', color: '#791F1F' },
 }
 const TYPE_STYLE: Record<string, { bg: string; color: string }> = {
-  BLOOD:       { bg: '#FCEBEB', color: '#791F1F' },
-  URINE:       { bg: '#E6F1FB', color: '#0C447C' },
-  TISSUE:      { bg: '#FAEEDA', color: '#633806' },
-  BONE_MARROW: { bg: '#EEEDFE', color: '#26215C' },
-  CSF:         { bg: '#E1F5EE', color: '#085041' },
-  OTHER:       { bg: '#F1EFE8', color: '#444441' },
+  BLOOD:          { bg: '#FCEBEB', color: '#791F1F' },
+  URINE:          { bg: '#E6F1FB', color: '#0C447C' },
+  TISSUE:         { bg: '#FAEEDA', color: '#633806' },
+  BONE_MARROW:    { bg: '#EEEDFE', color: '#26215C' },
+  CSF:            { bg: '#E1F5EE', color: '#085041' },
+  PLACENTA:       { bg:'#FAEEDA', color:'#854F0B'},
+  CORD_BLOOD:     { bg:'#FCEBEB', color:'#633806'},
+  UMBILICAL_CORD: { bg:'#F1EFE8', color:'#444441'},
+  SALIVA:         { bg:'#E6F1FB', color:'#26215C'},
+  OTHER:          { bg: '#F1EFE8', color: '#444441' },
 }
 
 // Estados del flujo en orden

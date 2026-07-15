@@ -10,6 +10,8 @@ import TabMonitoring from '../components/project/TabMonitoring'
 import TabSamples from '../components/project/TabSamples'
 import TabNotes from '../components/project/TabNotes'
 import TabMonitoringQA from '../components/project/TabMonitoringQA'
+import TabSampleProcessing from '../components/project/TabSampleProcessing'
+
 
 
 // ── Types ────────────────────────────────────────────────────
@@ -818,6 +820,7 @@ const TABS = [
   { key:'monitoring_qa', label:'Monitoreo QA',   icon:'ti-shield-check'  },
   { key:'adverse',       label:'Ef. adversos',   icon:'ti-alert-triangle'},
   { key:'samples',       label:'Muestras',       icon:'ti-test-pipe'     },
+  { key:'processing',    label:'Procesamiento', icon:'ti-flask' },
   { key:'documents',     label:'Documentos',     icon:'ti-files'         },
   { key:'notes',         label:'Notas',          icon:'ti-notes'         },
 ]
@@ -932,6 +935,7 @@ export default function ProjectDetailPage() {
         {activeTab === 'monitoring'     && <TabMonitoring    projectId={project.id} />}
         {activeTab === 'monitoring_qa'  && <TabMonitoringQA  projectId={project.id} />}
         {activeTab === 'samples'        && <TabSamples       projectId={project.id} />}
+        {activeTab === 'processing'     && <TabSampleProcessing projectId={project.id} />}
         {activeTab === 'notes'          && <TabNotes         projectId={project.id} />}
           
       </div>

@@ -4,18 +4,19 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/index'
 
 const NAV_ITEMS = [
-  { to: '/',                 icon: 'ti-layout-dashboard', label: 'Dashboard'      },
-  { to: '/proyectos',        icon: 'ti-folder',           label: 'Proyectos'      },
-  { section: 'Operaciones' },
-  { to: '/monitoreo',        icon: 'ti-eye',              label: 'Monitoreo'      },
-  { to: '/muestras',         icon: 'ti-test-pipe',        label: 'Muestras'       },
-  { to: '/efectos-adversos', icon: 'ti-alert-triangle',   label: 'Ef. adversos'  },
-  { section: 'Gestión' },
-  { to: '/monitoreo-qa',     icon: 'ti-shield-check',     label: 'Calidad (QA)'  },
-  { to: '/clientes',         icon: 'ti-building',         label: 'Clientes'       },
-  { to: '/finanzas',         icon: 'ti-cash',             label: 'Finanzas'       },
-  { to: '/usuarios',         icon: 'ti-users',            label: 'Usuarios'       },
-  { to: '/configuracion',    icon: 'ti-settings',         label: 'Configuración'  },
+  { to: '/sponsor',          icon: 'ti-building',         label: 'Mi portal',     sponsorOnly: true  },
+  { to: '/',                 icon: 'ti-layout-dashboard', label: 'Dashboard',     hideForSponsor: true },
+  { to: '/proyectos',        icon: 'ti-folder',           label: 'Proyectos',     hideForSponsor: true },
+  { section: 'Operaciones',  hideForSponsor: true },
+  { to: '/monitoreo',        icon: 'ti-eye',              label: 'Monitoreo',     hideForSponsor: true },
+  { to: '/muestras',         icon: 'ti-test-pipe',        label: 'Muestras',      hideForSponsor: true },
+  { to: '/efectos-adversos', icon: 'ti-alert-triangle',   label: 'Ef. adversos',  hideForSponsor: true },
+  { section: 'Gestión',      hideForSponsor: true },
+  { to: '/monitoreo-qa',     icon: 'ti-shield-check',     label: 'Calidad (QA)',  hideForSponsor: true },
+  { to: '/clientes',         icon: 'ti-building',         label: 'Clientes',      hideForSponsor: true },
+  { to: '/finanzas',         icon: 'ti-cash',             label: 'Finanzas',      hideForSponsor: true },
+  { to: '/usuarios',         icon: 'ti-users',            label: 'Usuarios',      hideForSponsor: true },
+  { to: '/configuracion',    icon: 'ti-settings',         label: 'Configuración', hideForSponsor: true },
 ]
 
 const ROLE_LABELS: Record<string, string> = {
@@ -30,12 +31,9 @@ const ROLE_LABELS: Record<string, string> = {
   QA:               'Calidad (QA)',
 }
 
-// ── Paleta ───────────────────────────────────────────────────
 const C = {
   navy:        '#0A2E5C',
   cyan:        '#00BFFF',
-  cyanBg:      'rgba(0,191,255,0.12)',
-  cyanBorder:  'rgba(0,191,255,0.25)',
   teal:        '#00CBA5',
   white:       '#FFFFFF',
   whiteAlpha6: 'rgba(255,255,255,0.6)',
@@ -49,6 +47,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const [signingOut, setSigningOut] = useState(false)
 
+  const isSponsor = user?.role === 'SPONSOR'
+
   const initials = user?.full_name
     ?.split(' ')
     .slice(0, 2)
@@ -60,6 +60,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     await signOut()
     navigate('/login')
   }
+
+  // Filtrar items según rol
+  const visibleItems = NAV_ITEMS.filter(item => {
+    if (isSponsor) {
+      // Sponsor solo ve su portal
+      if ('sponsorOnly' in item) return true
+      if ('hideForSponsor' in item) return false
+      return false
+    }
+    // Resto de roles no ven el portal del sponsor
+    if ('sponsorOnly' in item) return false
+    return true
+  })
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#F5F4F0' }}>
@@ -92,14 +105,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               CRIO Manager
             </div>
             <div style={{ fontSize: 10, color: C.whiteAlpha4, marginTop: 2 }}>
-              Centro IMPACT
+              {isSponsor ? 'Portal del Sponsor' : 'Centro IMPACT'}
             </div>
           </div>
         </div>
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: '10px 8px', overflowY: 'auto' }}>
-          {NAV_ITEMS.map((item, i) => {
+          {visibleItems.map((item, i) => {
             if ('section' in item) {
               return (
                 <div key={i} style={{

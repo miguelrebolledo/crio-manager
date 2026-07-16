@@ -12,6 +12,7 @@ import ClientsPage from './pages/ClientsPage'
 import SettingsPage from './pages/SettingsPage'
 import MonitoringQAPage from './pages/MonitoringQAPage'
 import FinancePage from './pages/FinancePage'
+import SponsorPortal from './pages/SponsorPortal'
 
 
 
@@ -43,10 +44,11 @@ export default function App() {
       <Route path="/proyectos"         element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
       <Route path="/proyectos/:id"     element={<PrivateRoute><ProjectDetailPage /></PrivateRoute>} />
       <Route path="/monitoreo"         element={<PrivateRoute><MonitoringPage /></PrivateRoute>} />
-      <Route path="/monitoreo-qa" element={<PrivateRoute><MonitoringQAPage /></PrivateRoute>} />
+      <Route path="/monitoreo-qa"      element={<PrivateRoute><MonitoringQAPage /></PrivateRoute>} />
       <Route path="/muestras"          element={<PrivateRoute><SamplesPage /></PrivateRoute>} />
       <Route path="/efectos-adversos"  element={<PrivateRoute><AdverseEventsPage /></PrivateRoute>} />
       <Route path="/clientes"          element={<PrivateRoute><ClientsPage /></PrivateRoute>} />
+      <Route path="/sponsor"           element={<PrivateRoute><SponsorPortal /></PrivateRoute>} />
       <Route path="/finanzas"          element={<PrivateRoute><FinancePage /></PrivateRoute>} />
       <Route path="/usuarios"          element={<PrivateRoute><UsersPage /></PrivateRoute>} />
       <Route path="/configuracion"     element={<PrivateRoute><SettingsPage /></PrivateRoute>} />

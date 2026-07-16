@@ -13,8 +13,10 @@ interface AppUser {
   specialty: string | null
   institution: string | null
   phone: string | null
+  org_id: string | null
   is_active: boolean
   created_at: string
+  organization?: { name: string } | null
 }
 
 // ── Label maps ───────────────────────────────────────────────
@@ -80,10 +82,18 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
     specialty:   editUser?.specialty   ?? '',
     institution: editUser?.institution ?? '',
     phone:       editUser?.phone       ?? '',
+    org_id:      editUser?.org_id      ?? '',
   })
+  const [orgs, setOrgs]       = useState<{id:string;name:string}[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    supabase.from('organizations').select('id, name')
+      .eq('is_active', true).order('name')
+      .then(({ data }) => setOrgs(data ?? []))
+  }, [])
 
   const inp: React.CSSProperties = {
     width: '100%', padding: '7px 10px',
@@ -97,16 +107,15 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
     setLoading(true)
     setError(null)
 
+    const orgPayload = form.role === 'SPONSOR' ? (form.org_id || null) : null
+
     if (mode === 'invite') {
-      // 1. Invitar via Supabase Auth (envía email)
       const { data, error: invErr } = await supabase.auth.admin.inviteUserByEmail(
         form.email,
         { data: { full_name: form.full_name, role: form.role } }
       )
 
       if (invErr) {
-        // Si no tenemos acceso admin, usar signUp con password temporal
-        // y luego actualizar el perfil
         const tempPassword = Math.random().toString(36).slice(-10) + 'A1!'
         const { data: signData, error: signErr } = await supabase.auth.signUp({
           email:    form.email,
@@ -116,7 +125,6 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
 
         if (signErr) { setError(signErr.message); setLoading(false); return }
 
-        // Confirmar email manualmente y actualizar perfil
         if (signData.user) {
           await supabase.from('users').upsert({
             id:          signData.user.id,
@@ -126,12 +134,12 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
             specialty:   form.specialty   || null,
             institution: form.institution || null,
             phone:       form.phone       || null,
+            org_id:      orgPayload,
           }, { onConflict: 'id' })
 
-          // Confirmar email via SQL (requiere ejecutar manualmente si falla)
           try {
             await supabase.rpc('confirm_user_email', { user_id: signData.user.id })
-            } catch {}
+          } catch {}
         }
       } else if (data.user) {
         await supabase.from('users').upsert({
@@ -142,12 +150,12 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
           specialty:   form.specialty   || null,
           institution: form.institution || null,
           phone:       form.phone       || null,
+          org_id:      orgPayload,
         }, { onConflict: 'id' })
       }
 
       setSuccess(true)
     } else if (editUser) {
-      // Editar usuario existente
       const { error: updErr } = await supabase
         .from('users')
         .update({
@@ -156,6 +164,7 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
           specialty:   form.specialty   || null,
           institution: form.institution || null,
           phone:       form.phone       || null,
+          org_id:      orgPayload,
         })
         .eq('id', editUser.id)
 
@@ -196,7 +205,7 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
             <i className="ti ti-circle-check" style={{ fontSize: 36, color: '#00A88A', display: 'block', marginBottom: 12 }} />
             <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A', marginBottom: 6 }}>Usuario creado</div>
             <div style={{ fontSize: 13, color: '#9C9A92', marginBottom: 20 }}>
-              El usuario fue creado. Para que pueda iniciar sesión, ejecuta esto en el SQL Editor de Supabase:
+              Ejecuta esto en el SQL Editor de Supabase para confirmar el email:
             </div>
             <div style={{ background: '#F8F7F4', border: '0.5px solid #E8E6DE', borderRadius: 8, padding: '10px 14px', fontSize: 12, fontFamily: 'monospace', textAlign: 'left', color: '#3D3D3A', marginBottom: 20 }}>
               UPDATE auth.users SET email_confirmed_at = NOW() WHERE email = '{form.email}';
@@ -241,21 +250,43 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
                     <option key={k} value={k}>{v}</option>
                   ))}
                 </select>
-
-                {/* descripción del rol seleccionado */}
                 <div style={{ fontSize: 11, color: '#9C9A92', marginTop: 5 }}>
                   {{
-                    ADMIN:            '✦ Acceso total al sistema. Gestiona usuarios, catálogos y configuración.',
-                    PM_CRIO:          '✦ CRUD de proyectos, tareas, reclutamiento, ética y desviaciones.',
-                    INVESTIGATOR:     '✦ Ve y edita proyectos asignados. Puede actualizar notas y reclutamiento.',
-                    COORDINATOR:      '✦ Actualiza reclutamiento, reporta EA/SAE, responde hallazgos del monitor.',
-                    SPONSOR:          '✦ Solo lectura de sus proyectos: estado, hitos y documentos permitidos.',
-                    EXTERNAL_MONITOR: '✦ Agenda y registra visitas, registra hallazgos y aprueba respuestas.',
-                    FINANCE:          '✦ Acceso a presupuestos, cotizaciones y gastos.',
-                    LAB:              '✦ Gestión de muestras y resultados de laboratorio.',
+                    ADMIN:            '✦ Acceso total al sistema.',
+                    PM_CRIO:          '✦ CRUD de proyectos, reclutamiento, ética y desviaciones.',
+                    INVESTIGATOR:     '✦ Ve y edita proyectos asignados.',
+                    COORDINATOR:      '✦ Actualiza reclutamiento, reporta EA/SAE, responde hallazgos.',
+                    SPONSOR:          '✦ Portal de solo lectura de sus proyectos.',
+                    EXTERNAL_MONITOR: '✦ Agenda visitas, registra hallazgos y aprueba respuestas.',
+                    FINANCE:          '✦ Acceso a presupuestos, cotizaciones y facturas.',
+                    LAB:              '✦ Gestión de muestras y procesamiento.',
+                    QA:               '✦ Monitoreo interno de calidad — confidencial.',
                   }[form.role]}
                 </div>
               </div>
+
+              {/* Organización — solo para SPONSOR */}
+              {form.role === 'SPONSOR' && (
+                <div>
+                  <label style={{ fontSize: 11, color: '#9C9A92', fontWeight: 500, display: 'block', marginBottom: 3 }}>
+                    Organización / Cliente <span style={{ color: '#A32D2D' }}>*</span>
+                  </label>
+                  <select style={inp} value={form.org_id}
+                    onChange={e => setForm(f => ({ ...f, org_id: e.target.value }))}>
+                    <option value="">Seleccionar organización...</option>
+                    {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                  </select>
+                  <div style={{ fontSize: 10, color: '#9C9A92', marginTop: 3 }}>
+                    Vincula el sponsor a su organización para que vea sus proyectos en el portal.
+                  </div>
+                  {form.org_id === '' && (
+                    <div style={{ fontSize: 11, color: '#854F0B', marginTop: 4 }}>
+                      <i className="ti ti-alert-triangle" style={{ fontSize: 12, marginRight: 4 }} />
+                      Sin organización el sponsor no podrá ver proyectos en su portal.
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
@@ -276,7 +307,7 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
                 <label style={{ fontSize: 11, color: '#9C9A92', fontWeight: 500, display: 'block', marginBottom: 3 }}>Institución</label>
                 <input style={inp} value={form.institution}
                   onChange={e => setForm(f => ({ ...f, institution: e.target.value }))}
-                  placeholder="Ej: Universidad de los Andes, Clínica Las Condes" />
+                  placeholder="Ej: Universidad de los Andes" />
               </div>
 
               {error && (
@@ -319,7 +350,7 @@ export default function UsersPage() {
     setLoading(true)
     let q = supabase
       .from('users')
-      .select('*')
+      .select('*, organization:organizations(name)')
       .order('full_name')
 
     if (fRole)  q = q.eq('role', fRole)
@@ -342,7 +373,6 @@ export default function UsersPage() {
     setModal('edit')
   }
 
-  // stats por rol
   const byRole = users.reduce((acc, u) => {
     acc[u.role] = (acc[u.role] ?? 0) + 1
     return acc
@@ -381,8 +411,7 @@ export default function UsersPage() {
           {Object.entries(ROLE_LABELS).slice(0, 4).map(([role, label]) => (
             <div key={role} style={{
               background: '#fff', border: '0.5px solid #E8E6DE',
-              borderRadius: 9, padding: '11px 14px',
-              cursor: 'pointer',
+              borderRadius: 9, padding: '11px 14px', cursor: 'pointer',
               borderLeft: fRole === role ? `3px solid ${ROLE_STYLE[role]?.color}` : '0.5px solid #E8E6DE',
             }}
               onClick={() => setFRole(fRole === role ? '' : role)}
@@ -448,6 +477,13 @@ export default function UsersPage() {
                     {u.email}
                     {u.specialty && ` · ${u.specialty}`}
                     {u.institution && ` · ${u.institution}`}
+                    {/* Mostrar organización vinculada para sponsors */}
+                    {u.role === 'SPONSOR' && u.organization && (
+                      <span style={{ color: '#6A1B9A', fontWeight: 500 }}> · {(u.organization as any).name}</span>
+                    )}
+                    {u.role === 'SPONSOR' && !u.org_id && (
+                      <span style={{ color: '#854F0B' }}> · Sin organización vinculada</span>
+                    )}
                   </div>
                 </div>
 
@@ -492,4 +528,3 @@ export default function UsersPage() {
     </Layout>
   )
 }
-

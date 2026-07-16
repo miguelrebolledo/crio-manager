@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/index'
 import Layout from '../components/layout/Layout'
 import { CoordinatorDashboard } from './DashboardCoordinator'
+import SponsorPortal from './SponsorPortal'
 
 // ── Types ────────────────────────────────────────────────────
 interface Project {
@@ -138,6 +139,7 @@ export default function DashboardPage() {
   const [recruitmentHistory, setRecruitmentHistory] = useState<{label:string;value:number}[]>([])
   const [closingSoon, setClosingSoon] = useState<Project[]>([])
   const [loading, setLoading]       = useState(true)
+
 
   useEffect(() => {
     const load = async () => {
@@ -293,6 +295,12 @@ if (user?.role === 'COORDINATOR') {
     </Layout>
   )
 }
+useEffect(() => {
+  if (user?.role === 'SPONSOR') {
+    navigate('/sponsor')
+  }
+}, [user, navigate])
+
   return (
     <Layout>
       <div style={{ padding:'24px 28px', maxWidth:1160 }}>

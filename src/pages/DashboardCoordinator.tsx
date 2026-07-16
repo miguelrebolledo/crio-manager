@@ -53,7 +53,7 @@ interface UpcomingVisit {
 const CATEGORY_STYLE: Record<string,{bg:string;color:string}> = {
   CRITICAL:{bg:'#FCEBEB',color:'#791F1F'},
   MAJOR:   {bg:'#FAEEDA',color:'#633806'},
-  MINOR:   {bg:'#E6F1FB',color:'#0C447C'},
+  MINOR:   {bg:'#E0F7FA',color:'#007A99'},
 }
 const SAMPLE_TYPE_LABELS: Record<string,string> = {
   BLOOD:'Sangre', URINE:'Orina', TISSUE:'Tejido',
@@ -77,7 +77,7 @@ const card: React.CSSProperties = {
 const cardHead = (icon: string, title: string, badge?: {text:string;bg:string;color:string}) => (
   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px', borderBottom:'0.5px solid #E8E6DE' }}>
     <div style={{ fontSize:13, fontWeight:500, color:'#73726C', display:'flex', alignItems:'center', gap:6 }}>
-      <i className={`ti ${icon}`} style={{ color:'#185FA5', fontSize:15 }} />
+      <i className={`ti ${icon}`} style={{ color:'#0A2E5C', fontSize:15 }} />
       {title}
     </div>
     {badge && <span style={{ background:badge.bg, color:badge.color, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>{badge.text}</span>}
@@ -254,9 +254,9 @@ export function CoordinatorDashboard() {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:14 }}>
         {[
           {label:'Proyectos asignados',      value:projects.length,         color:'#3D3D3A'},
-          {label:`Reportes pendientes (${monthName})`, value:pendingReports.length,  color:pendingReports.length>0?'#A32D2D':'#0F6E56'},
-          {label:'Hallazgos sin responder',  value:pendingFindings.length,  color:pendingFindings.length>0?'#854F0B':'#0F6E56'},
-          {label:'Muestras pendientes',      value:pendingSamples.length,   color:pendingSamples.length>0?'#854F0B':'#0F6E56'},
+          {label:`Reportes pendientes (${monthName})`, value:pendingReports.length,  color:pendingReports.length>0?'#A32D2D':'#00A88A'},
+          {label:'Hallazgos sin responder',  value:pendingFindings.length,  color:pendingFindings.length>0?'#854F0B':'#00A88A'},
+          {label:'Muestras pendientes',      value:pendingSamples.length,   color:pendingSamples.length>0?'#854F0B':'#00A88A'},
         ].map(m=>(
           <div key={m.label} style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, padding:'14px 16px' }}>
             <div style={{ fontSize:11, color:'#9C9A92', marginBottom:6 }}>{m.label}</div>
@@ -291,7 +291,7 @@ export function CoordinatorDashboard() {
           {cardHead('ti-chart-bar', `Reportes de reclutamiento — ${monthName} ${thisYear}`,
             pendingReports.length>0
               ? {text:`${pendingReports.length} pendiente${pendingReports.length>1?'s':''}`,bg:'#FCEBEB',color:'#A32D2D'}
-              : {text:'Al día',bg:'#E1F5EE',color:'#085041'}
+              : {text:'Al día',bg:'#E0F2F1',color:'#005246'}
           )}
           <div style={{ padding:'4px 0' }}>
             {loading ? (
@@ -305,18 +305,18 @@ export function CoordinatorDashboard() {
                 onMouseEnter={e=>(e.currentTarget.style.background='#F8F7F4')}
                 onMouseLeave={e=>(e.currentTarget.style.background='')}>
                 <div style={{ width:20, height:20, borderRadius:'50%', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
-                  background: p.hasReportThisMonth?'#E1F5EE':'#FCEBEB',
-                  border: `1.5px solid ${p.hasReportThisMonth?'#1D9E75':'#F7C1C1'}` }}>
+                  background: p.hasReportThisMonth?'#E0F2F1':'#FCEBEB',
+                  border: `1.5px solid ${p.hasReportThisMonth?'#00CBA5':'#F7C1C1'}` }}>
                   <i className={`ti ti-${p.hasReportThisMonth?'check':'clock'}`}
-                    style={{ fontSize:11, color:p.hasReportThisMonth?'#0F6E56':'#A32D2D' }} />
+                    style={{ fontSize:11, color:p.hasReportThisMonth?'#00A88A':'#A32D2D' }} />
                 </div>
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:12, fontWeight:500, color:'#185FA5' }}>{p.codigo_proyecto}</div>
+                  <div style={{ fontSize:12, fontWeight:500, color:'#0A2E5C' }}>{p.codigo_proyecto}</div>
                   <div style={{ fontSize:12, color:'#3D3D3A', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{p.titulo}</div>
                 </div>
                 <div style={{ textAlign:'right', flexShrink:0 }}>
                   {p.hasReportThisMonth ? (
-                    <span style={{ fontSize:11, color:'#0F6E56', fontWeight:500 }}>
+                    <span style={{ fontSize:11, color:'#00A88A', fontWeight:500 }}>
                       <i className="ti ti-circle-check" style={{ fontSize:12, marginRight:3 }} />
                       Enviado
                     </span>
@@ -336,7 +336,7 @@ export function CoordinatorDashboard() {
         <div style={card}>
           {cardHead('ti-calendar-event', 'Visitas agendadas (próximos 30 días)',
             upcomingVisits.length>0
-              ? {text:`${upcomingVisits.length} visita${upcomingVisits.length>1?'s':''}`,bg:'#E6F1FB',color:'#0C447C'}
+              ? {text:`${upcomingVisits.length} visita${upcomingVisits.length>1?'s':''}`,bg:'#E0F7FA',color:'#007A99'}
               : undefined
           )}
           <div style={{ padding:'4px 0' }}>
@@ -355,13 +355,13 @@ export function CoordinatorDashboard() {
                   style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 16px', borderBottom:i<upcomingVisits.length-1?'0.5px solid #E8E6DE':'none', cursor:'pointer' }}
                   onMouseEnter={e=>(e.currentTarget.style.background='#F8F7F4')}
                   onMouseLeave={e=>(e.currentTarget.style.background='')}>
-                  <div style={{ width:36, height:36, borderRadius:8, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', background:isQA?'#E6F1FB':'#EEEDFE' }}>
-                    <i className={`ti ${isQA?'ti-shield-check':'ti-eye'}`} style={{ fontSize:17, color:isQA?'#185FA5':'#26215C' }} />
+                  <div style={{ width:36, height:36, borderRadius:8, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', background:isQA?'#E0F7FA':'#F3E5F5' }}>
+                    <i className={`ti ${isQA?'ti-shield-check':'ti-eye'}`} style={{ fontSize:17, color:isQA?'#0A2E5C':'#6A1B9A' }} />
                   </div>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3 }}>
-                      <span style={{ fontSize:11, fontWeight:500, color:'#185FA5' }}>{v.project_code}</span>
-                      <span style={{ fontSize:11, background:isQA?'#E6F1FB':'#EEEDFE', color:isQA?'#0C447C':'#26215C', padding:'1px 7px', borderRadius:20, fontWeight:500 }}>
+                      <span style={{ fontSize:11, fontWeight:500, color:'#0A2E5C' }}>{v.project_code}</span>
+                      <span style={{ fontSize:11, background:isQA?'#E0F7FA':'#F3E5F5', color:isQA?'#007A99':'#6A1B9A', padding:'1px 7px', borderRadius:20, fontWeight:500 }}>
                         {isQA?'QA':''} {VISIT_TYPE_LABELS[v.visit_type]}
                       </span>
                     </div>
@@ -388,14 +388,14 @@ export function CoordinatorDashboard() {
           {cardHead('ti-message-x', 'Hallazgos sin responder',
             pendingFindings.length>0
               ? {text:`${pendingFindings.length}`,bg:'#FCEBEB',color:'#A32D2D'}
-              : {text:'Sin pendientes',bg:'#E1F5EE',color:'#085041'}
+              : {text:'Sin pendientes',bg:'#E0F2F1',color:'#005246'}
           )}
           <div style={{ padding:'4px 0' }}>
             {loading ? (
               <div style={{ padding:24, fontSize:13, color:'#9C9A92', textAlign:'center' }}>Cargando...</div>
             ) : pendingFindings.length===0 ? (
               <div style={{ padding:24, textAlign:'center' }}>
-                <i className="ti ti-circle-check" style={{ fontSize:24, color:'#1D9E75', display:'block', marginBottom:8 }} />
+                <i className="ti ti-circle-check" style={{ fontSize:24, color:'#00CBA5', display:'block', marginBottom:8 }} />
                 <div style={{ fontSize:13, color:'#9C9A92' }}>Sin hallazgos pendientes</div>
               </div>
             ) : pendingFindings.map((f,i)=>{
@@ -410,7 +410,7 @@ export function CoordinatorDashboard() {
                     <span style={{ ...cs, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>
                       {{CRITICAL:'Crítico',MAJOR:'Mayor',MINOR:'Menor'}[f.category]}
                     </span>
-                    <span style={{ fontSize:11, color:'#185FA5', fontWeight:500 }}>{f.project_code}</span>
+                    <span style={{ fontSize:11, color:'#0A2E5C', fontWeight:500 }}>{f.project_code}</span>
                     <span style={{ fontSize:11, color:'#9C9A92' }}>Visita {formatDate(f.visit_date)}</span>
                   </div>
                   <div style={{ fontSize:12, color:'#3D3D3A', lineHeight:1.4, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
@@ -427,14 +427,14 @@ export function CoordinatorDashboard() {
           {cardHead('ti-test-pipe', 'Muestras pendientes y omisiones',
             pendingSamples.length>0
               ? {text:`${pendingSamples.length}`,bg:urgentSamples.length>0?'#FCEBEB':'#FAEEDA',color:urgentSamples.length>0?'#A32D2D':'#633806'}
-              : {text:'Sin pendientes',bg:'#E1F5EE',color:'#085041'}
+              : {text:'Sin pendientes',bg:'#E0F2F1',color:'#005246'}
           )}
           <div style={{ padding:'4px 0' }}>
             {loading ? (
               <div style={{ padding:24, fontSize:13, color:'#9C9A92', textAlign:'center' }}>Cargando...</div>
             ) : pendingSamples.length===0 ? (
               <div style={{ padding:24, textAlign:'center' }}>
-                <i className="ti ti-circle-check" style={{ fontSize:24, color:'#1D9E75', display:'block', marginBottom:8 }} />
+                <i className="ti ti-circle-check" style={{ fontSize:24, color:'#00CBA5', display:'block', marginBottom:8 }} />
                 <div style={{ fontSize:13, color:'#9C9A92' }}>Sin muestras pendientes</div>
               </div>
             ) : pendingSamples.map((s,i)=>{
@@ -450,7 +450,7 @@ export function CoordinatorDashboard() {
                     <span style={{ fontSize:11, background:isOmission?'#FCEBEB':'#FAEEDA', color:isOmission?'#791F1F':'#633806', padding:'2px 8px', borderRadius:20, fontWeight:500 }}>
                       {isOmission?`Omisión${isUrgent?` ⚠ ${s.hours_open}h`:''}` : 'Pendiente'}
                     </span>
-                    <span style={{ fontSize:11, color:'#185FA5', fontWeight:500 }}>{s.project_code}</span>
+                    <span style={{ fontSize:11, color:'#0A2E5C', fontWeight:500 }}>{s.project_code}</span>
                   </div>
                   <div style={{ fontSize:12, color:'#3D3D3A' }}>
                     {s.patient_id} · {SAMPLE_TYPE_LABELS[s.sample_type]??s.sample_type} · {formatDate(s.scheduled_date)}

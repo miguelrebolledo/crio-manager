@@ -113,13 +113,13 @@ const TEAM_ROLE_LABELS: Record<string,string> = {
 const MONTH_NAMES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
 const STATUS_STYLE: Record<string,{bg:string;color:string}> = {
-  ACTIVE:     {bg:'#E1F5EE',color:'#085041'},
+  ACTIVE:     {bg:'#E0F2F1',color:'#005246'},
   LEAD:       {bg:'#F1EFE8',color:'#444441'},
-  PROPOSAL:   {bg:'#EEEDFE',color:'#26215C'},
-  CONTRACTED: {bg:'#E6F1FB',color:'#0C447C'},
+  PROPOSAL:   {bg:'#F3E5F5',color:'#6A1B9A'},
+  CONTRACTED: {bg:'#E0F7FA',color:'#007A99'},
   PAUSED:     {bg:'#FAEEDA',color:'#633806'},
   CLOSED:     {bg:'#FCEBEB',color:'#791F1F'},
-  COMPLETED:  {bg:'#E1F5EE',color:'#085041'},
+  COMPLETED:  {bg:'#E0F2F1',color:'#005246'},
   CANCELLED:  {bg:'#F1EFE8',color:'#444441'},
 }
 
@@ -141,7 +141,7 @@ function DField({ label, value }: { label:string; value?: string|number|null }) 
     </div>
   )
 }
-function Avatar({ name, color='#185FA5' }: { name:string; color?:string }) {
+function Avatar({ name, color='#0A2E5C' }: { name:string; color?:string }) {
   const initials = name.split(' ').slice(0,2).map(n=>n[0]).join('')
   return (
     <div style={{
@@ -154,7 +154,7 @@ function Avatar({ name, color='#185FA5' }: { name:string; color?:string }) {
   )
 }
 
-const AVATAR_COLORS = ['#185FA5','#0F6E56','#633806','#26215C','#444441','#854F0B']
+const AVATAR_COLORS = ['#0A2E5C','#00A88A','#633806','#6A1B9A','#444441','#854F0B']
 
 // ── TAB: Información general ─────────────────────────────────
 function TabInfo({ project, onUpdate }: { project: Project; onUpdate: () => void }) {
@@ -236,14 +236,14 @@ useEffect(() => {
       {/* datos generales */}
       <div style={cardStyle}>
         <div style={cardHeadStyle}>
-          <span><i className="ti ti-clipboard-list" style={{ color:'#185FA5', marginRight:6 }} />Datos generales</span>
+          <span><i className="ti ti-clipboard-list" style={{ color:'#0A2E5C', marginRight:6 }} />Datos generales</span>
           {!editing
             ? <button onClick={() => setEditing(true)} style={{ background:'none', border:'0.5px solid #D3D1C7', borderRadius:6, padding:'3px 10px', fontSize:11, cursor:'pointer', color:'#73726C' }}>
                 <i className="ti ti-edit" style={{ fontSize:12, marginRight:4 }} />Editar
               </button>
             : <div style={{ display:'flex', gap:6 }}>
                 <button onClick={() => setEditing(false)} style={{ background:'none', border:'0.5px solid #D3D1C7', borderRadius:6, padding:'3px 10px', fontSize:11, cursor:'pointer', color:'#73726C' }}>Cancelar</button>
-                <button onClick={handleSave} disabled={saving} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:6, padding:'3px 12px', fontSize:11, cursor:'pointer', fontWeight:500 }}>
+                <button onClick={handleSave} disabled={saving} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:6, padding:'3px 12px', fontSize:11, cursor:'pointer', fontWeight:500 }}>
                   {saving ? 'Guardando...' : 'Guardar'}
                 </button>
               </div>
@@ -426,10 +426,10 @@ function TabTeam({ projectId }: { projectId: string }) {
   return (
     <div style={cardStyle}>
       <div style={cardHeadStyle}>
-        <span><i className="ti ti-users" style={{ color:'#185FA5', marginRight:6 }} />Equipo del proyecto</span>
+        <span><i className="ti ti-users" style={{ color:'#0A2E5C', marginRight:6 }} />Equipo del proyecto</span>
         {canEdit && (
           <button onClick={() => { setShowAdd(!showAdd); loadUsers() }} style={{
-            background:'#185FA5', color:'#fff', border:'none',
+            background:'#0A2E5C', color:'#fff', border:'none',
             borderRadius:6, padding:'3px 10px', fontSize:11, cursor:'pointer', fontWeight:500,
             display:'flex', alignItems:'center', gap:4,
           }}>
@@ -454,7 +454,7 @@ function TabTeam({ projectId }: { projectId: string }) {
             </select>
           </div>
           <button onClick={handleAdd} disabled={saving||!newUserId} style={{
-            background:'#185FA5', color:'#fff', border:'none', borderRadius:7,
+            background:'#0A2E5C', color:'#fff', border:'none', borderRadius:7,
             padding:'7px 14px', fontSize:12, cursor:'pointer', fontWeight:500,
           }}>
             {saving ? 'Agregando...' : 'Agregar'}
@@ -510,7 +510,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
   const pct = project.recruitment_target
     ? Math.round(project.recruited_current / project.recruitment_target * 100)
     : 0
-  const rc = pct>=80?'#185FA5':pct>=50?'#1D9E75':pct>=30?'#EF9F27':'#E24B4A'
+  const rc = pct>=80?'#0A2E5C':pct>=50?'#00CBA5':pct>=30?'#EF9F27':'#E24B4A'
 
   useEffect(() => {
     supabase.from('recruitment_updates')
@@ -560,8 +560,8 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
       {/* metrics strip */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:12 }}>
         {[
-          { label:'Meta total',    value: project.recruitment_target ?? '—', color:'#185FA5' },
-          { label:'Enrolados',     value: project.recruited_current,          color:'#0F6E56' },
+          { label:'Meta total',    value: project.recruitment_target ?? '—', color:'#0A2E5C' },
+          { label:'Enrolados',     value: project.recruited_current,          color:'#00A88A' },
           { label:'Abandonos',     value: project.dropouts_current,           color:'#854F0B' },
           { label:'Excluidos',     value: project.excluded_current,           color:'#A32D2D' },
           { label:'Activos netos', value: project.recruited_current - project.dropouts_current - project.excluded_current, color:'#3D3D3A' },
@@ -577,7 +577,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
       {project.recruitment_target && (
         <div style={{ ...cardStyle }}>
           <div style={cardHeadStyle}>
-            <span><i className="ti ti-chart-bar" style={{ color:'#185FA5', marginRight:6 }} />Progreso de reclutamiento</span>
+            <span><i className="ti ti-chart-bar" style={{ color:'#0A2E5C', marginRight:6 }} />Progreso de reclutamiento</span>
             <span style={{ fontSize:13, fontWeight:600, color:rc }}>{pct}%</span>
           </div>
           <div style={{ padding:16 }}>
@@ -597,7 +597,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
         <div style={{ marginBottom:12 }}>
           {!showForm ? (
             <button onClick={()=>setShowForm(true)} style={{
-              background:'#185FA5', color:'#fff', border:'none',
+              background:'#0A2E5C', color:'#fff', border:'none',
               borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:500, cursor:'pointer',
               display:'flex', alignItems:'center', gap:6,
             }}>
@@ -607,12 +607,12 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
           ) : (
             <div style={{ ...cardStyle }}>
               <div style={cardHeadStyle}>
-                <span><i className="ti ti-edit" style={{ color:'#185FA5', marginRight:6 }} />
+                <span><i className="ti ti-edit" style={{ color:'#0A2E5C', marginRight:6 }} />
                   Reporte — {MONTH_NAMES[new Date().getMonth()]} {new Date().getFullYear()}
                 </span>
               </div>
               <form onSubmit={handleSubmit} style={{ padding:16 }}>
-                <div style={{ background:'#E6F1FB', border:'0.5px solid #B5D4F4', borderRadius:8, padding:'8px 11px', fontSize:12, color:'#0C447C', marginBottom:14 }}>
+                <div style={{ background:'#E0F7FA', border:'0.5px solid #80DEEA', borderRadius:8, padding:'8px 11px', fontSize:12, color:'#007A99', marginBottom:14 }}>
                   <i className="ti ti-info-circle" style={{ fontSize:13, verticalAlign:-1, marginRight:4 }} />
                   Ingresa el total acumulado desde el inicio del estudio, no solo los nuevos del mes.
                 </div>
@@ -643,7 +643,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
                 {error && <div style={{ fontSize:12, color:'#791F1F', background:'#FCEBEB', border:'0.5px solid #F7C1C1', borderRadius:7, padding:'7px 10px', marginBottom:10 }}>{error}</div>}
                 <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
                   <button type="button" onClick={()=>setShowForm(false)} style={{ background:'none', border:'0.5px solid #D3D1C7', borderRadius:7, padding:'6px 14px', fontSize:12, cursor:'pointer', color:'#73726C' }}>Cancelar</button>
-                  <button type="submit" disabled={saving} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:7, padding:'6px 16px', fontSize:12, fontWeight:500, cursor:'pointer' }}>
+                  <button type="submit" disabled={saving} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:7, padding:'6px 16px', fontSize:12, fontWeight:500, cursor:'pointer' }}>
                     {saving ? 'Guardando...' : 'Enviar reporte'}
                   </button>
                 </div>
@@ -656,7 +656,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
       {/* historial */}
       <div style={cardStyle}>
         <div style={cardHeadStyle}>
-          <span><i className="ti ti-history" style={{ color:'#185FA5', marginRight:6 }} />Historial de reportes</span>
+          <span><i className="ti ti-history" style={{ color:'#0A2E5C', marginRight:6 }} />Historial de reportes</span>
         </div>
         {history.length === 0 ? (
           <div style={{ padding:24, textAlign:'center', fontSize:13, color:'#9C9A92' }}>Sin reportes registrados aún.</div>
@@ -673,7 +673,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
               {history.map(r => (
                 <tr key={r.id} style={{ borderBottom:'0.5px solid #E8E6DE' }}>
                   <td style={{ padding:'9px 14px', fontWeight:500 }}>{MONTH_NAMES[r.period_month-1]} {r.period_year}</td>
-                  <td style={{ padding:'9px 14px', color:'#0F6E56', fontWeight:500 }}>{r.enrolled_total}</td>
+                  <td style={{ padding:'9px 14px', color:'#00A88A', fontWeight:500 }}>{r.enrolled_total}</td>
                   <td style={{ padding:'9px 14px', color:'#854F0B' }}>{r.dropouts_total}</td>
                   <td style={{ padding:'9px 14px', color:'#A32D2D' }}>{r.excluded_total}</td>
                   <td style={{ padding:'9px 14px' }}>{r.new_this_period != null ? (r.new_this_period > 0 ? `+${r.new_this_period}` : r.new_this_period) : '—'}</td>
@@ -747,9 +747,9 @@ function TabMilestones({ projectId }: { projectId: string }) {
 
       <div style={cardStyle}>
         <div style={cardHeadStyle}>
-          <span><i className="ti ti-flag" style={{ color:'#185FA5', marginRight:6 }} />Hitos del proyecto</span>
+          <span><i className="ti ti-flag" style={{ color:'#0A2E5C', marginRight:6 }} />Hitos del proyecto</span>
           {canEdit && (
-            <button onClick={()=>setShowAdd(!showAdd)} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:6, padding:'3px 10px', fontSize:11, cursor:'pointer', fontWeight:500, display:'flex', alignItems:'center', gap:4 }}>
+            <button onClick={()=>setShowAdd(!showAdd)} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:6, padding:'3px 10px', fontSize:11, cursor:'pointer', fontWeight:500, display:'flex', alignItems:'center', gap:4 }}>
               <i className="ti ti-plus" style={{ fontSize:12 }} />Agregar hito
             </button>
           )}
@@ -767,7 +767,7 @@ function TabMilestones({ projectId }: { projectId: string }) {
               <input type="date" value={newDate} onChange={e=>setNewDate(e.target.value)}
                 style={{ width:'100%', padding:'6px 9px', border:'0.5px solid #D3D1C7', borderRadius:7, fontSize:13, background:'#fff' }} />
             </div>
-            <button onClick={handleAdd} disabled={saving||!newName||!newDate} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:7, padding:'7px 14px', fontSize:12, cursor:'pointer', fontWeight:500 }}>
+            <button onClick={handleAdd} disabled={saving||!newName||!newDate} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:7, padding:'7px 14px', fontSize:12, cursor:'pointer', fontWeight:500 }}>
               {saving ? 'Guardando...' : 'Agregar'}
             </button>
             <button onClick={()=>setShowAdd(false)} style={{ background:'none', border:'0.5px solid #D3D1C7', borderRadius:7, padding:'7px 12px', fontSize:12, cursor:'pointer', color:'#73726C' }}>Cancelar</button>
@@ -779,10 +779,10 @@ function TabMilestones({ projectId }: { projectId: string }) {
         ) : milestones.map((m, i) => {
           const isDone    = m.status === 'COMPLETED'
           const isOverdue = m.status === 'OVERDUE'
-          const iconColor = isDone ? '#0F6E56' : isOverdue ? '#A32D2D' : '#854F0B'
+          const iconColor = isDone ? '#00A88A' : isOverdue ? '#A32D2D' : '#854F0B'
           const icon      = isDone ? 'ti-circle-check' : isOverdue ? 'ti-alert-triangle' : 'ti-clock'
-          const badgeBg   = isDone ? '#E1F5EE' : isOverdue ? '#FCEBEB' : '#FAEEDA'
-          const badgeColor= isDone ? '#085041' : isOverdue ? '#791F1F' : '#633806'
+          const badgeBg   = isDone ? '#E0F2F1' : isOverdue ? '#FCEBEB' : '#FAEEDA'
+          const badgeColor= isDone ? '#005246' : isOverdue ? '#791F1F' : '#633806'
           const badgeText = isDone ? 'Completado' : isOverdue ? 'Vencido' : 'Pendiente'
           return (
             <div key={m.id} style={{
@@ -875,7 +875,7 @@ export default function ProjectDetailPage() {
         <div style={{ padding:'16px 28px 0' }}>
           {/* breadcrumb */}
           <div style={{ fontSize:12, color:'#9C9A92', marginBottom:10, display:'flex', alignItems:'center', gap:5 }}>
-            <span style={{ cursor:'pointer', color:'#185FA5' }} onClick={()=>navigate('/proyectos')}>
+            <span style={{ cursor:'pointer', color:'#0A2E5C' }} onClick={()=>navigate('/proyectos')}>
               <i className="ti ti-folder" style={{ fontSize:12 }} /> Proyectos
             </span>
             <i className="ti ti-chevron-right" style={{ fontSize:11 }} />
@@ -885,18 +885,18 @@ export default function ProjectDetailPage() {
           {/* title row */}
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:10 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:500, color:'#185FA5', marginBottom:4 }}>{project.codigo_proyecto}</div>
+              <div style={{ fontSize:11, fontWeight:500, color:'#0A2E5C', marginBottom:4 }}>{project.codigo_proyecto}</div>
               <div style={{ fontSize:17, fontWeight:500, color:'#3D3D3A', marginBottom:7 }}>{project.titulo}</div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
                 <span style={{ ...ss, fontSize:11, padding:'2px 9px', borderRadius:20, fontWeight:500 }}>
                   <i className="ti ti-circle-filled" style={{ fontSize:8, marginRight:3 }} />
                   {STATUS_LABELS[project.status] ?? project.status}
                 </span>
-                <span style={{ background:'#E1F5EE', color:'#085041', fontSize:11, padding:'2px 9px', borderRadius:20, fontWeight:500 }}>
+                <span style={{ background:'#E0F2F1', color:'#005246', fontSize:11, padding:'2px 9px', borderRadius:20, fontWeight:500 }}>
                   {TYPE_LABELS[project.study_type] ?? project.study_type}
                 </span>
                 {project.trial_phase && project.trial_phase !== 'NOT_APPLICABLE' && (
-                  <span style={{ background:'#E6F1FB', color:'#0C447C', fontSize:11, padding:'2px 9px', borderRadius:20, fontWeight:500 }}>
+                  <span style={{ background:'#E0F7FA', color:'#007A99', fontSize:11, padding:'2px 9px', borderRadius:20, fontWeight:500 }}>
                     {PHASE_LABELS[project.trial_phase]}
                   </span>
                 )}
@@ -914,8 +914,8 @@ export default function ProjectDetailPage() {
               <button key={t.key} onClick={()=>setActiveTab(t.key)} style={{
                 padding:'9px 14px', fontSize:12, cursor:'pointer',
                 background:'none', border:'none',
-                color: activeTab===t.key ? '#185FA5' : '#73726C',
-                borderBottom: activeTab===t.key ? '2px solid #185FA5' : '2px solid transparent',
+                color: activeTab===t.key ? '#0A2E5C' : '#73726C',
+                borderBottom: activeTab===t.key ? '2px solid #0A2E5C' : '2px solid transparent',
                 fontWeight: activeTab===t.key ? 500 : 400,
                 whiteSpace:'nowrap', display:'flex', alignItems:'center', gap:5,
               }}>

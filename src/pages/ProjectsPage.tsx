@@ -54,18 +54,18 @@ const DISEASE_LABELS: Record<string, string> = {
   MENTAL_HEALTH:'Salud Mental', PULMONARY:'Pulmonar', OTHER:'Otros',
 }
 const STATUS_STYLE: Record<string, {bg:string;color:string}> = {
-  ACTIVE:     {bg:'#E1F5EE',color:'#085041'},
+  ACTIVE:     {bg:'#E0F2F1',color:'#005246'},
   LEAD:       {bg:'#F1EFE8',color:'#444441'},
-  PROPOSAL:   {bg:'#EEEDFE',color:'#26215C'},
-  CONTRACTED: {bg:'#E6F1FB',color:'#0C447C'},
+  PROPOSAL:   {bg:'#F3E5F5',color:'#6A1B9A'},
+  CONTRACTED: {bg:'#E0F7FA',color:'#007A99'},
   PAUSED:     {bg:'#FAEEDA',color:'#633806'},
   CLOSED:     {bg:'#FCEBEB',color:'#791F1F'},
-  COMPLETED:  {bg:'#E1F5EE',color:'#085041'},
+  COMPLETED:  {bg:'#E0F2F1',color:'#005246'},
   CANCELLED:  {bg:'#F1EFE8',color:'#444441'},
 }
 const TYPE_STYLE: Record<string, {bg:string;color:string}> = {
-  INTERVENTIONAL:  {bg:'#E1F5EE',color:'#085041'},
-  OBSERVATIONAL:   {bg:'#EEEDFE',color:'#26215C'},
+  INTERVENTIONAL:  {bg:'#E0F2F1',color:'#005246'},
+  OBSERVATIONAL:   {bg:'#F3E5F5',color:'#6A1B9A'},
   CLINICAL_SERIES: {bg:'#FAEEDA',color:'#633806'},
   SERVICE:         {bg:'#F1EFE8',color:'#444441'},
 }
@@ -98,8 +98,8 @@ function recruitPct(cur: number, target: number|null) {
   return Math.round(cur / target * 100)
 }
 function recruitColor(pct: number) {
-  if (pct >= 80) return '#185FA5'
-  if (pct >= 50) return '#1D9E75'
+  if (pct >= 80) return '#0A2E5C'
+  if (pct >= 50) return '#00CBA5'
   if (pct >= 30) return '#EF9F27'
   return '#E24B4A'
 }
@@ -226,7 +226,7 @@ function NewProjectModal({ onClose, onCreated }: { onClose:()=>void; onCreated:(
         {/* head */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px', borderBottom:'0.5px solid #E8E6DE' }}>
           <div style={{ fontSize:15, fontWeight:500, color:'#3D3D3A' }}>
-            <i className="ti ti-folder-plus" style={{ color:'#185FA5', marginRight:8, fontSize:16, verticalAlign:-2 }} />
+            <i className="ti ti-folder-plus" style={{ color:'#0A2E5C', marginRight:8, fontSize:16, verticalAlign:-2 }} />
             Nuevo proyecto
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#9C9A92', fontSize:18, lineHeight:1 }}>
@@ -241,7 +241,7 @@ function NewProjectModal({ onClose, onCreated }: { onClose:()=>void; onCreated:(
             {/* código + título */}
             <div style={{ display:'grid', gridTemplateColumns:'140px 1fr', gap:12 }}>
               <Field label="Código" required>
-                <input style={{ ...inputStyle, background: codeLoading ? '#F1EFE8' : '#F8F7F4', fontWeight:500, color:'#185FA5' }}
+                <input style={{ ...inputStyle, background: codeLoading ? '#F1EFE8' : '#F8F7F4', fontWeight:500, color:'#0A2E5C' }}
                   value={codeLoading ? 'Generando...' : form.codigo_proyecto}
                   onChange={set('codigo_proyecto')}
                   pattern="^[0-9]{4}CR[0-9]+"
@@ -336,7 +336,7 @@ function NewProjectModal({ onClose, onCreated }: { onClose:()=>void; onCreated:(
             </Field>
 
             {/* info box */}
-            <div style={{ background:'#E6F1FB', border:'0.5px solid #B5D4F4', borderRadius:8, padding:'9px 12px', fontSize:12, color:'#0C447C' }}>
+            <div style={{ background:'#E0F7FA', border:'0.5px solid #80DEEA', borderRadius:8, padding:'9px 12px', fontSize:12, color:'#007A99' }}>
               <i className="ti ti-info-circle" style={{ fontSize:13, verticalAlign:-1, marginRight:5 }} />
               Puedes completar el equipo, investigador principal, sponsor y detalles del protocolo desde el detalle del proyecto.
             </div>
@@ -358,7 +358,7 @@ function NewProjectModal({ onClose, onCreated }: { onClose:()=>void; onCreated:(
               Cancelar
             </button>
             <button type="submit" disabled={loading} style={{
-              background: loading ? '#9C9A92' : '#185FA5', color:'#fff', border:'none',
+              background: loading ? '#9C9A92' : '#0A2E5C', color:'#fff', border:'none',
               padding:'7px 18px', borderRadius:8, fontSize:13, fontWeight:500,
               cursor: loading ? 'not-allowed' : 'pointer',
               display:'flex', alignItems:'center', gap:6,
@@ -444,7 +444,7 @@ export default function ProjectsPage() {
             <button
               onClick={() => setShowModal(true)}
               style={{
-                background:'#185FA5', color:'#fff', border:'none',
+                background:'#0A2E5C', color:'#fff', border:'none',
                 padding:'8px 16px', borderRadius:8, fontSize:13, fontWeight:500,
                 cursor:'pointer', display:'flex', alignItems:'center', gap:6,
               }}
@@ -497,7 +497,7 @@ export default function ProjectsPage() {
 
           {hasFilters && (
             <button onClick={clearFilters} style={{
-              background:'#E6F1FB', color:'#0C447C', border:'none',
+              background:'#E0F7FA', color:'#007A99', border:'none',
               padding:'6px 12px', borderRadius:20, fontSize:12, fontWeight:500, cursor:'pointer',
               display:'flex', alignItems:'center', gap:4,
             }}>
@@ -545,7 +545,7 @@ export default function ProjectsPage() {
                   </div>
                   {!hasFilters && canCreate && (
                     <button onClick={() => setShowModal(true)} style={{
-                      background:'#185FA5', color:'#fff', border:'none',
+                      background:'#0A2E5C', color:'#fff', border:'none',
                       padding:'7px 16px', borderRadius:8, fontSize:13, cursor:'pointer',
                       marginTop:4,
                     }}>
@@ -554,7 +554,7 @@ export default function ProjectsPage() {
                   )}
                   {hasFilters && (
                     <button onClick={clearFilters} style={{
-                      background:'none', border:'none', color:'#185FA5',
+                      background:'none', border:'none', color:'#0A2E5C',
                       fontSize:13, cursor:'pointer', textDecoration:'underline', marginTop:4,
                     }}>
                       Limpiar filtros
@@ -578,7 +578,7 @@ export default function ProjectsPage() {
                     onMouseEnter={e => (e.currentTarget.style.background = '#F8F7F4')}
                     onMouseLeave={e => (e.currentTarget.style.background = '')}
                   >
-                    <td style={{ padding:'10px 14px', fontWeight:500, color:'#185FA5', fontSize:12 }}>
+                    <td style={{ padding:'10px 14px', fontWeight:500, color:'#0A2E5C', fontSize:12 }}>
                       {p.codigo_proyecto}
                     </td>
                     <td style={{ padding:'10px 14px' }}>

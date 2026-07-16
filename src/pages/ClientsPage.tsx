@@ -42,24 +42,24 @@ const ORG_TYPE_LABELS: Record<string,string> = {
   GOVERNMENT:'Gobierno', OTHER:'Otro',
 }
 const SPONSOR_TYPE_STYLE: Record<string,{bg:string;color:string}> = {
-  INTERNAL: {bg:'#E6F1FB',color:'#0C447C'},
-  EXTERNAL: {bg:'#E1F5EE',color:'#085041'},
+  INTERNAL: {bg:'#E0F7FA',color:'#007A99'},
+  EXTERNAL: {bg:'#E0F2F1',color:'#005246'},
 }
 const STATUS_STYLE: Record<string,{bg:string;color:string}> = {
-  ACTIVE:     {bg:'#E1F5EE',color:'#085041'},
+  ACTIVE:     {bg:'#E0F2F1',color:'#005246'},
   LEAD:       {bg:'#F1EFE8',color:'#444441'},
-  PROPOSAL:   {bg:'#EEEDFE',color:'#26215C'},
-  CONTRACTED: {bg:'#E6F1FB',color:'#0C447C'},
+  PROPOSAL:   {bg:'#F3E5F5',color:'#6A1B9A'},
+  CONTRACTED: {bg:'#E0F7FA',color:'#007A99'},
   PAUSED:     {bg:'#FAEEDA',color:'#633806'},
   CLOSED:     {bg:'#FCEBEB',color:'#791F1F'},
-  COMPLETED:  {bg:'#E1F5EE',color:'#085041'},
+  COMPLETED:  {bg:'#E0F2F1',color:'#005246'},
   CANCELLED:  {bg:'#F1EFE8',color:'#444441'},
 }
 const STATUS_LABELS: Record<string,string> = {
   ACTIVE:'Activo', LEAD:'Lead', PROPOSAL:'Propuesta', CONTRACTED:'Contratado',
   PAUSED:'En pausa', CLOSED:'Cerrado', COMPLETED:'Completado', CANCELLED:'Cancelado',
 }
-const AVATAR_COLORS = ['#185FA5','#0F6E56','#633806','#26215C','#854F0B','#791F1F','#444441','#0C447C']
+const AVATAR_COLORS = ['#0A2E5C','#00A88A','#633806','#6A1B9A','#854F0B','#791F1F','#444441','#007A99']
 
 function initials(name: string) {
   return name.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase()
@@ -111,7 +111,7 @@ function OrgModal({ org, onClose, onSaved }: { org?: Organization; onClose: ()=>
       <div style={{ background:'#fff', borderRadius:12, width:'100%', maxWidth:500, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 8px 32px rgba(0,0,0,0.16)' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px', borderBottom:'0.5px solid #E8E6DE' }}>
           <div style={{ fontSize:15, fontWeight:500, color:'#3D3D3A' }}>
-            <i className="ti ti-building" style={{ color:'#185FA5', marginRight:8, fontSize:15, verticalAlign:-2 }} />
+            <i className="ti ti-building" style={{ color:'#0A2E5C', marginRight:8, fontSize:15, verticalAlign:-2 }} />
             {org ? 'Editar cliente' : 'Nuevo cliente'}
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#9C9A92', fontSize:18 }}><i className="ti ti-x" /></button>
@@ -172,7 +172,7 @@ function OrgModal({ org, onClose, onSaved }: { org?: Organization; onClose: ()=>
           </div>
           <div style={{ display:'flex', justifyContent:'flex-end', gap:8, padding:'14px 20px', borderTop:'0.5px solid #E8E6DE' }}>
             <button type="button" onClick={onClose} style={{ background:'transparent', border:'0.5px solid #D3D1C7', color:'#73726C', padding:'7px 16px', borderRadius:8, fontSize:13, cursor:'pointer' }}>Cancelar</button>
-            <button type="submit" disabled={saving} style={{ background:saving?'#9C9A92':'#185FA5', color:'#fff', border:'none', padding:'7px 18px', borderRadius:8, fontSize:13, fontWeight:500, cursor:saving?'not-allowed':'pointer', display:'flex', alignItems:'center', gap:6 }}>
+            <button type="submit" disabled={saving} style={{ background:saving?'#9C9A92':'#0A2E5C', color:'#fff', border:'none', padding:'7px 18px', borderRadius:8, fontSize:13, fontWeight:500, cursor:saving?'not-allowed':'pointer', display:'flex', alignItems:'center', gap:6 }}>
               <i className="ti ti-device-floppy" style={{ fontSize:13 }} />
               {saving ? 'Guardando...' : org ? 'Guardar cambios' : 'Crear cliente'}
             </button>
@@ -260,7 +260,7 @@ function ClientDetail({ org, onUpdate }: { org: Organization; onUpdate: ()=>void
           <button key={t.key} onClick={() => setActiveTab(t.key as any)} style={{
             flex:1, padding:'6px 12px', fontSize:12, cursor:'pointer',
             background: activeTab===t.key ? '#fff' : 'transparent',
-            border:'none', borderRadius:6, color: activeTab===t.key ? '#185FA5' : '#73726C',
+            border:'none', borderRadius:6, color: activeTab===t.key ? '#0A2E5C' : '#73726C',
             fontWeight: activeTab===t.key ? 500 : 400,
             boxShadow: activeTab===t.key ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
           }}>
@@ -296,8 +296,8 @@ function ClientDetail({ org, onUpdate }: { org: Organization; onUpdate: ()=>void
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:10 }}>
             {[
-              { label:'Proyectos', value: projects.length, color:'#185FA5' },
-              { label:'Activos',   value: projects.filter(p=>p.status==='ACTIVE').length, color:'#0F6E56' },
+              { label:'Proyectos', value: projects.length, color:'#0A2E5C' },
+              { label:'Activos',   value: projects.filter(p=>p.status==='ACTIVE').length, color:'#00A88A' },
               { label:'Interacciones', value: interactions.length, color:'#3D3D3A' },
             ].map(m => (
               <div key={m.label} style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:9, padding:'11px 14px', textAlign:'center' }}>
@@ -321,7 +321,7 @@ function ClientDetail({ org, onUpdate }: { org: Organization; onUpdate: ()=>void
                 style={{ width:'100%', padding:'8px 10px', border:'0.5px solid #D3D1C7', borderRadius:8, fontSize:13, background:'#F8F7F4', color:'#3D3D3A', fontFamily:'inherit', outline:'none', resize:'vertical', minHeight:64 }}
               />
               <div style={{ display:'flex', justifyContent:'flex-end', marginTop:8 }}>
-                <button onClick={addInteraction} disabled={saving || !newNote.trim()} style={{ background:!newNote.trim()||saving?'#9C9A92':'#185FA5', color:'#fff', border:'none', padding:'6px 14px', borderRadius:7, fontSize:12, fontWeight:500, cursor:!newNote.trim()||saving?'not-allowed':'pointer', display:'flex', alignItems:'center', gap:5 }}>
+                <button onClick={addInteraction} disabled={saving || !newNote.trim()} style={{ background:!newNote.trim()||saving?'#9C9A92':'#0A2E5C', color:'#fff', border:'none', padding:'6px 14px', borderRadius:7, fontSize:12, fontWeight:500, cursor:!newNote.trim()||saving?'not-allowed':'pointer', display:'flex', alignItems:'center', gap:5 }}>
                   <i className="ti ti-send" style={{ fontSize:13 }} />
                   {saving ? 'Guardando...' : 'Guardar nota'}
                 </button>
@@ -335,7 +335,7 @@ function ClientDetail({ org, onUpdate }: { org: Organization; onUpdate: ()=>void
           ) : interactions.map((n, i) => (
             <div key={n.id} style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, padding:14, marginBottom:8, borderLeft:`3px solid ${AVATAR_COLORS[i % AVATAR_COLORS.length]}` }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
-                <span style={{ fontSize:12, fontWeight:500, color:'#0C447C' }}>{(n.author as any)?.full_name ?? '—'}</span>
+                <span style={{ fontSize:12, fontWeight:500, color:'#007A99' }}>{(n.author as any)?.full_name ?? '—'}</span>
                 <span style={{ fontSize:11, color:'#9C9A92' }}>{formatDate(n.interaction_date)}</span>
               </div>
               <div style={{ fontSize:13, color:'#3D3D3A', lineHeight:1.5 }}>{n.notes}</div>
@@ -360,7 +360,7 @@ function ClientDetail({ org, onUpdate }: { org: Organization; onUpdate: ()=>void
                 onMouseLeave={e => (e.currentTarget.style.background='#fff')}
               >
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:12, fontWeight:500, color:'#185FA5', marginBottom:3 }}>{p.codigo_proyecto}</div>
+                  <div style={{ fontSize:12, fontWeight:500, color:'#0A2E5C', marginBottom:3 }}>{p.codigo_proyecto}</div>
                   <div style={{ fontSize:13, color:'#3D3D3A', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{p.titulo}</div>
                 </div>
                 <span style={{ ...ps, fontSize:11, padding:'2px 9px', borderRadius:20, fontWeight:500 }}>
@@ -413,7 +413,7 @@ export default function ClientsPage() {
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
               <div style={{ fontSize:15, fontWeight:500, color:'#3D3D3A' }}>Clientes</div>
               {canCreate && (
-                <button onClick={() => setShowModal(true)} style={{ background:'#185FA5', color:'#fff', border:'none', padding:'5px 10px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>
+                <button onClick={() => setShowModal(true)} style={{ background:'#0A2E5C', color:'#fff', border:'none', padding:'5px 10px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>
                   <i className="ti ti-plus" style={{ fontSize:13 }} />Nuevo
                 </button>
               )}
@@ -442,7 +442,7 @@ export default function ClientsPage() {
                   style={{
                     padding:'12px 16px', cursor:'pointer',
                     background: isSelected ? '#EBF4FF' : 'transparent',
-                    borderLeft: isSelected ? '2px solid #185FA5' : '2px solid transparent',
+                    borderLeft: isSelected ? '2px solid #0A2E5C' : '2px solid transparent',
                     borderBottom:'0.5px solid #E8E6DE',
                   }}
                   onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background='#F8F7F4' }}

@@ -50,9 +50,9 @@ const GRADE_STYLE: Record<string, { bg: string; color: string }> = {
   GRADE_5: { bg: '#3D3D3A', color: '#fff'    },
 }
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-  REPORTED:  { bg: '#E6F1FB', color: '#0C447C' },
+  REPORTED:  { bg: '#E0F7FA', color: '#007A99' },
   FOLLOW_UP: { bg: '#FAEEDA', color: '#633806' },
-  CLOSED:    { bg: '#E1F5EE', color: '#085041' },
+  CLOSED:    { bg: '#E0F2F1', color: '#005246' },
 }
 
 function formatDate(iso: string) {
@@ -128,12 +128,12 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
               <div key={n.key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{
                   width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
-                  background: n.value ? '#E1F5EE' : (isSAE ? '#FCEBEB' : '#F1EFE8'),
-                  border: `1.5px solid ${n.value ? '#1D9E75' : (isSAE ? '#F7C1C1' : '#E8E6DE')}`,
+                  background: n.value ? '#E0F2F1' : (isSAE ? '#FCEBEB' : '#F1EFE8'),
+                  border: `1.5px solid ${n.value ? '#00CBA5' : (isSAE ? '#F7C1C1' : '#E8E6DE')}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
                 }}>
                   <i className={`ti ${n.value ? 'ti-check' : 'ti-clock'}`}
-                    style={{ color: n.value ? '#0F6E56' : (isSAE ? '#A32D2D' : '#B4B2A9') }} />
+                    style={{ color: n.value ? '#00A88A' : (isSAE ? '#A32D2D' : '#B4B2A9') }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 12, fontWeight: 500, color: '#3D3D3A' }}>{n.label}</div>
@@ -143,7 +143,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
                 </div>
                 {!n.value && canEdit && (isSAE || n.key === 'pi_notified_at') && (
                   <button onClick={() => markNotification(n.key)} disabled={saving}
-                    style={{ fontSize: 11, padding: '3px 8px', background: '#E6F1FB', color: '#0C447C', border: '0.5px solid #B5D4F4', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}>
+                    style={{ fontSize: 11, padding: '3px 8px', background: '#E0F7FA', color: '#007A99', border: '0.5px solid #80DEEA', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}>
                     Marcar
                   </button>
                 )}
@@ -163,7 +163,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
             </button>
           )}
           <button onClick={() => updateStatus('CLOSED')} disabled={saving}
-            style={{ background: '#E1F5EE', color: '#085041', border: '0.5px solid #9FE1CB', padding: '5px 12px', borderRadius: 7, fontSize: 12, cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>
+            style={{ background: '#E0F2F1', color: '#005246', border: '0.5px solid #80D4C4', padding: '5px 12px', borderRadius: 7, fontSize: 12, cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>
             <i className="ti ti-circle-check" style={{ fontSize: 13 }} /> Marcar cerrado
           </button>
         </div>
@@ -250,7 +250,7 @@ export default function AdverseEventsPage() {
             { label: 'SAE graves',            value: saes,         color: saes > 0 ? '#A32D2D' : '#3D3D3A' },
             { label: 'Sin cerrar',            value: open,         color: open > 0 ? '#854F0B' : '#3D3D3A' },
             { label: 'Grado ≥ 3',             value: grade34,      color: grade34 > 0 ? '#791F1F' : '#3D3D3A' },
-            { label: 'Notificaciones SAE pend.', value: pendingNotif, color: pendingNotif > 0 ? '#A32D2D' : '#0F6E56' },
+            { label: 'Notificaciones SAE pend.', value: pendingNotif, color: pendingNotif > 0 ? '#A32D2D' : '#00A88A' },
           ].map(m => (
             <div key={m.label} style={{ background: '#fff', border: '0.5px solid #E8E6DE', borderRadius: 9, padding: '12px 14px', textAlign: 'center' }}>
               <div style={{ fontSize: 10, color: '#9C9A92', marginBottom: 5 }}>{m.label}</div>
@@ -292,7 +292,7 @@ export default function AdverseEventsPage() {
           </select>
           {hasFilters && (
             <button onClick={() => { setFilterType(''); setFilterStatus(''); setFilterGrade(''); setSearch('') }}
-              style={{ background: '#E6F1FB', color: '#0C447C', border: 'none', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+              style={{ background: '#E0F7FA', color: '#007A99', border: 'none', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
               <i className="ti ti-x" style={{ fontSize: 12 }} /> Limpiar
             </button>
           )}
@@ -346,7 +346,7 @@ export default function AdverseEventsPage() {
                         {/* proyecto — clickeable */}
                         <span
                           onClick={e => { e.stopPropagation(); navigate(`/proyectos/${ae.project_id}`) }}
-                          style={{ fontSize: 11, color: '#185FA5', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline' }}
+                          style={{ fontSize: 11, color: '#0A2E5C', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline' }}
                         >
                           {(ae.project as any)?.codigo_proyecto}
                         </span>

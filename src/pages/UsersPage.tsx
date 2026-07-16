@@ -32,19 +32,19 @@ const ROLE_LABELS: Record<string, string> = {
 
 const ROLE_STYLE: Record<string, { bg: string; color: string }> = {
   ADMIN:            { bg: '#FCEBEB', color: '#791F1F' },
-  PM_CRIO:          { bg: '#E6F1FB', color: '#0C447C' },
-  INVESTIGATOR:     { bg: '#E1F5EE', color: '#085041' },
+  PM_CRIO:          { bg: '#E0F7FA', color: '#007A99' },
+  INVESTIGATOR:     { bg: '#E0F2F1', color: '#005246' },
   COORDINATOR:      { bg: '#FAEEDA', color: '#633806' },
-  SPONSOR:          { bg: '#EEEDFE', color: '#26215C' },
+  SPONSOR:          { bg: '#F3E5F5', color: '#6A1B9A' },
   EXTERNAL_MONITOR: { bg: '#F1EFE8', color: '#444441' },
-  FINANCE:          { bg: '#E1F5EE', color: '#085041' },
-  LAB:              { bg: '#E6F1FB', color: '#0C447C' },
-  QA:               { bg: '#E1F5EE', color: '#085041' },
+  FINANCE:          { bg: '#E0F2F1', color: '#005246' },
+  LAB:              { bg: '#E0F7FA', color: '#007A99' },
+  QA:               { bg: '#E0F2F1', color: '#005246' },
 }
 
 const AVATAR_COLORS = [
-  '#185FA5','#0F6E56','#633806','#26215C',
-  '#444441','#854F0B','#791F1F','#0C447C',
+  '#0A2E5C','#00A88A','#633806','#6A1B9A',
+  '#444441','#854F0B','#791F1F','#007A99',
 ]
 
 function initials(name: string) {
@@ -183,7 +183,7 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '0.5px solid #E8E6DE' }}>
           <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A' }}>
             <i className={`ti ${mode === 'invite' ? 'ti-user-plus' : 'ti-user-edit'}`}
-              style={{ color: '#185FA5', marginRight: 8, fontSize: 16, verticalAlign: -2 }} />
+              style={{ color: '#0A2E5C', marginRight: 8, fontSize: 16, verticalAlign: -2 }} />
             {mode === 'invite' ? 'Agregar usuario' : 'Editar usuario'}
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9C9A92', fontSize: 18 }}>
@@ -193,7 +193,7 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
 
         {success ? (
           <div style={{ padding: 32, textAlign: 'center' }}>
-            <i className="ti ti-circle-check" style={{ fontSize: 36, color: '#0F6E56', display: 'block', marginBottom: 12 }} />
+            <i className="ti ti-circle-check" style={{ fontSize: 36, color: '#00A88A', display: 'block', marginBottom: 12 }} />
             <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A', marginBottom: 6 }}>Usuario creado</div>
             <div style={{ fontSize: 13, color: '#9C9A92', marginBottom: 20 }}>
               El usuario fue creado. Para que pueda iniciar sesión, ejecuta esto en el SQL Editor de Supabase:
@@ -201,7 +201,7 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
             <div style={{ background: '#F8F7F4', border: '0.5px solid #E8E6DE', borderRadius: 8, padding: '10px 14px', fontSize: 12, fontFamily: 'monospace', textAlign: 'left', color: '#3D3D3A', marginBottom: 20 }}>
               UPDATE auth.users SET email_confirmed_at = NOW() WHERE email = '{form.email}';
             </div>
-            <button onClick={() => { onDone(); onClose() }} style={{ background: '#185FA5', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+            <button onClick={() => { onDone(); onClose() }} style={{ background: '#0A2E5C', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
               Listo
             </button>
           </div>
@@ -291,7 +291,7 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
               <button type="button" onClick={onClose} style={{ background: 'transparent', border: '0.5px solid #D3D1C7', color: '#73726C', padding: '7px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>
                 Cancelar
               </button>
-              <button type="submit" disabled={loading} style={{ background: loading ? '#9C9A92' : '#185FA5', color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button type="submit" disabled={loading} style={{ background: loading ? '#9C9A92' : '#0A2E5C', color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <i className={`ti ${mode === 'invite' ? 'ti-user-plus' : 'ti-device-floppy'}`} style={{ fontSize: 13 }} />
                 {loading ? 'Guardando...' : mode === 'invite' ? 'Crear usuario' : 'Guardar cambios'}
               </button>
@@ -368,7 +368,7 @@ export default function UsersPage() {
           {isAdmin && (
             <button
               onClick={() => { setEditTarget(undefined); setModal('invite') }}
-              style={{ background: '#185FA5', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+              style={{ background: '#0A2E5C', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
             >
               <i className="ti ti-user-plus" style={{ fontSize: 15 }} />
               Agregar usuario
@@ -408,7 +408,7 @@ export default function UsersPage() {
             {Object.entries(ROLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
           {(search || fRole) && (
-            <button onClick={() => { setSearch(''); setFRole('') }} style={{ background: '#E6F1FB', color: '#0C447C', border: 'none', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button onClick={() => { setSearch(''); setFRole('') }} style={{ background: '#E0F7FA', color: '#007A99', border: 'none', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
               <i className="ti ti-x" style={{ fontSize: 12 }} /> Limpiar
             </button>
           )}
@@ -438,7 +438,7 @@ export default function UsersPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
                     <span style={{ fontSize: 13, fontWeight: 500, color: '#3D3D3A' }}>{u.full_name}</span>
                     {u.id === currentUser?.id && (
-                      <span style={{ fontSize: 10, background: '#E6F1FB', color: '#0C447C', padding: '1px 6px', borderRadius: 20 }}>Tú</span>
+                      <span style={{ fontSize: 10, background: '#E0F7FA', color: '#007A99', padding: '1px 6px', borderRadius: 20 }}>Tú</span>
                     )}
                     {!u.is_active && (
                       <span style={{ fontSize: 10, background: '#F1EFE8', color: '#9C9A92', padding: '1px 6px', borderRadius: 20 }}>Inactivo</span>
@@ -460,7 +460,7 @@ export default function UsersPage() {
                     <button onClick={() => openEdit(u)} style={{ padding: '4px 8px', border: '0.5px solid #E8E6DE', borderRadius: 6, background: 'transparent', cursor: 'pointer', color: '#73726C', fontSize: 13 }} title="Editar">
                       <i className="ti ti-edit" />
                     </button>
-                    <button onClick={() => toggleActive(u)} style={{ padding: '4px 8px', border: '0.5px solid #E8E6DE', borderRadius: 6, background: 'transparent', cursor: 'pointer', color: u.is_active ? '#854F0B' : '#0F6E56', fontSize: 13 }} title={u.is_active ? 'Desactivar' : 'Activar'}>
+                    <button onClick={() => toggleActive(u)} style={{ padding: '4px 8px', border: '0.5px solid #E8E6DE', borderRadius: 6, background: 'transparent', cursor: 'pointer', color: u.is_active ? '#854F0B' : '#00A88A', fontSize: 13 }} title={u.is_active ? 'Desactivar' : 'Activar'}>
                       <i className={`ti ${u.is_active ? 'ti-user-off' : 'ti-user-check'}`} />
                     </button>
                   </div>
@@ -472,7 +472,7 @@ export default function UsersPage() {
 
         {/* ── SQL helper note ── */}
         <div style={{ marginTop: 14, background: '#F8F7F4', border: '0.5px solid #E8E6DE', borderRadius: 9, padding: '11px 14px', fontSize: 12, color: '#73726C' }}>
-          <i className="ti ti-info-circle" style={{ fontSize: 13, verticalAlign: -1, marginRight: 5, color: '#185FA5' }} />
+          <i className="ti ti-info-circle" style={{ fontSize: 13, verticalAlign: -1, marginRight: 5, color: '#0A2E5C' }} />
           Al crear un usuario nuevo, ejecuta este SQL en Supabase para confirmar su email:{' '}
           <code style={{ background: '#E8E6DE', padding: '1px 6px', borderRadius: 4, fontSize: 11 }}>
             UPDATE auth.users SET email_confirmed_at = NOW() WHERE email = 'correo@ejemplo.cl';

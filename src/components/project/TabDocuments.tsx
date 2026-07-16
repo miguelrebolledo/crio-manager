@@ -47,11 +47,11 @@ function fileIcon(mimeType: string | null): { icon: string; bg: string; color: s
   if (!mimeType) return { icon: 'ti-file',               bg: '#F1EFE8', color: '#444441' }
   if (mimeType.includes('pdf'))        return { icon: 'ti-file-type-pdf',   bg: '#FCEBEB', color: '#791F1F' }
   if (mimeType.includes('sheet') || mimeType.includes('excel') || mimeType.includes('csv'))
-    return { icon: 'ti-file-spreadsheet', bg: '#E1F5EE', color: '#085041' }
+    return { icon: 'ti-file-spreadsheet', bg: '#E0F2F1', color: '#005246' }
   if (mimeType.includes('word') || mimeType.includes('document'))
-    return { icon: 'ti-file-type-docx',  bg: '#E6F1FB', color: '#0C447C' }
+    return { icon: 'ti-file-type-docx',  bg: '#E0F7FA', color: '#007A99' }
   if (mimeType.includes('image'))
-    return { icon: 'ti-photo',           bg: '#EEEDFE', color: '#26215C' }
+    return { icon: 'ti-photo',           bg: '#F3E5F5', color: '#6A1B9A' }
   if (mimeType.includes('zip') || mimeType.includes('rar'))
     return { icon: 'ti-file-zip',        bg: '#FAEEDA', color: '#633806' }
   return { icon: 'ti-file',             bg: '#F1EFE8', color: '#444441' }
@@ -166,7 +166,7 @@ function UploadModal({
         {/* head */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '0.5px solid #E8E6DE' }}>
           <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A' }}>
-            <i className="ti ti-upload" style={{ color: '#185FA5', marginRight: 8, fontSize: 15, verticalAlign: -2 }} />
+            <i className="ti ti-upload" style={{ color: '#0A2E5C', marginRight: 8, fontSize: 15, verticalAlign: -2 }} />
             Subir documento
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9C9A92', fontSize: 18 }}>
@@ -183,7 +183,7 @@ function UploadModal({
             onDrop={handleDrop}
             onClick={() => fileRef.current?.click()}
             style={{
-              border: `1.5px dashed ${dragOver ? '#185FA5' : file ? '#0F6E56' : '#D3D1C7'}`,
+              border: `1.5px dashed ${dragOver ? '#0A2E5C' : file ? '#00A88A' : '#D3D1C7'}`,
               borderRadius: 10, padding: '24px 16px', textAlign: 'center',
               cursor: 'pointer', marginBottom: 16, transition: 'all .15s',
               background: dragOver ? '#EBF4FF' : file ? '#F0FAF5' : '#F8F7F4',
@@ -194,7 +194,7 @@ function UploadModal({
 
             {file ? (
               <div>
-                <i className="ti ti-circle-check" style={{ fontSize: 28, color: '#0F6E56', display: 'block', marginBottom: 6 }} />
+                <i className="ti ti-circle-check" style={{ fontSize: 28, color: '#00A88A', display: 'block', marginBottom: 6 }} />
                 <div style={{ fontSize: 13, fontWeight: 500, color: '#3D3D3A' }}>{file.name}</div>
                 <div style={{ fontSize: 11, color: '#9C9A92', marginTop: 3 }}>{formatBytes(file.size)}</div>
                 <button
@@ -238,8 +238,8 @@ function UploadModal({
           >
             <div style={{
               width: 18, height: 18, borderRadius: 4,
-              border: `1.5px solid ${visibleToSponsor ? '#185FA5' : '#D3D1C7'}`,
-              background: visibleToSponsor ? '#185FA5' : '#fff',
+              border: `1.5px solid ${visibleToSponsor ? '#0A2E5C' : '#D3D1C7'}`,
+              background: visibleToSponsor ? '#0A2E5C' : '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0, transition: 'all .1s',
             }}>
@@ -261,7 +261,7 @@ function UploadModal({
                 <span>{progress}%</span>
               </div>
               <div style={{ height: 6, background: '#E8E6DE', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${progress}%`, background: '#185FA5', borderRadius: 3, transition: 'width .3s' }} />
+                <div style={{ height: '100%', width: `${progress}%`, background: '#0A2E5C', borderRadius: 3, transition: 'width .3s' }} />
               </div>
             </div>
           )}
@@ -280,7 +280,7 @@ function UploadModal({
             Cancelar
           </button>
           <button onClick={handleUpload} disabled={!file || uploading} style={{
-            background: !file || uploading ? '#9C9A92' : '#185FA5',
+            background: !file || uploading ? '#9C9A92' : '#0A2E5C',
             color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8,
             fontSize: 13, fontWeight: 500,
             cursor: !file || uploading ? 'not-allowed' : 'pointer',
@@ -392,7 +392,7 @@ export default function TabDocuments({ projectId }: { projectId: string }) {
             ))}
           </select>
           {filterType && (
-            <button onClick={() => setFilterType('')} style={{ background: '#E6F1FB', color: '#0C447C', border: 'none', padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
+            <button onClick={() => setFilterType('')} style={{ background: '#E0F7FA', color: '#007A99', border: 'none', padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
               <i className="ti ti-x" style={{ fontSize: 11 }} /> Limpiar
             </button>
           )}
@@ -400,7 +400,7 @@ export default function TabDocuments({ projectId }: { projectId: string }) {
         {canUpload && (
           <button
             onClick={() => setShowUpload(true)}
-            style={{ background: '#185FA5', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+            style={{ background: '#0A2E5C', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <i className="ti ti-upload" style={{ fontSize: 14 }} />
             Subir documento
@@ -420,7 +420,7 @@ export default function TabDocuments({ projectId }: { projectId: string }) {
             {filterType ? 'Sin documentos de este tipo' : 'Sin documentos adjuntos'}
           </div>
           {canUpload && !filterType && (
-            <button onClick={() => setShowUpload(true)} style={{ background: '#185FA5', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 16px', fontSize: 13, cursor: 'pointer', marginTop: 4 }}>
+            <button onClick={() => setShowUpload(true)} style={{ background: '#0A2E5C', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 16px', fontSize: 13, cursor: 'pointer', marginTop: 4 }}>
               Subir el primer documento
             </button>
           )}
@@ -435,7 +435,7 @@ export default function TabDocuments({ projectId }: { projectId: string }) {
         Object.entries(grouped).map(([type, typeDocs]) => (
           <div key={type} style={{ background: '#fff', border: '0.5px solid #E8E6DE', borderRadius: 10, overflow: 'hidden', marginBottom: 10 }}>
             <div style={{ padding: '10px 16px', borderBottom: '0.5px solid #E8E6DE', fontSize: 12, fontWeight: 500, color: '#73726C', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <i className="ti ti-folder" style={{ color: '#185FA5', fontSize: 14 }} />
+              <i className="ti ti-folder" style={{ color: '#0A2E5C', fontSize: 14 }} />
               {DOC_TYPE_LABELS[type] ?? type}
               <span style={{ marginLeft: 4, background: '#F1EFE8', color: '#9C9A92', fontSize: 11, padding: '1px 7px', borderRadius: 20 }}>
                 {typeDocs.length}
@@ -455,7 +455,7 @@ export default function TabDocuments({ projectId }: { projectId: string }) {
       {/* ── Sponsor note ── */}
       {docs.length > 0 && (
         <div style={{ marginTop: 10, background: '#F8F7F4', border: '0.5px solid #E8E6DE', borderRadius: 9, padding: '10px 14px', fontSize: 12, color: '#73726C', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="ti ti-eye" style={{ fontSize: 13, color: '#185FA5', flexShrink: 0 }} />
+          <i className="ti ti-eye" style={{ fontSize: 13, color: '#0A2E5C', flexShrink: 0 }} />
           <span>
             <strong>{docs.filter(d => d.visible_to_sponsor).length}</strong> de {docs.length} documentos son visibles para el sponsor.
             Usa el ícono <i className="ti ti-eye" style={{ fontSize: 12 }} /> para cambiar la visibilidad.
@@ -528,10 +528,10 @@ function DocRow({
     onClick={() => onToggleSponsor(doc)}
     title={doc.visible_to_sponsor ? 'Visible para sponsor' : 'Oculto para sponsor'}
     style={{
-      background: doc.visible_to_sponsor ? '#E6F1FB' : 'transparent',
-      border: `0.5px solid ${doc.visible_to_sponsor ? '#B5D4F4' : '#E8E6DE'}`,
+      background: doc.visible_to_sponsor ? '#E0F7FA' : 'transparent',
+      border: `0.5px solid ${doc.visible_to_sponsor ? '#80DEEA' : '#E8E6DE'}`,
       borderRadius: 6, padding: '4px 10px', cursor: 'pointer',
-      color: doc.visible_to_sponsor ? '#0C447C' : '#B4B2A9',
+      color: doc.visible_to_sponsor ? '#007A99' : '#B4B2A9',
       fontSize: 11, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4,
     }}
   >
@@ -548,7 +548,7 @@ function DocRow({
   style={{
     padding: '4px 10px', border: '0.5px solid #E8E6DE', borderRadius: 6,
     background: 'transparent', cursor: isDownloading ? 'wait' : 'pointer',
-    color: '#185FA5', fontSize: 11, fontWeight: 500,
+    color: '#0A2E5C', fontSize: 11, fontWeight: 500,
     display: 'flex', alignItems: 'center', gap: 4,
   }}
 >

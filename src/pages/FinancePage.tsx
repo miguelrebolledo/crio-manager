@@ -37,13 +37,13 @@ const QUOTATION_STATUS_LABELS: Record<string,string> = {
   DRAFT:'Borrador', SENT:'Enviada', ACCEPTED:'Aceptada', REJECTED:'Rechazada', EXPIRED:'Vencida',
 }
 const INVOICE_STATUS_STYLE: Record<string,{bg:string;color:string}> = {
-  PENDING:{bg:'#FAEEDA',color:'#633806'}, SENT:{bg:'#E6F1FB',color:'#0C447C'},
-  PAID:{bg:'#E1F5EE',color:'#085041'}, OVERDUE:{bg:'#FCEBEB',color:'#791F1F'},
+  PENDING:{bg:'#FAEEDA',color:'#633806'}, SENT:{bg:'#E0F7FA',color:'#007A99'},
+  PAID:{bg:'#E0F2F1',color:'#005246'}, OVERDUE:{bg:'#FCEBEB',color:'#791F1F'},
   CANCELLED:{bg:'#F1EFE8',color:'#444441'},
 }
 const QUOTATION_STATUS_STYLE: Record<string,{bg:string;color:string}> = {
-  DRAFT:{bg:'#F1EFE8',color:'#444441'}, SENT:{bg:'#E6F1FB',color:'#0C447C'},
-  ACCEPTED:{bg:'#E1F5EE',color:'#085041'}, REJECTED:{bg:'#FCEBEB',color:'#791F1F'},
+  DRAFT:{bg:'#F1EFE8',color:'#444441'}, SENT:{bg:'#E0F7FA',color:'#007A99'},
+  ACCEPTED:{bg:'#E0F2F1',color:'#005246'}, REJECTED:{bg:'#FCEBEB',color:'#791F1F'},
   EXPIRED:{bg:'#FAEEDA',color:'#633806'},
 }
 
@@ -128,9 +128,9 @@ export default function FinancePage() {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:16 }}>
           {[
             {label:'Total facturado',  value:formatAmount(totalInvoiced,currency), color:'#3D3D3A'},
-            {label:'Cobrado / Pagado', value:formatAmount(totalPaid,currency),     color:'#0F6E56'},
-            {label:'Por cobrar',       value:formatAmount(totalPending,currency),  color:'#185FA5'},
-            {label:'Vencido sin pago', value:formatAmount(totalOverdue,currency),  color:totalOverdue>0?'#A32D2D':'#0F6E56'},
+            {label:'Cobrado / Pagado', value:formatAmount(totalPaid,currency),     color:'#00A88A'},
+            {label:'Por cobrar',       value:formatAmount(totalPending,currency),  color:'#0A2E5C'},
+            {label:'Vencido sin pago', value:formatAmount(totalOverdue,currency),  color:totalOverdue>0?'#A32D2D':'#00A88A'},
           ].map(m=>(
             <div key={m.label} style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, padding:'14px 16px' }}>
               <div style={{ fontSize:11, color:'#9C9A92', marginBottom:6 }}>{m.label}</div>
@@ -155,8 +155,8 @@ export default function FinancePage() {
             <button key={t.key} onClick={()=>setActiveTab(t.key as any)} style={{
               flex:1, padding:'9px 16px', fontSize:13, cursor:'pointer',
               background:'none', border:'none',
-              color:activeTab===t.key?'#185FA5':'#73726C',
-              borderBottom:activeTab===t.key?'2px solid #185FA5':'2px solid transparent',
+              color:activeTab===t.key?'#0A2E5C':'#73726C',
+              borderBottom:activeTab===t.key?'2px solid #0A2E5C':'2px solid transparent',
               fontWeight:activeTab===t.key?500:400,
               display:'flex', alignItems:'center', justifyContent:'center', gap:6,
             }}>
@@ -175,7 +175,7 @@ export default function FinancePage() {
             }
           </select>
           {fStatus && (
-            <button onClick={()=>setFStatus('')} style={{ background:'#E6F1FB', color:'#0C447C', border:'none', padding:'6px 12px', borderRadius:20, fontSize:12, fontWeight:500, cursor:'pointer' }}>
+            <button onClick={()=>setFStatus('')} style={{ background:'#E0F7FA', color:'#007A99', border:'none', padding:'6px 12px', borderRadius:20, fontSize:12, fontWeight:500, cursor:'pointer' }}>
               <i className="ti ti-x" style={{ fontSize:12 }} /> Limpiar
             </button>
           )}
@@ -204,9 +204,9 @@ export default function FinancePage() {
                       <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5, flexWrap:'wrap' }}>
                         <span style={{ fontSize:13, fontWeight:500, color:'#3D3D3A' }}>{inv.number}</span>
                         <span style={{ ...is, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>{INVOICE_STATUS_LABELS[inv.status]}</span>
-                        <span style={{ fontSize:13, fontWeight:600, color:isOverdue?'#A32D2D':'#185FA5' }}>{formatAmount(inv.amount,inv.currency)}</span>
+                        <span style={{ fontSize:13, fontWeight:600, color:isOverdue?'#A32D2D':'#0A2E5C' }}>{formatAmount(inv.amount,inv.currency)}</span>
                         <span onClick={()=>navigate(`/proyectos/${inv.project_id}`)}
-                          style={{ fontSize:11, color:'#185FA5', fontWeight:500, cursor:'pointer', textDecoration:'underline' }}>
+                          style={{ fontSize:11, color:'#0A2E5C', fontWeight:500, cursor:'pointer', textDecoration:'underline' }}>
                           {(inv.project as any)?.codigo_proyecto}
                         </span>
                         {daysLeft!==null && !['PAID','CANCELLED'].includes(inv.status) && (
@@ -223,7 +223,7 @@ export default function FinancePage() {
                       </div>
                     </div>
                     <button onClick={()=>navigate(`/proyectos/${inv.project_id}`)}
-                      style={{ fontSize:11, padding:'4px 10px', background:'#E6F1FB', color:'#0C447C', border:'0.5px solid #B5D4F4', borderRadius:6, cursor:'pointer', fontWeight:500, flexShrink:0 }}>
+                      style={{ fontSize:11, padding:'4px 10px', background:'#E0F7FA', color:'#007A99', border:'0.5px solid #80DEEA', borderRadius:6, cursor:'pointer', fontWeight:500, flexShrink:0 }}>
                       Ver proyecto
                     </button>
                   </div>
@@ -254,16 +254,16 @@ export default function FinancePage() {
                       <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5, flexWrap:'wrap' }}>
                         <span style={{ fontSize:13, fontWeight:500, color:'#3D3D3A' }}>{q.number}</span>
                         <span style={{ ...qs, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>{QUOTATION_STATUS_LABELS[q.status]}</span>
-                        <span style={{ fontSize:13, fontWeight:600, color:'#185FA5' }}>{formatAmount(q.amount,q.currency)}</span>
+                        <span style={{ fontSize:13, fontWeight:600, color:'#0A2E5C' }}>{formatAmount(q.amount,q.currency)}</span>
                         <span onClick={()=>navigate(`/proyectos/${q.project_id}`)}
-                          style={{ fontSize:11, color:'#185FA5', fontWeight:500, cursor:'pointer', textDecoration:'underline' }}>
+                          style={{ fontSize:11, color:'#0A2E5C', fontWeight:500, cursor:'pointer', textDecoration:'underline' }}>
                           {(q.project as any)?.codigo_proyecto}
                         </span>
                       </div>
                       <div style={{ fontSize:12, color:'#9C9A92' }}>Emitida: {formatDate(q.issue_date)}</div>
                     </div>
                     <button onClick={()=>navigate(`/proyectos/${q.project_id}`)}
-                      style={{ fontSize:11, padding:'4px 10px', background:'#E6F1FB', color:'#0C447C', border:'0.5px solid #B5D4F4', borderRadius:6, cursor:'pointer', fontWeight:500, flexShrink:0 }}>
+                      style={{ fontSize:11, padding:'4px 10px', background:'#E0F7FA', color:'#007A99', border:'0.5px solid #80DEEA', borderRadius:6, cursor:'pointer', fontWeight:500, flexShrink:0 }}>
                       Ver proyecto
                     </button>
                   </div>

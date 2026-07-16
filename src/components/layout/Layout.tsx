@@ -4,20 +4,18 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/index'
 
 const NAV_ITEMS = [
-  { to: '/',                icon: 'ti-layout-dashboard', label: 'Dashboard' },
-  { to: '/proyectos',       icon: 'ti-folder',            label: 'Proyectos' },
+  { to: '/',                 icon: 'ti-layout-dashboard', label: 'Dashboard'      },
+  { to: '/proyectos',        icon: 'ti-folder',           label: 'Proyectos'      },
   { section: 'Operaciones' },
-  { to: '/monitoreo',       icon: 'ti-eye',               label: 'Monitoreo' },
-  { to: '/muestras',        icon: 'ti-test-pipe',         label: 'Muestras' },
-  { to: '/efectos-adversos',icon: 'ti-alert-triangle',    label: 'Ef. adversos' },
+  { to: '/monitoreo',        icon: 'ti-eye',              label: 'Monitoreo'      },
+  { to: '/muestras',         icon: 'ti-test-pipe',        label: 'Muestras'       },
+  { to: '/efectos-adversos', icon: 'ti-alert-triangle',   label: 'Ef. adversos'  },
   { section: 'Gestión' },
-  { to: '/monitoreo-qa',    icon: 'ti-shield-check',      label: 'Calidad (QA)' },
-  { to: '/clientes',        icon: 'ti-building',          label: 'Clientes' },
-  { to: '/finanzas',        icon: 'ti-cash',              label: 'Finanzas' },
-  { to: '/usuarios',        icon: 'ti-users',             label: 'Usuarios' },
-  { to: '/configuracion',   icon: 'ti-settings',          label: 'Configuración' },
-  
-
+  { to: '/monitoreo-qa',     icon: 'ti-shield-check',     label: 'Calidad (QA)'  },
+  { to: '/clientes',         icon: 'ti-building',         label: 'Clientes'       },
+  { to: '/finanzas',         icon: 'ti-cash',             label: 'Finanzas'       },
+  { to: '/usuarios',         icon: 'ti-users',            label: 'Usuarios'       },
+  { to: '/configuracion',    icon: 'ti-settings',         label: 'Configuración'  },
 ]
 
 const ROLE_LABELS: Record<string, string> = {
@@ -29,6 +27,21 @@ const ROLE_LABELS: Record<string, string> = {
   EXTERNAL_MONITOR: 'Monitor Externo',
   FINANCE:          'Finanzas',
   LAB:              'Laboratorio',
+  QA:               'Calidad (QA)',
+}
+
+// ── Paleta ───────────────────────────────────────────────────
+const C = {
+  navy:        '#0A2E5C',
+  cyan:        '#00BFFF',
+  cyanBg:      'rgba(0,191,255,0.12)',
+  cyanBorder:  'rgba(0,191,255,0.25)',
+  teal:        '#00CBA5',
+  white:       '#FFFFFF',
+  whiteAlpha6: 'rgba(255,255,255,0.6)',
+  whiteAlpha4: 'rgba(255,255,255,0.4)',
+  whiteAlpha1: 'rgba(255,255,255,0.08)',
+  whiteAlpha2: 'rgba(255,255,255,0.12)',
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -50,31 +63,51 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#F5F4F0' }}>
+
       {/* ── Sidebar ── */}
       <aside style={{
-        width: 200, flexShrink: 0,
-        background: '#ffffff',
-        borderRight: '0.5px solid #E8E6DE',
+        width: 210, flexShrink: 0,
+        background: C.navy,
         display: 'flex', flexDirection: 'column',
         position: 'fixed', top: 0, left: 0, bottom: 0,
         zIndex: 40,
       }}>
+
         {/* Logo */}
-        <div style={{ padding: '18px 16px 14px', borderBottom: '0.5px solid #E8E6DE' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#185FA5', letterSpacing: '-0.01em' }}>
-            CRIO Manager
+        <div style={{
+          padding: '18px 16px 16px',
+          borderBottom: `1px solid ${C.whiteAlpha1}`,
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: C.cyan,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <i className="ti ti-dna" style={{ fontSize: 17, color: C.navy }} />
           </div>
-          <div style={{ fontSize: 11, color: '#9C9A92', marginTop: 2 }}>Centro IMPACT</div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.white, letterSpacing: '-0.01em', lineHeight: 1.2 }}>
+              CRIO Manager
+            </div>
+            <div style={{ fontSize: 10, color: C.whiteAlpha4, marginTop: 2 }}>
+              Centro IMPACT
+            </div>
+          </div>
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
+        <nav style={{ flex: 1, padding: '10px 8px', overflowY: 'auto' }}>
           {NAV_ITEMS.map((item, i) => {
             if ('section' in item) {
               return (
                 <div key={i} style={{
-                  fontSize: 10, color: '#B4B2A9', padding: '10px 16px 3px',
-                  letterSpacing: '0.06em', textTransform: 'uppercase',
+                  fontSize: 10, color: C.whiteAlpha4,
+                  padding: '12px 10px 4px',
+                  letterSpacing: '0.07em',
+                  textTransform: 'uppercase',
+                  fontWeight: 500,
                 }}>
                   {item.section}
                 </div>
@@ -86,19 +119,41 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 to={item.to!}
                 end={item.to === '/'}
                 style={({ isActive }) => ({
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '7px 16px',
+                  display: 'flex', alignItems: 'center', gap: 9,
+                  padding: '7px 10px',
+                  borderRadius: 8,
+                  marginBottom: 2,
                   fontSize: 13,
-                  color: isActive ? '#185FA5' : '#73726C',
-                  background: isActive ? '#EBF4FF' : 'transparent',
-                  borderLeft: isActive ? '2px solid #185FA5' : '2px solid transparent',
-                  fontWeight: isActive ? 500 : 400,
+                  color: isActive ? C.navy : C.whiteAlpha6,
+                  background: isActive ? C.cyan : 'transparent',
+                  fontWeight: isActive ? 600 : 400,
                   textDecoration: 'none',
-                  transition: 'all 0.1s',
+                  transition: 'background 0.1s, color 0.1s',
                 })}
+                onMouseEnter={e => {
+                  const el = e.currentTarget
+                  if (!el.classList.contains('active')) {
+                    el.style.background = C.whiteAlpha2
+                    el.style.color = C.white
+                  }
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget
+                  if (!el.classList.contains('active')) {
+                    el.style.background = 'transparent'
+                    el.style.color = C.whiteAlpha6
+                  }
+                }}
               >
-                <i className={`ti ${item.icon}`} style={{ fontSize: 16, flexShrink: 0 }} />
-                {item.label}
+                {({ isActive }) => (
+                  <>
+                    <i className={`ti ${item.icon}`} style={{
+                      fontSize: 16, flexShrink: 0,
+                      color: isActive ? C.navy : 'inherit',
+                    }} />
+                    <span>{item.label}</span>
+                  </>
+                )}
               </NavLink>
             )
           })}
@@ -106,26 +161,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* User footer */}
         <div style={{
-          padding: '12px 16px',
-          borderTop: '0.5px solid #E8E6DE',
+          padding: '12px 14px',
+          borderTop: `1px solid ${C.whiteAlpha1}`,
           display: 'flex', alignItems: 'center', gap: 9,
         }}>
           <div style={{
-            width: 30, height: 30, borderRadius: '50%',
-            background: '#185FA5', color: '#fff',
+            width: 32, height: 32, borderRadius: '50%',
+            background: C.teal,
+            color: C.navy,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 11, fontWeight: 600, flexShrink: 0,
+            fontSize: 12, fontWeight: 700, flexShrink: 0,
           }}>
             {initials}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
-              fontSize: 12, fontWeight: 500, color: '#3D3D3A',
+              fontSize: 12, fontWeight: 500, color: C.white,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {user?.full_name}
             </div>
-            <div style={{ fontSize: 11, color: '#9C9A92' }}>
+            <div style={{ fontSize: 10, color: C.whiteAlpha4, marginTop: 1 }}>
               {ROLE_LABELS[user?.role ?? ''] ?? user?.role}
             </div>
           </div>
@@ -135,8 +191,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             title="Cerrar sesión"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#B4B2A9', fontSize: 16, padding: 2, flexShrink: 0,
+              color: C.whiteAlpha4, fontSize: 17, padding: 2, flexShrink: 0,
+              transition: 'color 0.1s',
             }}
+            onMouseEnter={e => (e.currentTarget.style.color = C.white)}
+            onMouseLeave={e => (e.currentTarget.style.color = C.whiteAlpha4)}
           >
             <i className="ti ti-logout" />
           </button>
@@ -144,7 +203,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── Main content ── */}
-      <main style={{ flex: 1, marginLeft: 200, minWidth: 0 }}>
+      <main style={{ flex: 1, marginLeft: 210, minWidth: 0 }}>
         {children}
       </main>
     </div>

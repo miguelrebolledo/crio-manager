@@ -51,24 +51,24 @@ const FINDING_STATUS_LABELS: Record<string, string> = {
 }
 
 const VISIT_STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-  SCHEDULED:  { bg: '#E6F1FB', color: '#0C447C' },
-  COMPLETED:  { bg: '#E1F5EE', color: '#085041' },
+  SCHEDULED:  { bg: '#E0F7FA', color: '#007A99' },
+  COMPLETED:  { bg: '#E0F2F1', color: '#005246' },
   CANCELLED:  { bg: '#FCEBEB', color: '#791F1F' },
 }
 const VISIT_TYPE_STYLE: Record<string, { bg: string; color: string }> = {
-  INITIATION: { bg: '#EEEDFE', color: '#26215C' },
+  INITIATION: { bg: '#F3E5F5', color: '#6A1B9A' },
   FOLLOW_UP:  { bg: '#F1EFE8', color: '#444441' },
   CLOSE_OUT:  { bg: '#FAEEDA', color: '#633806' },
 }
 const CATEGORY_STYLE: Record<string, { bg: string; color: string }> = {
   CRITICAL: { bg: '#FCEBEB', color: '#791F1F' },
   MAJOR:    { bg: '#FAEEDA', color: '#633806' },
-  MINOR:    { bg: '#E6F1FB', color: '#0C447C' },
+  MINOR:    { bg: '#E0F7FA', color: '#007A99' },
 }
 const FINDING_STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   OPEN:      { bg: '#FCEBEB', color: '#791F1F' },
   RESPONDED: { bg: '#FAEEDA', color: '#633806' },
-  APPROVED:  { bg: '#E1F5EE', color: '#085041' },
+  APPROVED:  { bg: '#E0F2F1', color: '#005246' },
   REJECTED:  { bg: '#F1EFE8', color: '#444441' },
 }
 
@@ -178,21 +178,21 @@ function FindingRow({ finding, onUpdate }: { finding: Finding; onUpdate: () => v
           {/* decision */}
           {finding.decision_text && (
             <div style={{
-              background: finding.decision_approved ? '#E1F5EE' : '#FCEBEB',
-              border: `0.5px solid ${finding.decision_approved ? '#9FE1CB' : '#F7C1C1'}`,
+              background: finding.decision_approved ? '#E0F2F1' : '#FCEBEB',
+              border: `0.5px solid ${finding.decision_approved ? '#80D4C4' : '#F7C1C1'}`,
               borderRadius: 8, padding: '10px 12px',
             }}>
-              <div style={{ fontSize: 11, fontWeight: 500, color: finding.decision_approved ? '#085041' : '#791F1F', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: finding.decision_approved ? '#005246' : '#791F1F', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 5 }}>
                 <i className={`ti ti-${finding.decision_approved ? 'circle-check' : 'circle-x'}`} style={{ fontSize: 13 }} />
                 {finding.decision_approved ? 'Aprobado' : 'Rechazado'} por monitor — {finding.decision_date ? formatDateTime(finding.decision_date) : ''}
               </div>
-              <div style={{ fontSize: 13, color: finding.decision_approved ? '#085041' : '#791F1F', lineHeight: 1.4 }}>{finding.decision_text}</div>
+              <div style={{ fontSize: 13, color: finding.decision_approved ? '#005246' : '#791F1F', lineHeight: 1.4 }}>{finding.decision_text}</div>
             </div>
           )}
 
           {/* response form */}
           {canRespond && !showForm && (
-            <button onClick={() => setShowForm(true)} style={{ background: '#185FA5', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer', alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <button onClick={() => setShowForm(true)} style={{ background: '#0A2E5C', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer', alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 5 }}>
               <i className="ti ti-message" style={{ fontSize: 13 }} />
               {finding.status === 'REJECTED' ? 'Corregir respuesta' : 'Responder hallazgo'}
             </button>
@@ -213,7 +213,7 @@ function FindingRow({ finding, onUpdate }: { finding: Finding; onUpdate: () => v
                 placeholder="Describe la acción correctiva tomada. Sé específico: qué, cuándo y quién lo hizo..."
               />
               <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <button onClick={submitResponse} disabled={saving || !responseText.trim()} style={{ background: '#185FA5', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                <button onClick={submitResponse} disabled={saving || !responseText.trim()} style={{ background: '#0A2E5C', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
                   {saving ? 'Enviando...' : 'Enviar respuesta'}
                 </button>
                 <button onClick={() => { setShowForm(false); setResponseText('') }} style={{ background: 'none', border: '0.5px solid #D3D1C7', color: '#73726C', padding: '6px 12px', borderRadius: 7, fontSize: 12, cursor: 'pointer' }}>
@@ -234,7 +234,7 @@ function FindingRow({ finding, onUpdate }: { finding: Finding; onUpdate: () => v
                 placeholder="Comentario sobre la decisión..."
               />
               <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <button onClick={() => submitDecision(true)} disabled={saving || !decisionText.trim()} style={{ background: '#E1F5EE', color: '#085041', border: '0.5px solid #9FE1CB', padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <button onClick={() => submitDecision(true)} disabled={saving || !decisionText.trim()} style={{ background: '#E0F2F1', color: '#005246', border: '0.5px solid #80D4C4', padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <i className="ti ti-check" style={{ fontSize: 13 }} /> Aprobar
                 </button>
                 <button onClick={() => submitDecision(false)} disabled={saving || !decisionText.trim()} style={{ background: '#FCEBEB', color: '#791F1F', border: '0.5px solid #F7C1C1', padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -309,7 +309,7 @@ function VisitModal({
       <div style={{ background: '#fff', borderRadius: 12, width: '100%', maxWidth: 460, boxShadow: '0 8px 32px rgba(0,0,0,0.16)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '0.5px solid #E8E6DE' }}>
           <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A' }}>
-            <i className="ti ti-calendar-plus" style={{ color: '#185FA5', marginRight: 8, fontSize: 15, verticalAlign: -2 }} />
+            <i className="ti ti-calendar-plus" style={{ color: '#0A2E5C', marginRight: 8, fontSize: 15, verticalAlign: -2 }} />
             Agendar visita de monitoreo
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9C9A92', fontSize: 18 }}>
@@ -352,7 +352,7 @@ function VisitModal({
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '14px 20px', borderTop: '0.5px solid #E8E6DE' }}>
             <button type="button" onClick={onClose} style={{ background: 'transparent', border: '0.5px solid #D3D1C7', color: '#73726C', padding: '7px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>Cancelar</button>
-            <button type="submit" disabled={saving} style={{ background: saving ? '#9C9A92' : '#185FA5', color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button type="submit" disabled={saving} style={{ background: saving ? '#9C9A92' : '#0A2E5C', color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
               <i className="ti ti-send" style={{ fontSize: 13 }} />
               {saving ? 'Agendando...' : 'Agendar visita'}
             </button>
@@ -489,7 +489,7 @@ function VisitCard({ visit, onUpdate }: { visit: Visit; onUpdate: () => void }) 
               {VISIT_STATUS_LABELS[visit.status]}
             </span>
             {totalFindings > 0 && (
-              <span style={{ fontSize: 11, background: openFindings > 0 ? '#FCEBEB' : '#E1F5EE', color: openFindings > 0 ? '#791F1F' : '#085041', padding: '2px 8px', borderRadius: 20, fontWeight: 500 }}>
+              <span style={{ fontSize: 11, background: openFindings > 0 ? '#FCEBEB' : '#E0F2F1', color: openFindings > 0 ? '#791F1F' : '#005246', padding: '2px 8px', borderRadius: 20, fontWeight: 500 }}>
                 {openFindings > 0 ? `${openFindings} hallazgo${openFindings > 1 ? 's' : ''} abierto${openFindings > 1 ? 's' : ''}` : `${totalFindings} hallazgo${totalFindings > 1 ? 's' : ''} cerrado${totalFindings > 1 ? 's' : ''}`}
               </span>
             )}
@@ -509,7 +509,7 @@ function VisitCard({ visit, onUpdate }: { visit: Visit; onUpdate: () => void }) 
             <button
               onClick={e => { e.stopPropagation(); markCompleted() }}
               disabled={saving}
-              style={{ fontSize: 11, padding: '4px 10px', background: '#E1F5EE', color: '#085041', border: '0.5px solid #9FE1CB', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
+              style={{ fontSize: 11, padding: '4px 10px', background: '#E0F2F1', color: '#005246', border: '0.5px solid #80D4C4', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
             >
               Marcar realizada
             </button>
@@ -589,7 +589,7 @@ export default function TabMonitoring({ projectId }: { projectId: string }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 14 }}>
         {[
           { label: 'Total visitas',       value: total,    color: '#3D3D3A' },
-          { label: 'Agendadas',           value: upcoming, color: upcoming > 0 ? '#185FA5' : '#3D3D3A' },
+          { label: 'Agendadas',           value: upcoming, color: upcoming > 0 ? '#0A2E5C' : '#3D3D3A' },
           { label: 'Hallazgos abiertos',  value: openF,    color: openF > 0 ? '#854F0B' : '#3D3D3A' },
           { label: 'Hallazgos críticos',  value: criticalF, color: criticalF > 0 ? '#A32D2D' : '#3D3D3A' },
         ].map(m => (
@@ -611,7 +611,7 @@ export default function TabMonitoring({ projectId }: { projectId: string }) {
       {/* header */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
         {canSchedule && (
-          <button onClick={() => setShowModal(true)} style={{ background: '#185FA5', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button onClick={() => setShowModal(true)} style={{ background: '#0A2E5C', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
             <i className="ti ti-calendar-plus" style={{ fontSize: 14 }} /> Agendar visita
           </button>
         )}
@@ -625,7 +625,7 @@ export default function TabMonitoring({ projectId }: { projectId: string }) {
           <i className="ti ti-eye-off" style={{ fontSize: 28, color: '#D3D1C7', display: 'block', marginBottom: 10 }} />
           <div style={{ fontSize: 14, color: '#9C9A92', marginBottom: 6 }}>Sin visitas de monitoreo registradas</div>
           {canSchedule && (
-            <button onClick={() => setShowModal(true)} style={{ background: '#185FA5', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 16px', fontSize: 13, cursor: 'pointer', marginTop: 4 }}>
+            <button onClick={() => setShowModal(true)} style={{ background: '#0A2E5C', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 16px', fontSize: 13, cursor: 'pointer', marginTop: 4 }}>
               Agendar primera visita
             </button>
           )}

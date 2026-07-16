@@ -41,9 +41,9 @@ const STATUS_LABELS: Record<string,string> = {
 }
 const STATUS_STYLE: Record<string,{bg:string;color:string}> = {
   PENDING:          {bg:'#FAEEDA',color:'#633806'},
-  IN_PROGRESS:      {bg:'#EEEDFE',color:'#26215C'},
-  STORED:           {bg:'#E1F5EE',color:'#085041'},
-  READY_FOR_PICKUP: {bg:'#E6F1FB',color:'#0C447C'},
+  IN_PROGRESS:      {bg:'#F3E5F5',color:'#6A1B9A'},
+  STORED:           {bg:'#E0F2F1',color:'#005246'},
+  READY_FOR_PICKUP: {bg:'#E0F7FA',color:'#007A99'},
   SHIPPED:          {bg:'#F1EFE8',color:'#444441'},
 }
 
@@ -124,7 +124,7 @@ function ProcessingModal({ projectId, onClose, onSaved }: { projectId:string; on
       <div style={{ background:'#fff', borderRadius:12, width:'100%', maxWidth:500, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 8px 32px rgba(0,0,0,0.16)' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px', borderBottom:'0.5px solid #E8E6DE' }}>
           <div style={{ fontSize:15, fontWeight:500, color:'#3D3D3A' }}>
-            <i className="ti ti-flask" style={{ color:'#185FA5', marginRight:8, fontSize:15, verticalAlign:-2 }} />
+            <i className="ti ti-flask" style={{ color:'#0A2E5C', marginRight:8, fontSize:15, verticalAlign:-2 }} />
             Registrar procesamiento
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#9C9A92', fontSize:18 }}>
@@ -154,7 +154,7 @@ function ProcessingModal({ projectId, onClose, onSaved }: { projectId:string; on
             </div>
 
             {form.collection_id && (
-              <div style={{ background:'#E6F1FB', border:'0.5px solid #B5D4F4', borderRadius:8, padding:'9px 12px', fontSize:12, color:'#0C447C' }}>
+              <div style={{ background:'#E0F7FA', border:'0.5px solid #80DEEA', borderRadius:8, padding:'9px 12px', fontSize:12, color:'#007A99' }}>
                 <i className="ti ti-info-circle" style={{ fontSize:13, marginRight:5 }} />
                 Paciente: <strong>{form.patient_id}</strong> · Tipo: <strong>{SAMPLE_TYPE_LABELS[form.sample_type]??form.sample_type}</strong>
               </div>
@@ -192,7 +192,7 @@ function ProcessingModal({ projectId, onClose, onSaved }: { projectId:string; on
           </div>
           <div style={{ display:'flex', justifyContent:'flex-end', gap:8, padding:'14px 20px', borderTop:'0.5px solid #E8E6DE' }}>
             <button type="button" onClick={onClose} style={{ background:'transparent', border:'0.5px solid #D3D1C7', color:'#73726C', padding:'7px 16px', borderRadius:8, fontSize:13, cursor:'pointer' }}>Cancelar</button>
-            <button type="submit" disabled={saving||!form.collection_id} style={{ background:saving||!form.collection_id?'#9C9A92':'#185FA5', color:'#fff', border:'none', padding:'7px 18px', borderRadius:8, fontSize:13, fontWeight:500, cursor:saving||!form.collection_id?'not-allowed':'pointer', display:'flex', alignItems:'center', gap:6 }}>
+            <button type="submit" disabled={saving||!form.collection_id} style={{ background:saving||!form.collection_id?'#9C9A92':'#0A2E5C', color:'#fff', border:'none', padding:'7px 18px', borderRadius:8, fontSize:13, fontWeight:500, cursor:saving||!form.collection_id?'not-allowed':'pointer', display:'flex', alignItems:'center', gap:6 }}>
               <i className="ti ti-send" style={{ fontSize:13 }} />
               {saving?'Registrando...':'Registrar procesamiento'}
             </button>
@@ -248,7 +248,7 @@ function StatusModal({ proc, onClose, onSaved }: { proc:Processing; onClose:()=>
       <div style={{ background:'#fff', borderRadius:12, width:'100%', maxWidth:420, boxShadow:'0 8px 32px rgba(0,0,0,0.16)' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px', borderBottom:'0.5px solid #E8E6DE' }}>
           <div style={{ fontSize:15, fontWeight:500, color:'#3D3D3A' }}>
-            <i className="ti ti-refresh" style={{ color:'#185FA5', marginRight:8, fontSize:15, verticalAlign:-2 }} />
+            <i className="ti ti-refresh" style={{ color:'#0A2E5C', marginRight:8, fontSize:15, verticalAlign:-2 }} />
             Actualizar procesamiento
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#9C9A92', fontSize:18 }}>
@@ -265,7 +265,7 @@ function StatusModal({ proc, onClose, onSaved }: { proc:Processing; onClose:()=>
               const ss = STATUS_STYLE[s] ?? {bg:'#F1EFE8',color:'#444441'}
               return (
                 <div key={s} onClick={() => setSelected(s)}
-                  style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 13px', border:`0.5px solid ${selected===s?'#185FA5':'#E8E6DE'}`, borderRadius:9, cursor:'pointer', background:selected===s?'#EBF4FF':'#fff' }}>
+                  style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 13px', border:`0.5px solid ${selected===s?'#0A2E5C':'#E8E6DE'}`, borderRadius:9, cursor:'pointer', background:selected===s?'#EBF4FF':'#fff' }}>
                   <span style={{ ...ss, fontSize:11, padding:'2px 9px', borderRadius:20, fontWeight:500 }}>{STATUS_LABELS[s]}</span>
                   <span style={{ fontSize:12, color:'#73726C' }}>
                     {s==='IN_PROGRESS'?'Muestra en proceso de análisis':
@@ -298,7 +298,7 @@ function StatusModal({ proc, onClose, onSaved }: { proc:Processing; onClose:()=>
         <div style={{ display:'flex', justifyContent:'flex-end', gap:8, padding:'14px 20px', borderTop:'0.5px solid #E8E6DE' }}>
           <button onClick={onClose} style={{ background:'transparent', border:'0.5px solid #D3D1C7', color:'#73726C', padding:'7px 16px', borderRadius:8, fontSize:13, cursor:'pointer' }}>Cancelar</button>
           <button onClick={handleApply} disabled={!selected||saving}
-            style={{ background:!selected||saving?'#9C9A92':'#185FA5', color:'#fff', border:'none', padding:'7px 18px', borderRadius:8, fontSize:13, fontWeight:500, cursor:!selected||saving?'not-allowed':'pointer' }}>
+            style={{ background:!selected||saving?'#9C9A92':'#0A2E5C', color:'#fff', border:'none', padding:'7px 18px', borderRadius:8, fontSize:13, fontWeight:500, cursor:!selected||saving?'not-allowed':'pointer' }}>
             {saving?'Aplicando...':'Aplicar cambio'}
           </button>
         </div>
@@ -344,7 +344,7 @@ function ProcessingRow({ proc, onUpdate, canEdit }: { proc:Processing; onUpdate:
           <div style={{ display:'flex', gap:6, alignItems:'center', flexShrink:0 }}>
             {canEdit && (
               <button onClick={e=>{e.stopPropagation();setShowStatus(true)}}
-                style={{ fontSize:11, padding:'4px 10px', background:'#E6F1FB', color:'#0C447C', border:'0.5px solid #B5D4F4', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
+                style={{ fontSize:11, padding:'4px 10px', background:'#E0F7FA', color:'#007A99', border:'0.5px solid #80DEEA', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
                 Actualizar estado
               </button>
             )}
@@ -438,8 +438,8 @@ export default function TabSampleProcessing({ projectId }: { projectId:string })
         {[
           {label:'Total registros',    value:total,   color:'#3D3D3A'},
           {label:'Pendientes',         value:pending, color:pending>0?'#854F0B':'#3D3D3A'},
-          {label:'En proceso',         value:inProg,  color:inProg>0?'#26215C':'#3D3D3A'},
-          {label:'Listas para recoger',value:ready,   color:ready>0?'#185FA5':'#3D3D3A'},
+          {label:'En proceso',         value:inProg,  color:inProg>0?'#6A1B9A':'#3D3D3A'},
+          {label:'Listas para recoger',value:ready,   color:ready>0?'#0A2E5C':'#3D3D3A'},
         ].map(m=>(
           <div key={m.label} style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:9, padding:'11px 14px', textAlign:'center' }}>
             <div style={{ fontSize:10, color:'#9C9A92', marginBottom:5 }}>{m.label}</div>
@@ -456,13 +456,13 @@ export default function TabSampleProcessing({ projectId }: { projectId:string })
             {Object.entries(STATUS_LABELS).map(([k,v])=><option key={k} value={k}>{v}</option>)}
           </select>
           {fStatus && (
-            <button onClick={()=>setFStatus('')} style={{ background:'#E6F1FB', color:'#0C447C', border:'none', padding:'5px 10px', borderRadius:20, fontSize:11, fontWeight:500, cursor:'pointer' }}>
+            <button onClick={()=>setFStatus('')} style={{ background:'#E0F7FA', color:'#007A99', border:'none', padding:'5px 10px', borderRadius:20, fontSize:11, fontWeight:500, cursor:'pointer' }}>
               <i className="ti ti-x" style={{ fontSize:11 }} /> Limpiar
             </button>
           )}
         </div>
         {canCreate && (
-          <button onClick={()=>setShowModal(true)} style={{ background:'#185FA5', color:'#fff', border:'none', padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}>
+          <button onClick={()=>setShowModal(true)} style={{ background:'#0A2E5C', color:'#fff', border:'none', padding:'7px 14px', borderRadius:8, fontSize:13, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}>
             <i className="ti ti-plus" style={{ fontSize:14 }} /> Registrar procesamiento
           </button>
         )}
@@ -479,7 +479,7 @@ export default function TabSampleProcessing({ projectId }: { projectId:string })
               {fStatus?'Sin registros con este filtro':'Sin procesamientos registrados'}
             </div>
             {canCreate && !fStatus && (
-              <button onClick={()=>setShowModal(true)} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:8, padding:'7px 16px', fontSize:13, cursor:'pointer', marginTop:4 }}>
+              <button onClick={()=>setShowModal(true)} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:8, padding:'7px 16px', fontSize:13, cursor:'pointer', marginTop:4 }}>
                 Registrar primer procesamiento
               </button>
             )}

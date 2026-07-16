@@ -41,22 +41,22 @@ const STATUS_LABELS: Record<string,string> = {
 }
 const STATUS_STYLE: Record<string,{bg:string;color:string}> = {
   PENDING:    {bg:'#FAEEDA',color:'#633806'},
-  COLLECTED:  {bg:'#E6F1FB',color:'#0C447C'},
-  PROCESSING: {bg:'#EEEDFE',color:'#26215C'},
-  STORED:     {bg:'#E1F5EE',color:'#085041'},
+  COLLECTED:  {bg:'#E0F7FA',color:'#007A99'},
+  PROCESSING: {bg:'#F3E5F5',color:'#6A1B9A'},
+  STORED:     {bg:'#E0F2F1',color:'#005246'},
   SHIPPED:    {bg:'#F1EFE8',color:'#444441'},
   OMISSION:   {bg:'#FCEBEB',color:'#791F1F'},
 }
 const TYPE_STYLE: Record<string,{bg:string;color:string}> = {
   BLOOD:         {bg:'#FCEBEB',color:'#791F1F'},
-  URINE:         {bg:'#E6F1FB',color:'#0C447C'},
+  URINE:         {bg:'#E0F7FA',color:'#007A99'},
   TISSUE:        {bg:'#FAEEDA',color:'#633806'},
-  BONE_MARROW:   {bg:'#EEEDFE',color:'#26215C'},
-  CSF:           {bg:'#E1F5EE',color:'#085041'},
+  BONE_MARROW:   {bg:'#F3E5F5',color:'#6A1B9A'},
+  CSF:           {bg:'#E0F2F1',color:'#005246'},
   PLACENTA:      {bg:'#FAEEDA',color:'#854F0B'},
   CORD_BLOOD:    {bg:'#FCEBEB',color:'#633806'},
   UMBILICAL_CORD:{bg:'#F1EFE8',color:'#444441'},
-  SALIVA:        {bg:'#E6F1FB',color:'#26215C'},
+  SALIVA:        {bg:'#E0F7FA',color:'#6A1B9A'},
   OTHER:         {bg:'#F1EFE8',color:'#444441'},
 }
 
@@ -119,14 +119,14 @@ function CollectorSummaryView() {
             <tr key={s.collector_id??'unknown'} style={{ borderBottom:i<summaries.length-1?'0.5px solid #E8E6DE':'none' }}>
               <td style={{ padding:'12px 16px' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <div style={{ width:30, height:30, borderRadius:'50%', background:'#185FA5', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:600, flexShrink:0 }}>
+                  <div style={{ width:30, height:30, borderRadius:'50%', background:'#0A2E5C', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:600, flexShrink:0 }}>
                     {s.collector_name.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase()}
                   </div>
                   <span style={{ fontWeight:500, color:'#3D3D3A' }}>{s.collector_name}</span>
                 </div>
               </td>
               <td style={{ padding:'12px 16px' }}>
-                <span style={{ fontSize:18, fontWeight:600, color:'#185FA5' }}>{s.total}</span>
+                <span style={{ fontSize:18, fontWeight:600, color:'#0A2E5C' }}>{s.total}</span>
               </td>
               <td style={{ padding:'12px 16px' }}>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
@@ -245,8 +245,8 @@ export default function SamplesPage() {
             {label:'Total',              value:total,     color:'#3D3D3A'},
             {label:'Pendientes',         value:pending,   color:pending>0?'#854F0B':'#3D3D3A'},
             {label:'Omisiones abiertas', value:omissions, color:omissions>0?'#A32D2D':'#3D3D3A'},
-            {label:'Urgentes (>72h)',    value:urgentOm,  color:urgentOm>0?'#791F1F':'#0F6E56'},
-            {label:'Completadas',        value:completed, color:completed>0?'#0F6E56':'#3D3D3A'},
+            {label:'Urgentes (>72h)',    value:urgentOm,  color:urgentOm>0?'#791F1F':'#00A88A'},
+            {label:'Completadas',        value:completed, color:completed>0?'#00A88A':'#3D3D3A'},
           ].map(m=>(
             <div key={m.label} style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:9, padding:'12px 14px', textAlign:'center' }}>
               <div style={{ fontSize:10, color:'#9C9A92', marginBottom:5 }}>{m.label}</div>
@@ -271,8 +271,8 @@ export default function SamplesPage() {
             <button key={t.key} onClick={()=>setActiveTab(t.key as any)} style={{
               flex:1, padding:'9px 16px', fontSize:13, cursor:'pointer',
               background:'none', border:'none',
-              color:activeTab===t.key?'#185FA5':'#73726C',
-              borderBottom:activeTab===t.key?'2px solid #185FA5':'2px solid transparent',
+              color:activeTab===t.key?'#0A2E5C':'#73726C',
+              borderBottom:activeTab===t.key?'2px solid #0A2E5C':'2px solid transparent',
               fontWeight:activeTab===t.key?500:400,
               display:'flex', alignItems:'center', justifyContent:'center', gap:6,
             }}>
@@ -325,7 +325,7 @@ export default function SamplesPage() {
 </button>
               <input type="month" value={fMonth} onChange={e=>setFMonth(e.target.value)} style={selStyle} />
               {hasFilters && (
-                <button onClick={clearFilters} style={{ background:'#E6F1FB', color:'#0C447C', border:'none', padding:'6px 12px', borderRadius:20, fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>
+                <button onClick={clearFilters} style={{ background:'#E0F7FA', color:'#007A99', border:'none', padding:'6px 12px', borderRadius:20, fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>
                   <i className="ti ti-x" style={{ fontSize:12 }} /> Limpiar
                 </button>
               )}
@@ -374,7 +374,7 @@ export default function SamplesPage() {
                         onMouseLeave={e=>(e.currentTarget.style.background=urgent?'rgba(162,45,45,0.03)':'')}>
                         <td style={{ padding:'10px 14px' }}>
                           <span onClick={()=>navigate(`/proyectos/${s.project_id}`)}
-                            style={{ fontSize:12, fontWeight:500, color:'#185FA5', cursor:'pointer', textDecoration:'underline' }}>
+                            style={{ fontSize:12, fontWeight:500, color:'#0A2E5C', cursor:'pointer', textDecoration:'underline' }}>
                             {(s.project as any)?.codigo_proyecto??'—'}
                           </span>
                         </td>
@@ -398,7 +398,7 @@ export default function SamplesPage() {
                         </td>
                         <td style={{ padding:'10px 14px' }}>
                           <button onClick={()=>navigate(`/proyectos/${s.project_id}`)}
-                            style={{ fontSize:11, padding:'4px 10px', background:'#E6F1FB', color:'#0C447C', border:'0.5px solid #B5D4F4', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
+                            style={{ fontSize:11, padding:'4px 10px', background:'#E0F7FA', color:'#007A99', border:'0.5px solid #80DEEA', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
                             Ver proyecto
                           </button>
                         </td>

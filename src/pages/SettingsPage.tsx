@@ -40,7 +40,7 @@ const cardHead: React.CSSProperties = {
 function SaveBtn({ saving, disabled, onClick }: { saving: boolean; disabled?: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} disabled={saving || disabled} style={{
-      background: saving || disabled ? '#9C9A92' : '#185FA5',
+      background: saving || disabled ? '#9C9A92' : '#0A2E5C',
       color: '#fff', border: 'none', padding: '7px 18px',
       borderRadius: 8, fontSize: 13, fontWeight: 500,
       cursor: saving || disabled ? 'not-allowed' : 'pointer',
@@ -55,9 +55,9 @@ function Toast({ msg, type }: { msg: string; type: 'ok' | 'err' }) {
   return (
     <div style={{
       position: 'fixed', bottom: 24, right: 24, zIndex: 300,
-      background: type === 'ok' ? '#E1F5EE' : '#FCEBEB',
-      border: `0.5px solid ${type === 'ok' ? '#9FE1CB' : '#F7C1C1'}`,
-      color: type === 'ok' ? '#085041' : '#791F1F',
+      background: type === 'ok' ? '#E0F2F1' : '#FCEBEB',
+      border: `0.5px solid ${type === 'ok' ? '#80D4C4' : '#F7C1C1'}`,
+      color: type === 'ok' ? '#005246' : '#791F1F',
       borderRadius: 9, padding: '10px 16px', fontSize: 13, fontWeight: 500,
       display: 'flex', alignItems: 'center', gap: 8,
       boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
@@ -102,17 +102,17 @@ function SectionProfile() {
   return (
     <div style={cardStyle}>
       <div style={cardHead}>
-        <span><i className="ti ti-user-circle" style={{ color: '#185FA5', marginRight: 6 }} />Mi perfil</span>
+        <span><i className="ti ti-user-circle" style={{ color: '#0A2E5C', marginRight: 6 }} />Mi perfil</span>
       </div>
       <div style={{ padding: 18 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
-          <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#185FA5', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 600, flexShrink: 0 }}>
+          <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#0A2E5C', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 600, flexShrink: 0 }}>
             {initials}
           </div>
           <div>
             <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A' }}>{form.full_name || 'Sin nombre'}</div>
             <div style={{ fontSize: 12, color: '#9C9A92', marginTop: 2 }}>{user?.email}</div>
-            <div style={{ fontSize: 11, color: '#185FA5', marginTop: 2, fontWeight: 500 }}>
+            <div style={{ fontSize: 11, color: '#0A2E5C', marginTop: 2, fontWeight: 500 }}>
               {{ ADMIN:'Administrador', PM_CRIO:'PM / Gestor CRO', INVESTIGATOR:'Investigador', COORDINATOR:'Coordinadora', SPONSOR:'Sponsor', EXTERNAL_MONITOR:'Monitor Externo', FINANCE:'Finanzas', LAB:'Laboratorio', QA:'Calidad (QA)' }[user?.role ?? ''] ?? user?.role}
             </div>
           </div>
@@ -172,7 +172,7 @@ function SectionPassword() {
   return (
     <div style={cardStyle}>
       <div style={cardHead}>
-        <span><i className="ti ti-lock" style={{ color: '#185FA5', marginRight: 6 }} />Cambiar contraseña</span>
+        <span><i className="ti ti-lock" style={{ color: '#0A2E5C', marginRight: 6 }} />Cambiar contraseña</span>
       </div>
       <div style={{ padding: 18 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
@@ -226,7 +226,7 @@ function SectionSystem() {
   if (!isAdmin) {
     return (
       <div style={cardStyle}>
-        <div style={cardHead}><span><i className="ti ti-settings" style={{ color: '#185FA5', marginRight: 6 }} />Configuración del sistema</span></div>
+        <div style={cardHead}><span><i className="ti ti-settings" style={{ color: '#0A2E5C', marginRight: 6 }} />Configuración del sistema</span></div>
         <div style={{ padding: 32, textAlign: 'center', fontSize: 13, color: '#9C9A92' }}>
           <i className="ti ti-lock" style={{ fontSize: 24, display: 'block', marginBottom: 8, color: '#D3D1C7' }} />
           Solo los Administradores pueden editar la configuración del sistema.
@@ -238,7 +238,7 @@ function SectionSystem() {
   return (
     <div style={cardStyle}>
       <div style={cardHead}>
-        <span><i className="ti ti-settings" style={{ color: '#185FA5', marginRight: 6 }} />Configuración del sistema</span>
+        <span><i className="ti ti-settings" style={{ color: '#0A2E5C', marginRight: 6 }} />Configuración del sistema</span>
       </div>
       <div style={{ padding: 18 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, marginBottom: 16 }}>
@@ -279,8 +279,8 @@ function SectionSystem() {
         </div>
 
         <div style={{ background: '#F8F7F4', border: '0.5px solid #E8E6DE', borderRadius: 8, padding: '10px 13px', fontSize: 12, color: '#73726C', marginBottom: 14 }}>
-          <i className="ti ti-info-circle" style={{ fontSize: 13, color: '#185FA5', marginRight: 5 }} />
-          La base de datos, backups automáticos y actualizaciones de seguridad son gestionados por <strong>Supabase</strong>. Accede al panel en <a href="https://supabase.com" target="_blank" style={{ color: '#185FA5' }}>supabase.com</a>.
+          <i className="ti ti-info-circle" style={{ fontSize: 13, color: '#0A2E5C', marginRight: 5 }} />
+          La base de datos, backups automáticos y actualizaciones de seguridad son gestionados por <strong>Supabase</strong>. Accede al panel en <a href="https://supabase.com" target="_blank" style={{ color: '#0A2E5C' }}>supabase.com</a>.
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -325,10 +325,10 @@ function SectionNotifications() {
   return (
     <div style={cardStyle}>
       <div style={cardHead}>
-        <span><i className="ti ti-bell" style={{ color: '#185FA5', marginRight: 6 }} />Notificaciones y alertas</span>
+        <span><i className="ti ti-bell" style={{ color: '#0A2E5C', marginRight: 6 }} />Notificaciones y alertas</span>
       </div>
       <div style={{ padding: 18 }}>
-        <div style={{ background: '#E6F1FB', border: '0.5px solid #B5D4F4', borderRadius: 8, padding: '9px 12px', fontSize: 12, color: '#0C447C', marginBottom: 14 }}>
+        <div style={{ background: '#E0F7FA', border: '0.5px solid #80DEEA', borderRadius: 8, padding: '9px 12px', fontSize: 12, color: '#007A99', marginBottom: 14 }}>
           <i className="ti ti-info-circle" style={{ fontSize: 13, marginRight: 5 }} />
           Las alertas aparecen en el panel de alertas del dashboard. Las notificaciones por email requieren configuración de Supabase Edge Functions.
         </div>
@@ -338,8 +338,8 @@ function SectionNotifications() {
               onClick={() => setPrefs(p => ({ ...p, [n.key]: !p[n.key as keyof typeof p] }))}>
               <div style={{
                 width: 20, height: 20, borderRadius: 5, flexShrink: 0, marginTop: 1,
-                border: `1.5px solid ${(prefs as any)[n.key] ? '#185FA5' : '#D3D1C7'}`,
-                background: (prefs as any)[n.key] ? '#185FA5' : '#fff',
+                border: `1.5px solid ${(prefs as any)[n.key] ? '#0A2E5C' : '#D3D1C7'}`,
+                background: (prefs as any)[n.key] ? '#0A2E5C' : '#fff',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {(prefs as any)[n.key] && <i className="ti ti-check" style={{ fontSize: 12, color: '#fff' }} />}
@@ -407,7 +407,7 @@ function SectionCatalogs() {
   if (!isAdmin) {
     return (
       <div style={cardStyle}>
-        <div style={cardHead}><span><i className="ti ti-list" style={{ color: '#185FA5', marginRight: 6 }} />Catálogos del sistema</span></div>
+        <div style={cardHead}><span><i className="ti ti-list" style={{ color: '#0A2E5C', marginRight: 6 }} />Catálogos del sistema</span></div>
         <div style={{ padding: 32, textAlign: 'center', fontSize: 13, color: '#9C9A92' }}>
           <i className="ti ti-lock" style={{ fontSize: 24, display: 'block', marginBottom: 8, color: '#D3D1C7' }} />
           Solo los Administradores pueden ver los catálogos del sistema.
@@ -419,7 +419,7 @@ function SectionCatalogs() {
   return (
     <div style={cardStyle}>
       <div style={cardHead}>
-        <span><i className="ti ti-list" style={{ color: '#185FA5', marginRight: 6 }} />Catálogos del sistema</span>
+        <span><i className="ti ti-list" style={{ color: '#0A2E5C', marginRight: 6 }} />Catálogos del sistema</span>
         <span style={{ fontSize: 11, color: '#9C9A92', fontWeight: 400 }}>Solo lectura — definidos en el schema SQL</span>
       </div>
       <div style={{ padding: 18 }}>
@@ -431,7 +431,7 @@ function SectionCatalogs() {
           {catalogs.map(cat => (
             <div key={cat.title} style={{ border: '0.5px solid #E8E6DE', borderRadius: 9, overflow: 'hidden' }}>
               <div style={{ padding: '9px 13px', background: '#F8F7F4', borderBottom: '0.5px solid #E8E6DE', fontSize: 12, fontWeight: 500, color: '#3D3D3A', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <i className={`ti ${cat.icon}`} style={{ fontSize: 14, color: '#185FA5' }} />
+                <i className={`ti ${cat.icon}`} style={{ fontSize: 14, color: '#0A2E5C' }} />
                 {cat.title}
               </div>
               <div style={{ padding: '10px 13px' }}>
@@ -479,10 +479,10 @@ export default function SettingsPage() {
               <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
                 width: '100%', padding: '10px 14px', textAlign: 'left',
                 background: activeTab === t.key ? '#EBF4FF' : 'transparent',
-                border: 'none', borderLeft: `2px solid ${activeTab === t.key ? '#185FA5' : 'transparent'}`,
+                border: 'none', borderLeft: `2px solid ${activeTab === t.key ? '#0A2E5C' : 'transparent'}`,
                 borderBottom: '0.5px solid #E8E6DE',
                 cursor: 'pointer', fontSize: 13,
-                color: activeTab === t.key ? '#185FA5' : '#73726C',
+                color: activeTab === t.key ? '#0A2E5C' : '#73726C',
                 fontWeight: activeTab === t.key ? 500 : 400,
                 display: 'flex', alignItems: 'center', gap: 8,
               }}>

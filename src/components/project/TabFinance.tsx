@@ -59,9 +59,9 @@ const EXPENSE_CATEGORY_LABELS: Record<string,string> = {
   OVERHEAD:'Overhead / Administración', OTROS:'Otros',
 }
 const EXPENSE_CATEGORY_STYLE: Record<string,{bg:string;color:string}> = {
-  RRHH:        {bg:'#E6F1FB',color:'#0C447C'},
-  REACTIVOS:   {bg:'#E1F5EE',color:'#085041'},
-  EXAMENES:    {bg:'#EEEDFE',color:'#26215C'},
+  RRHH:        {bg:'#E0F7FA',color:'#007A99'},
+  REACTIVOS:   {bg:'#E0F2F1',color:'#005246'},
+  EXAMENES:    {bg:'#F3E5F5',color:'#6A1B9A'},
   EQUIPAMIENTO:{bg:'#FAEEDA',color:'#633806'},
   OVERHEAD:    {bg:'#F1EFE8',color:'#444441'},
   OTROS:       {bg:'#F1EFE8',color:'#9C9A92'},
@@ -75,13 +75,13 @@ const INVOICE_STATUS_LABELS: Record<string,string> = {
   OVERDUE:'Vencida', CANCELLED:'Cancelada',
 }
 const QUOTATION_STATUS_STYLE: Record<string,{bg:string;color:string}> = {
-  DRAFT:    {bg:'#F1EFE8',color:'#444441'}, SENT:{bg:'#E6F1FB',color:'#0C447C'},
-  ACCEPTED: {bg:'#E1F5EE',color:'#085041'}, REJECTED:{bg:'#FCEBEB',color:'#791F1F'},
+  DRAFT:    {bg:'#F1EFE8',color:'#444441'}, SENT:{bg:'#E0F7FA',color:'#007A99'},
+  ACCEPTED: {bg:'#E0F2F1',color:'#005246'}, REJECTED:{bg:'#FCEBEB',color:'#791F1F'},
   EXPIRED:  {bg:'#FAEEDA',color:'#633806'},
 }
 const INVOICE_STATUS_STYLE: Record<string,{bg:string;color:string}> = {
-  PENDING:   {bg:'#FAEEDA',color:'#633806'}, SENT:{bg:'#E6F1FB',color:'#0C447C'},
-  PAID:      {bg:'#E1F5EE',color:'#085041'}, OVERDUE:{bg:'#FCEBEB',color:'#791F1F'},
+  PENDING:   {bg:'#FAEEDA',color:'#633806'}, SENT:{bg:'#E0F7FA',color:'#007A99'},
+  PAID:      {bg:'#E0F2F1',color:'#005246'}, OVERDUE:{bg:'#FCEBEB',color:'#791F1F'},
   CANCELLED: {bg:'#F1EFE8',color:'#444441'},
 }
 
@@ -120,7 +120,7 @@ function MetricCard({ label, value, sub, color='#3D3D3A', alert=false }: {
 }
 
 // ── Progress bar ──────────────────────────────────────────────
-function ProgressBar({ label, value, max, color='#185FA5' }: { label:string; value:number; max:number; color?:string }) {
+function ProgressBar({ label, value, max, color='#0A2E5C' }: { label:string; value:number; max:number; color?:string }) {
   const pct = max > 0 ? Math.min(Math.round(value/max*100), 100) : 0
   const overBudget = max > 0 && value > max
   return (
@@ -198,9 +198,9 @@ function BudgetSection({
     <div style={cardStyle}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px', borderBottom:'0.5px solid #E8E6DE' }}>
         <div style={{ fontSize:13, fontWeight:500, color:'#73726C', display:'flex', alignItems:'center', gap:6 }}>
-          <i className="ti ti-chart-pie" style={{ color:'#185FA5', fontSize:15 }} />
+          <i className="ti ti-chart-pie" style={{ color:'#0A2E5C', fontSize:15 }} />
           Ejecución presupuestaria
-          <span style={{ fontSize:11, background:isExternal?'#E1F5EE':'#E6F1FB', color:isExternal?'#085041':'#0C447C', padding:'1px 8px', borderRadius:20, fontWeight:500 }}>
+          <span style={{ fontSize:11, background:isExternal?'#E0F2F1':'#E0F7FA', color:isExternal?'#005246':'#007A99', padding:'1px 8px', borderRadius:20, fontWeight:500 }}>
             {isExternal?'Proyecto externo':'Proyecto interno'}
           </span>
         </div>
@@ -213,7 +213,7 @@ function BudgetSection({
 
       {editing ? (
         <div style={{ padding:16 }}>
-          <div style={{ background:'#E6F1FB', border:'0.5px solid #B5D4F4', borderRadius:8, padding:'9px 12px', fontSize:12, color:'#0C447C', marginBottom:14 }}>
+          <div style={{ background:'#E0F7FA', border:'0.5px solid #80DEEA', borderRadius:8, padding:'9px 12px', fontSize:12, color:'#007A99', marginBottom:14 }}>
             <i className="ti ti-info-circle" style={{ fontSize:13, marginRight:5 }} />
             {isExternal
               ? 'Proyecto externo: define el presupuesto de gastos permitido. Los ingresos se calculan automáticamente desde las cotizaciones aceptadas.'
@@ -257,7 +257,7 @@ function BudgetSection({
           </div>
           <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
             <button onClick={()=>setEditing(false)} style={{ background:'none', border:'0.5px solid #D3D1C7', color:'#73726C', padding:'6px 14px', borderRadius:7, fontSize:12, cursor:'pointer' }}>Cancelar</button>
-            <button onClick={save} disabled={saving} style={{ background:saving?'#9C9A92':'#185FA5', color:'#fff', border:'none', padding:'6px 16px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer' }}>
+            <button onClick={save} disabled={saving} style={{ background:saving?'#9C9A92':'#0A2E5C', color:'#fff', border:'none', padding:'6px 16px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer' }}>
               {saving?'Guardando...':'Guardar presupuesto'}
             </button>
           </div>
@@ -265,7 +265,7 @@ function BudgetSection({
       ) : !budget ? (
         <div style={{ padding:24, textAlign:'center', fontSize:13, color:'#9C9A92' }}>
           Sin presupuesto configurado.
-          <button onClick={()=>setEditing(true)} style={{ background:'none', border:'none', color:'#185FA5', cursor:'pointer', fontSize:13, textDecoration:'underline', marginLeft:6 }}>Configurar ahora</button>
+          <button onClick={()=>setEditing(true)} style={{ background:'none', border:'none', color:'#0A2E5C', cursor:'pointer', fontSize:13, textDecoration:'underline', marginLeft:6 }}>Configurar ahora</button>
         </div>
       ) : (
         <div style={{ padding:16 }}>
@@ -273,23 +273,23 @@ function BudgetSection({
           {isExternal ? (
             <>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:16 }}>
-                <MetricCard label="Cotizado (aceptado)"  value={formatAmount(quotedTotal,currency)}    color="#0F6E56" />
-                <MetricCard label="Facturado"            value={formatAmount(invoicedTotal,currency)}  color="#185FA5" />
-                <MetricCard label="Cobrado / Pagado"     value={formatAmount(collectedTotal,currency)} color="#0F6E56" />
+                <MetricCard label="Cotizado (aceptado)"  value={formatAmount(quotedTotal,currency)}    color="#00A88A" />
+                <MetricCard label="Facturado"            value={formatAmount(invoicedTotal,currency)}  color="#0A2E5C" />
+                <MetricCard label="Cobrado / Pagado"     value={formatAmount(collectedTotal,currency)} color="#00A88A" />
                 <MetricCard label="Por facturar"         value={formatAmount(pendingToInvoice,currency)} color={pendingToInvoice>0?'#854F0B':'#9C9A92'} />
                 <MetricCard label="Por cobrar"           value={formatAmount(pendingToCollect,currency)} color={pendingToCollect>0?'#854F0B':'#9C9A92'} />
-                <MetricCard label="Saldo disponible"     value={formatAmount(available,currency)}      color={available<0?'#A32D2D':'#0F6E56'} alert={available<0}
+                <MetricCard label="Saldo disponible"     value={formatAmount(available,currency)}      color={available<0?'#A32D2D':'#00A88A'} alert={available<0}
                   sub="Cobrado − Gastos ejecutados" />
               </div>
               <div style={{ borderTop:'0.5px solid #E8E6DE', paddingTop:14 }}>
                 <div style={{ fontSize:11, fontWeight:500, color:'#9C9A92', textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:10 }}>Control de gastos</div>
                 {expenseBudget>0 ? (
                   <ProgressBar label={`Gastos ejecutados vs presupuesto de gastos (${formatAmount(expenseBudget,currency)})`}
-                    value={totalExpenses} max={expenseBudget} color="#185FA5" />
+                    value={totalExpenses} max={expenseBudget} color="#0A2E5C" />
                 ) : (
                   <div style={{ fontSize:12, color:'#9C9A92' }}>
                     Sin presupuesto de gastos configurado.
-                    <button onClick={()=>setEditing(true)} style={{ background:'none', border:'none', color:'#185FA5', cursor:'pointer', fontSize:12, textDecoration:'underline', marginLeft:4 }}>Configurar</button>
+                    <button onClick={()=>setEditing(true)} style={{ background:'none', border:'none', color:'#0A2E5C', cursor:'pointer', fontSize:12, textDecoration:'underline', marginLeft:4 }}>Configurar</button>
                   </div>
                 )}
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginTop:10 }}>
@@ -302,17 +302,17 @@ function BudgetSection({
             <>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:16 }}>
                 <MetricCard label="Presupuesto asignado" value={formatAmount(budget.total_amount,currency)}  color="#3D3D3A" />
-                <MetricCard label="Gastos ejecutados"    value={formatAmount(totalExpenses,currency)}        color={totalExpenses>expenseBudget&&expenseBudget>0?'#A32D2D':'#185FA5'} />
-                <MetricCard label="Saldo disponible"     value={formatAmount(available,currency)}            color={available<0?'#A32D2D':'#0F6E56'} alert={available<0}
+                <MetricCard label="Gastos ejecutados"    value={formatAmount(totalExpenses,currency)}        color={totalExpenses>expenseBudget&&expenseBudget>0?'#A32D2D':'#0A2E5C'} />
+                <MetricCard label="Saldo disponible"     value={formatAmount(available,currency)}            color={available<0?'#A32D2D':'#00A88A'} alert={available<0}
                   sub="Presupuesto − Gastos" />
               </div>
               {budget.total_amount>0 && (
                 <ProgressBar label={`Ejecución: gastos vs presupuesto total (${formatAmount(budget.total_amount,currency)})`}
-                  value={totalExpenses} max={budget.total_amount} color="#185FA5" />
+                  value={totalExpenses} max={budget.total_amount} color="#0A2E5C" />
               )}
               {expenseBudget>0 && expenseBudget!==budget.total_amount && (
                 <ProgressBar label={`Gastos vs presupuesto de gastos (${formatAmount(expenseBudget,currency)})`}
-                  value={totalExpenses} max={expenseBudget} color="#0F6E56" />
+                  value={totalExpenses} max={expenseBudget} color="#00A88A" />
               )}
             </>
           )}
@@ -360,9 +360,9 @@ function ExpensesSection({ projectId, expenses, onUpdate }: { projectId:string; 
     <div style={cardStyle}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px', borderBottom:'0.5px solid #E8E6DE' }}>
         <div style={{ fontSize:13, fontWeight:500, color:'#73726C', display:'flex', alignItems:'center', gap:6 }}>
-          <i className="ti ti-coin" style={{ color:'#185FA5', fontSize:15 }} />Gastos del proyecto
+          <i className="ti ti-coin" style={{ color:'#0A2E5C', fontSize:15 }} />Gastos del proyecto
         </div>
-        <button onClick={()=>setShowForm(s=>!s)} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:6, padding:'4px 12px', fontSize:11, cursor:'pointer', fontWeight:500, display:'flex', alignItems:'center', gap:4 }}>
+        <button onClick={()=>setShowForm(s=>!s)} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:6, padding:'4px 12px', fontSize:11, cursor:'pointer', fontWeight:500, display:'flex', alignItems:'center', gap:4 }}>
           <i className="ti ti-plus" style={{ fontSize:12 }} />Registrar gasto
         </button>
       </div>
@@ -402,7 +402,7 @@ function ExpensesSection({ projectId, expenses, onUpdate }: { projectId:string; 
             </div>
             <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
               <button type="button" onClick={()=>setShowForm(false)} style={{ background:'none', border:'0.5px solid #D3D1C7', color:'#73726C', padding:'6px 14px', borderRadius:7, fontSize:12, cursor:'pointer' }}>Cancelar</button>
-              <button type="submit" disabled={saving} style={{ background:saving?'#9C9A92':'#185FA5', color:'#fff', border:'none', padding:'6px 16px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer' }}>
+              <button type="submit" disabled={saving} style={{ background:saving?'#9C9A92':'#0A2E5C', color:'#fff', border:'none', padding:'6px 16px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer' }}>
                 {saving?'Guardando...':'Registrar gasto'}
               </button>
             </div>
@@ -488,13 +488,13 @@ function QuotationsSection({ projectId, quotations, onUpdate }: { projectId:stri
     <div style={cardStyle}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px', borderBottom:'0.5px solid #E8E6DE' }}>
         <div style={{ fontSize:13, fontWeight:500, color:'#73726C', display:'flex', alignItems:'center', gap:6 }}>
-          <i className="ti ti-file-invoice" style={{ color:'#185FA5', fontSize:15 }} />
+          <i className="ti ti-file-invoice" style={{ color:'#0A2E5C', fontSize:15 }} />
           Cotizaciones al cliente
-          <span style={{ fontSize:11, background:'#E1F5EE', color:'#085041', padding:'1px 7px', borderRadius:20 }}>
+          <span style={{ fontSize:11, background:'#E0F2F1', color:'#005246', padding:'1px 7px', borderRadius:20 }}>
             {quotations.filter(q=>q.status==='ACCEPTED').length} aceptada{quotations.filter(q=>q.status==='ACCEPTED').length!==1?'s':''}
           </span>
         </div>
-        <button onClick={()=>setShowForm(s=>!s)} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:6, padding:'4px 12px', fontSize:11, cursor:'pointer', fontWeight:500, display:'flex', alignItems:'center', gap:4 }}>
+        <button onClick={()=>setShowForm(s=>!s)} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:6, padding:'4px 12px', fontSize:11, cursor:'pointer', fontWeight:500, display:'flex', alignItems:'center', gap:4 }}>
           <i className="ti ti-plus" style={{ fontSize:12 }} />Nueva cotización
         </button>
       </div>
@@ -532,7 +532,7 @@ function QuotationsSection({ projectId, quotations, onUpdate }: { projectId:stri
             </div>
             <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
               <button type="button" onClick={()=>setShowForm(false)} style={{ background:'none', border:'0.5px solid #D3D1C7', color:'#73726C', padding:'6px 14px', borderRadius:7, fontSize:12, cursor:'pointer' }}>Cancelar</button>
-              <button type="submit" disabled={saving} style={{ background:saving?'#9C9A92':'#185FA5', color:'#fff', border:'none', padding:'6px 16px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer' }}>
+              <button type="submit" disabled={saving} style={{ background:saving?'#9C9A92':'#0A2E5C', color:'#fff', border:'none', padding:'6px 16px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer' }}>
                 {saving?'Guardando...':'Crear cotización'}
               </button>
             </div>
@@ -551,7 +551,7 @@ function QuotationsSection({ projectId, quotations, onUpdate }: { projectId:stri
                 <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5, flexWrap:'wrap' }}>
                   <span style={{ fontSize:13, fontWeight:500, color:'#3D3D3A' }}>{q.number}</span>
                   <span style={{ ...qs, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>{QUOTATION_STATUS_LABELS[q.status]}</span>
-                  <span style={{ fontSize:13, fontWeight:600, color:'#185FA5' }}>{formatAmount(q.amount,q.currency)}</span>
+                  <span style={{ fontSize:13, fontWeight:600, color:'#0A2E5C' }}>{formatAmount(q.amount,q.currency)}</span>
                 </div>
                 {q.description && <div style={{ fontSize:12, color:'#3D3D3A', marginBottom:3 }}>{q.description}</div>}
                 <div style={{ fontSize:11, color:'#9C9A92' }}>
@@ -562,14 +562,14 @@ function QuotationsSection({ projectId, quotations, onUpdate }: { projectId:stri
               <div style={{ display:'flex', gap:6, flexShrink:0 }}>
                 {q.status==='DRAFT' && (
                   <button onClick={()=>updateStatus(q.id,'SENT')} disabled={updatingId===q.id}
-                    style={{ fontSize:11, padding:'4px 10px', background:'#E6F1FB', color:'#0C447C', border:'0.5px solid #B5D4F4', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
+                    style={{ fontSize:11, padding:'4px 10px', background:'#E0F7FA', color:'#007A99', border:'0.5px solid #80DEEA', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
                     Marcar enviada
                   </button>
                 )}
                 {q.status==='SENT' && (
                   <>
                     <button onClick={()=>updateStatus(q.id,'ACCEPTED')} disabled={updatingId===q.id}
-                      style={{ fontSize:11, padding:'4px 10px', background:'#E1F5EE', color:'#085041', border:'0.5px solid #9FE1CB', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
+                      style={{ fontSize:11, padding:'4px 10px', background:'#E0F2F1', color:'#005246', border:'0.5px solid #80D4C4', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
                       Aceptada
                     </button>
                     <button onClick={()=>updateStatus(q.id,'REJECTED')} disabled={updatingId===q.id}
@@ -634,7 +634,7 @@ function InvoicesSection({ projectId, invoices, quotations, onUpdate }: { projec
     <div style={cardStyle}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px', borderBottom:'0.5px solid #E8E6DE' }}>
         <div style={{ fontSize:13, fontWeight:500, color:'#73726C', display:'flex', alignItems:'center', gap:6 }}>
-          <i className="ti ti-receipt" style={{ color:'#185FA5', fontSize:15 }} />
+          <i className="ti ti-receipt" style={{ color:'#0A2E5C', fontSize:15 }} />
           Facturas emitidas
           {overdueCount>0 && (
             <span style={{ fontSize:11, background:'#FCEBEB', color:'#791F1F', padding:'1px 7px', borderRadius:20, fontWeight:500 }}>
@@ -642,7 +642,7 @@ function InvoicesSection({ projectId, invoices, quotations, onUpdate }: { projec
             </span>
           )}
         </div>
-        <button onClick={()=>setShowForm(s=>!s)} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:6, padding:'4px 12px', fontSize:11, cursor:'pointer', fontWeight:500, display:'flex', alignItems:'center', gap:4 }}>
+        <button onClick={()=>setShowForm(s=>!s)} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:6, padding:'4px 12px', fontSize:11, cursor:'pointer', fontWeight:500, display:'flex', alignItems:'center', gap:4 }}>
           <i className="ti ti-plus" style={{ fontSize:12 }} />Emitir factura
         </button>
       </div>
@@ -687,7 +687,7 @@ function InvoicesSection({ projectId, invoices, quotations, onUpdate }: { projec
             </div>
             <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
               <button type="button" onClick={()=>setShowForm(false)} style={{ background:'none', border:'0.5px solid #D3D1C7', color:'#73726C', padding:'6px 14px', borderRadius:7, fontSize:12, cursor:'pointer' }}>Cancelar</button>
-              <button type="submit" disabled={saving} style={{ background:saving?'#9C9A92':'#185FA5', color:'#fff', border:'none', padding:'6px 16px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer' }}>
+              <button type="submit" disabled={saving} style={{ background:saving?'#9C9A92':'#0A2E5C', color:'#fff', border:'none', padding:'6px 16px', borderRadius:7, fontSize:12, fontWeight:500, cursor:'pointer' }}>
                 {saving?'Guardando...':'Emitir factura'}
               </button>
             </div>
@@ -708,7 +708,7 @@ function InvoicesSection({ projectId, invoices, quotations, onUpdate }: { projec
                 <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5, flexWrap:'wrap' }}>
                   <span style={{ fontSize:13, fontWeight:500, color:'#3D3D3A' }}>{inv.number}</span>
                   <span style={{ ...is, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>{INVOICE_STATUS_LABELS[inv.status]}</span>
-                  <span style={{ fontSize:13, fontWeight:600, color:isOverdue?'#A32D2D':'#185FA5' }}>{formatAmount(inv.amount,inv.currency)}</span>
+                  <span style={{ fontSize:13, fontWeight:600, color:isOverdue?'#A32D2D':'#0A2E5C' }}>{formatAmount(inv.amount,inv.currency)}</span>
                   {daysLeft!==null && !['PAID','CANCELLED'].includes(inv.status) && (
                     <span style={{ fontSize:11, color:daysLeft<0?'#A32D2D':daysLeft<=7?'#854F0B':'#9C9A92', fontWeight:daysLeft<0?600:400 }}>
                       {daysLeft<0?`Vencida hace ${Math.abs(daysLeft)}d`:daysLeft===0?'Vence hoy':`Vence en ${daysLeft}d`}
@@ -726,12 +726,12 @@ function InvoicesSection({ projectId, invoices, quotations, onUpdate }: { projec
                 <div style={{ display:'flex', gap:6, flexShrink:0 }}>
                   {inv.status==='PENDING' && (
                     <button onClick={()=>updateStatus(inv.id,'SENT')} disabled={updatingId===inv.id}
-                      style={{ fontSize:11, padding:'4px 10px', background:'#E6F1FB', color:'#0C447C', border:'0.5px solid #B5D4F4', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
+                      style={{ fontSize:11, padding:'4px 10px', background:'#E0F7FA', color:'#007A99', border:'0.5px solid #80DEEA', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
                       Marcar enviada
                     </button>
                   )}
                   <button onClick={()=>updateStatus(inv.id,'PAID')} disabled={updatingId===inv.id}
-                    style={{ fontSize:11, padding:'4px 10px', background:'#E1F5EE', color:'#085041', border:'0.5px solid #9FE1CB', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
+                    style={{ fontSize:11, padding:'4px 10px', background:'#E0F2F1', color:'#005246', border:'0.5px solid #80D4C4', borderRadius:6, cursor:'pointer', fontWeight:500 }}>
                     Registrar pago
                   </button>
                 </div>

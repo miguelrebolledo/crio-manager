@@ -22,7 +22,7 @@ const ROLE_LABELS: Record<string, string> = {
   INVESTIGATOR: 'Investigador', COORDINATOR: 'Coordinadora',
 }
 
-const AVATAR_COLORS = ['#185FA5','#0F6E56','#633806','#26215C','#854F0B','#791F1F']
+const AVATAR_COLORS = ['#0A2E5C','#00A88A','#633806','#6A1B9A','#854F0B','#791F1F']
 
 function initials(name: string) {
   return name.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
@@ -84,7 +84,7 @@ export default function TabNotes({ projectId }: { projectId: string }) {
   return (
     <div>
       {/* aviso de privacidad */}
-      <div style={{ background: '#E6F1FB', border: '0.5px solid #B5D4F4', borderRadius: 9, padding: '9px 13px', fontSize: 12, color: '#0C447C', marginBottom: 14, display: 'flex', gap: 8 }}>
+      <div style={{ background: '#E0F7FA', border: '0.5px solid #80DEEA', borderRadius: 9, padding: '9px 13px', fontSize: 12, color: '#007A99', marginBottom: 14, display: 'flex', gap: 8 }}>
         <i className="ti ti-lock" style={{ fontSize: 14, flexShrink: 0 }} />
         <div>Estas notas son <strong>visibles solo para Administradores, PM/CRIO e Investigadores.</strong> No son accesibles para coordinadoras, monitores externos ni sponsors.</div>
       </div>
@@ -93,7 +93,7 @@ export default function TabNotes({ projectId }: { projectId: string }) {
       {canWrite && (
         <div style={{ background: '#fff', border: '0.5px solid #E8E6DE', borderRadius: 10, padding: 16, marginBottom: 12 }}>
           <div style={{ fontSize: 12, fontWeight: 500, color: '#73726C', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <i className="ti ti-pencil" style={{ color: '#185FA5', fontSize: 14 }} />
+            <i className="ti ti-pencil" style={{ color: '#0A2E5C', fontSize: 14 }} />
             Nueva nota interna
           </div>
           <form onSubmit={handleSubmit}>
@@ -121,7 +121,7 @@ export default function TabNotes({ projectId }: { projectId: string }) {
                 type="submit"
                 disabled={saving || !content.trim()}
                 style={{
-                  background: saving || !content.trim() ? '#9C9A92' : '#185FA5',
+                  background: saving || !content.trim() ? '#9C9A92' : '#0A2E5C',
                   color: '#fff', border: 'none', padding: '7px 16px',
                   borderRadius: 8, fontSize: 13, fontWeight: 500,
                   cursor: saving || !content.trim() ? 'not-allowed' : 'pointer',

@@ -44,18 +44,18 @@ const DISEASE_LABELS: Record<string,string> = {
   MENTAL_HEALTH:'Mental', PULMONARY:'Pulmonar', OTHER:'Otros',
 }
 const STATUS_STYLE: Record<string,{bg:string;color:string}> = {
-  ACTIVE:     {bg:'#E1F5EE',color:'#085041'},
+  ACTIVE:     {bg:'#E0F2F1',color:'#005246'},
   LEAD:       {bg:'#F1EFE8',color:'#444441'},
-  PROPOSAL:   {bg:'#EEEDFE',color:'#26215C'},
-  CONTRACTED: {bg:'#E6F1FB',color:'#0C447C'},
+  PROPOSAL:   {bg:'#F3E5F5',color:'#6A1B9A'},
+  CONTRACTED: {bg:'#E0F7FA',color:'#007A99'},
   PAUSED:     {bg:'#FAEEDA',color:'#633806'},
   CLOSED:     {bg:'#FCEBEB',color:'#791F1F'},
-  COMPLETED:  {bg:'#E1F5EE',color:'#085041'},
+  COMPLETED:  {bg:'#E0F2F1',color:'#005246'},
   CANCELLED:  {bg:'#F1EFE8',color:'#444441'},
 }
 const TYPE_STYLE: Record<string,{bg:string;color:string}> = {
-  INTERVENTIONAL:  {bg:'#E1F5EE',color:'#085041'},
-  OBSERVATIONAL:   {bg:'#EEEDFE',color:'#26215C'},
+  INTERVENTIONAL:  {bg:'#E0F2F1',color:'#005246'},
+  OBSERVATIONAL:   {bg:'#F3E5F5',color:'#6A1B9A'},
   CLINICAL_SERIES: {bg:'#FAEEDA',color:'#633806'},
   SERVICE:         {bg:'#F1EFE8',color:'#444441'},
 }
@@ -65,7 +65,7 @@ const PRIORITY_DOT: Record<string,string> = {
 const ALERT_STYLE = {
   danger: {bg:'#FCEBEB', border:'#F7C1C1', color:'#791F1F'},
   warn:   {bg:'#FAEEDA', border:'#FAC775', color:'#633806'},
-  info:   {bg:'#E6F1FB', border:'#B5D4F4', color:'#0C447C'},
+  info:   {bg:'#E0F7FA', border:'#80DEEA', color:'#007A99'},
 }
 const MONTH_NAMES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
@@ -87,8 +87,8 @@ function recruitPct(cur:number, target:number|null) {
   return Math.round(cur/target*100)
 }
 function recruitColor(pct:number) {
-  if (pct>=80) return '#185FA5'
-  if (pct>=50) return '#1D9E75'
+  if (pct>=80) return '#0A2E5C'
+  if (pct>=50) return '#00CBA5'
   if (pct>=30) return '#EF9F27'
   return '#E24B4A'
 }
@@ -101,7 +101,7 @@ const card: React.CSSProperties = {
 const cardHead = (icon: string, title: string, badge?: {text:string;bg:string;color:string}) => (
   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px', borderBottom:'0.5px solid #E8E6DE' }}>
     <div style={{ fontSize:13, fontWeight:500, color:'#73726C', display:'flex', alignItems:'center', gap:6 }}>
-      <i className={`ti ${icon}`} style={{ color:'#185FA5', fontSize:15 }} />
+      <i className={`ti ${icon}`} style={{ color:'#0A2E5C', fontSize:15 }} />
       {title}
     </div>
     {badge && <span style={{ background:badge.bg, color:badge.color, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>{badge.text}</span>}
@@ -109,7 +109,7 @@ const cardHead = (icon: string, title: string, badge?: {text:string;bg:string;co
 )
 
 // ── Mini bar chart ────────────────────────────────────────────
-function MiniBarChart({ data, maxVal, color = '#185FA5' }: { data: {label:string;value:number}[]; maxVal: number; color?: string }) {
+function MiniBarChart({ data, maxVal, color = '#0A2E5C' }: { data: {label:string;value:number}[]; maxVal: number; color?: string }) {
   return (
     <div style={{ display:'flex', alignItems:'flex-end', gap:5, height:64 }}>
       {data.map(d => {
@@ -309,8 +309,8 @@ if (user?.role === 'COORDINATOR') {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:14 }}>
           {[
             {label:'Total proyectos',  value:loading?'—':total,    sub:'en el sistema',           color:'#3D3D3A'},
-            {label:'Activos',          value:loading?'—':active,   sub:'en ejecución',            color:'#185FA5'},
-            {label:'En pipeline',      value:loading?'—':pipeline, sub:'Lead · Proposal · Cont.', color:'#0F6E56'},
+            {label:'Activos',          value:loading?'—':active,   sub:'en ejecución',            color:'#0A2E5C'},
+            {label:'En pipeline',      value:loading?'—':pipeline, sub:'Lead · Proposal · Cont.', color:'#00A88A'},
             {label:'En pausa',         value:loading?'—':paused,   sub:'requieren revisión',      color:paused>0?'#854F0B':'#3D3D3A'},
           ].map(m=>(
             <div key={m.label} style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, padding:'14px 16px' }}>
@@ -333,7 +333,7 @@ if (user?.role === 'COORDINATOR') {
               {loading ? (
                 <div style={{ fontSize:12, color:'#9C9A92', padding:'8px 0' }}>Cargando alertas...</div>
               ) : alerts.length === 0 ? (
-                <div style={{ display:'flex', alignItems:'center', gap:8, padding:'12px 0', fontSize:13, color:'#0F6E56' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8, padding:'12px 0', fontSize:13, color:'#00A88A' }}>
                   <i className="ti ti-circle-check" style={{ fontSize:18 }} />
                   Sin alertas activas — todo en orden
                 </div>
@@ -360,8 +360,8 @@ if (user?.role === 'COORDINATOR') {
               <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:14 }}>
                 {[
                   {label:'Total visitas',      value:monitoringStats.total,             color:'#3D3D3A'},
-                  {label:'Realizadas',          value:monitoringStats.completed,         color:'#0F6E56'},
-                  {label:'Agendadas',           value:monitoringStats.scheduled,         color:'#185FA5'},
+                  {label:'Realizadas',          value:monitoringStats.completed,         color:'#00A88A'},
+                  {label:'Agendadas',           value:monitoringStats.scheduled,         color:'#0A2E5C'},
                   {label:'Hallazgos abiertos',  value:monitoringStats.openFindings,      color:monitoringStats.openFindings>0?'#854F0B':'#3D3D3A'},
                   {label:'Críticos sin resp.',  value:monitoringStats.criticalFindings,  color:monitoringStats.criticalFindings>0?'#A32D2D':'#3D3D3A'},
                   {label:'Esperando monitor',   value:monitoringStats.respondedFindings, color:monitoringStats.respondedFindings>0?'#633806':'#3D3D3A'},
@@ -394,11 +394,11 @@ if (user?.role === 'COORDINATOR') {
                   <span style={{ fontSize:11 }}>Los datos aparecerán cuando las coordinadoras envíen sus reportes mensuales.</span>
                 </div>
               ) : (
-                <MiniBarChart data={recruitmentHistory} maxVal={maxRec} color="#185FA5" />
+                <MiniBarChart data={recruitmentHistory} maxVal={maxRec} color="#0A2E5C" />
               )}
               <div style={{ borderTop:'0.5px solid #E8E6DE', marginTop:12, paddingTop:10, display:'flex', justifyContent:'space-between', fontSize:11, color:'#9C9A92' }}>
                 <span>Últimos 6 meses — todos los estudios</span>
-                <span style={{ fontWeight:500, color:'#185FA5' }}>
+                <span style={{ fontWeight:500, color:'#0A2E5C' }}>
                   {recruitmentHistory.reduce((s,m)=>s+m.value,0)} total
                 </span>
               </div>
@@ -427,7 +427,7 @@ if (user?.role === 'COORDINATOR') {
                     onMouseEnter={e=>(e.currentTarget.style.background='#F8F7F4')}
                     onMouseLeave={e=>(e.currentTarget.style.background='')}>
                     <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ fontSize:12, fontWeight:500, color:'#185FA5' }}>{p.codigo_proyecto}</div>
+                      <div style={{ fontSize:12, fontWeight:500, color:'#0A2E5C' }}>{p.codigo_proyecto}</div>
                       <div style={{ fontSize:12, color:'#3D3D3A', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{p.titulo}</div>
                     </div>
                     <div style={{ textAlign:'right', flexShrink:0 }}>
@@ -474,7 +474,7 @@ if (user?.role === 'COORDINATOR') {
                         <span style={{ color:'#9C9A92' }}>{count} ({pct}%)</span>
                       </div>
                       <div style={{ height:5, background:'#F1EFE8', borderRadius:3, overflow:'hidden' }}>
-                        <div style={{ height:'100%', width:`${pct}%`, background:'#185FA5', borderRadius:3 }} />
+                        <div style={{ height:'100%', width:`${pct}%`, background:'#0A2E5C', borderRadius:3 }} />
                       </div>
                     </div>
                   )
@@ -512,7 +512,7 @@ if (user?.role === 'COORDINATOR') {
                 <div style={{ padding:32, textAlign:'center' }}>
                   <i className="ti ti-folder-off" style={{ fontSize:24, color:'#D3D1C7', display:'block', marginBottom:8 }} />
                   <div style={{ fontSize:13, color:'#9C9A92', marginBottom:8 }}>No hay proyectos aún.</div>
-                  <button onClick={()=>navigate('/proyectos')} style={{ background:'#185FA5', color:'#fff', border:'none', borderRadius:8, padding:'7px 16px', fontSize:13, cursor:'pointer' }}>
+                  <button onClick={()=>navigate('/proyectos')} style={{ background:'#0A2E5C', color:'#fff', border:'none', borderRadius:8, padding:'7px 16px', fontSize:13, cursor:'pointer' }}>
                     Crear primer proyecto
                   </button>
                 </div>
@@ -531,7 +531,7 @@ if (user?.role === 'COORDINATOR') {
                     <div style={{ width:7, height:7, borderRadius:'50%', background:pd, flexShrink:0 }} />
                     <div style={{ flex:1, minWidth:0 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3 }}>
-                        <span style={{ fontSize:11, fontWeight:500, color:'#185FA5' }}>{p.codigo_proyecto}</span>
+                        <span style={{ fontSize:11, fontWeight:500, color:'#0A2E5C' }}>{p.codigo_proyecto}</span>
                         <span style={{ ...ss, fontSize:10, padding:'1px 7px', borderRadius:20, fontWeight:500 }}>{STATUS_LABELS[p.status]??p.status}</span>
                         {et.text !== '—' && <span style={{ fontSize:10, color:et.color, fontWeight:500 }}><i className="ti ti-shield" style={{ fontSize:10, marginRight:2 }} />{et.text}</span>}
                       </div>

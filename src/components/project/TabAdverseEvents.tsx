@@ -51,9 +51,9 @@ const GRADE_STYLE: Record<string, { bg: string; color: string }> = {
   GRADE_5: { bg: '#3D3D3A', color: '#fff'    },
 }
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-  REPORTED:  { bg: '#E6F1FB', color: '#0C447C' },
+  REPORTED:  { bg: '#E0F7FA', color: '#007A99' },
   FOLLOW_UP: { bg: '#FAEEDA', color: '#633806' },
-  CLOSED:    { bg: '#E1F5EE', color: '#085041' },
+  CLOSED:    { bg: '#E0F2F1', color: '#005246' },
 }
 
 function formatDate(iso: string) {
@@ -342,13 +342,13 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
               <div key={n.key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{
                   width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                  background: n.value ? '#E1F5EE' : (isSAE ? '#FCEBEB' : '#F1EFE8'),
-                  border: `1.5px solid ${n.value ? '#1D9E75' : (isSAE ? '#F7C1C1' : '#E8E6DE')}`,
+                  background: n.value ? '#E0F2F1' : (isSAE ? '#FCEBEB' : '#F1EFE8'),
+                  border: `1.5px solid ${n.value ? '#00CBA5' : (isSAE ? '#F7C1C1' : '#E8E6DE')}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 12,
                 }}>
                   <i className={`ti ${n.value ? 'ti-check' : 'ti-clock'}`}
-                    style={{ color: n.value ? '#0F6E56' : (isSAE ? '#A32D2D' : '#B4B2A9') }} />
+                    style={{ color: n.value ? '#00A88A' : (isSAE ? '#A32D2D' : '#B4B2A9') }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 12, fontWeight: 500, color: '#3D3D3A' }}>{n.label}</div>
@@ -360,7 +360,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
                   <button
                     onClick={() => markNotification(n.key as any)}
                     disabled={saving}
-                    style={{ fontSize: 11, padding: '3px 8px', background: '#E6F1FB', color: '#0C447C', border: '0.5px solid #B5D4F4', borderRadius: 6, cursor: 'pointer', fontWeight: 500, flexShrink: 0 }}
+                    style={{ fontSize: 11, padding: '3px 8px', background: '#E0F7FA', color: '#007A99', border: '0.5px solid #80DEEA', borderRadius: 6, cursor: 'pointer', fontWeight: 500, flexShrink: 0 }}
                   >
                     Marcar enviada
                   </button>
@@ -380,7 +380,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
               Pasar a seguimiento
             </button>
           )}
-          <button onClick={closeEvent} disabled={saving} style={{ background: '#E1F5EE', color: '#085041', border: '0.5px solid #9FE1CB', padding: '5px 12px', borderRadius: 7, fontSize: 12, cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <button onClick={closeEvent} disabled={saving} style={{ background: '#E0F2F1', color: '#005246', border: '0.5px solid #80D4C4', padding: '5px 12px', borderRadius: 7, fontSize: 12, cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>
             <i className="ti ti-circle-check" style={{ fontSize: 13 }} />
             Marcar como cerrado
           </button>
@@ -463,7 +463,7 @@ export default function TabAdverseEvents({ projectId }: { projectId: string }) {
             ))}
           </select>
           {(filterType || filterStatus) && (
-            <button onClick={() => { setFilterType(''); setFilterStatus('') }} style={{ background: '#E6F1FB', color: '#0C447C', border: 'none', padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
+            <button onClick={() => { setFilterType(''); setFilterStatus('') }} style={{ background: '#E0F7FA', color: '#007A99', border: 'none', padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
               <i className="ti ti-x" style={{ fontSize: 11 }} /> Limpiar
             </button>
           )}

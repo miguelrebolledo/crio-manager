@@ -42,22 +42,22 @@ const STATUS_LABELS: Record<string, string> = {
 }
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   PENDING:    { bg: '#FAEEDA', color: '#633806' },
-  COLLECTED:  { bg: '#E6F1FB', color: '#0C447C' },
-  PROCESSING: { bg: '#EEEDFE', color: '#26215C' },
-  STORED:     { bg: '#E1F5EE', color: '#085041' },
+  COLLECTED:  { bg: '#E0F7FA', color: '#007A99' },
+  PROCESSING: { bg: '#F3E5F5', color: '#6A1B9A' },
+  STORED:     { bg: '#E0F2F1', color: '#005246' },
   SHIPPED:    { bg: '#F1EFE8', color: '#444441' },
   OMISSION:   { bg: '#FCEBEB', color: '#791F1F' },
 }
 const TYPE_STYLE: Record<string, { bg: string; color: string }> = {
   BLOOD:          { bg: '#FCEBEB', color: '#791F1F' },
-  URINE:          { bg: '#E6F1FB', color: '#0C447C' },
+  URINE:          { bg: '#E0F7FA', color: '#007A99' },
   TISSUE:         { bg: '#FAEEDA', color: '#633806' },
-  BONE_MARROW:    { bg: '#EEEDFE', color: '#26215C' },
-  CSF:            { bg: '#E1F5EE', color: '#085041' },
+  BONE_MARROW:    { bg: '#F3E5F5', color: '#6A1B9A' },
+  CSF:            { bg: '#E0F2F1', color: '#005246' },
   PLACENTA:       { bg:'#FAEEDA', color:'#854F0B'},
   CORD_BLOOD:     { bg:'#FCEBEB', color:'#633806'},
   UMBILICAL_CORD: { bg:'#F1EFE8', color:'#444441'},
-  SALIVA:         { bg:'#E6F1FB', color:'#26215C'},
+  SALIVA:         { bg:'#E0F7FA', color:'#6A1B9A'},
   OTHER:          { bg: '#F1EFE8', color: '#444441' },
 }
 
@@ -126,7 +126,7 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
       <div style={{ background: '#fff', borderRadius: 12, width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.16)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '0.5px solid #E8E6DE' }}>
           <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A' }}>
-            <i className="ti ti-test-pipe" style={{ color: '#185FA5', marginRight: 8, fontSize: 15, verticalAlign: -2 }} />
+            <i className="ti ti-test-pipe" style={{ color: '#0A2E5C', marginRight: 8, fontSize: 15, verticalAlign: -2 }} />
             Registrar toma de muestra
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9C9A92', fontSize: 18 }}>
@@ -187,8 +187,8 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
                   onClick={() => setForm(f => ({ ...f, [opt.key]: !(f as any)[opt.key] }))}>
                   <div style={{
                     width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                    border: `1.5px solid ${(form as any)[opt.key] ? '#185FA5' : '#D3D1C7'}`,
-                    background: (form as any)[opt.key] ? '#185FA5' : '#fff',
+                    border: `1.5px solid ${(form as any)[opt.key] ? '#0A2E5C' : '#D3D1C7'}`,
+                    background: (form as any)[opt.key] ? '#0A2E5C' : '#fff',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     {(form as any)[opt.key] && <i className="ti ti-check" style={{ fontSize: 11, color: '#fff' }} />}
@@ -211,7 +211,7 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '14px 20px', borderTop: '0.5px solid #E8E6DE' }}>
             <button type="button" onClick={onClose} style={{ background: 'transparent', border: '0.5px solid #D3D1C7', color: '#73726C', padding: '7px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>Cancelar</button>
-            <button type="submit" disabled={saving} style={{ background: saving ? '#9C9A92' : '#185FA5', color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button type="submit" disabled={saving} style={{ background: saving ? '#9C9A92' : '#0A2E5C', color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
               <i className="ti ti-send" style={{ fontSize: 13 }} />
               {saving ? 'Registrando...' : 'Registrar muestra'}
             </button>
@@ -255,7 +255,7 @@ function StatusModal({ sample, onClose, onSaved }: { sample: Sample; onClose: ()
       <div style={{ background: '#fff', borderRadius: 12, width: '100%', maxWidth: 400, boxShadow: '0 8px 32px rgba(0,0,0,0.16)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '0.5px solid #E8E6DE' }}>
           <div style={{ fontSize: 15, fontWeight: 500, color: '#3D3D3A' }}>
-            <i className="ti ti-refresh" style={{ color: '#185FA5', marginRight: 8, fontSize: 15, verticalAlign: -2 }} />
+            <i className="ti ti-refresh" style={{ color: '#0A2E5C', marginRight: 8, fontSize: 15, verticalAlign: -2 }} />
             Cambiar estado
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9C9A92', fontSize: 18 }}>
@@ -274,7 +274,7 @@ function StatusModal({ sample, onClose, onSaved }: { sample: Sample; onClose: ()
                   onClick={() => setSelected(s)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '10px 13px', border: `0.5px solid ${selected === s ? '#185FA5' : '#E8E6DE'}`,
+                    padding: '10px 13px', border: `0.5px solid ${selected === s ? '#0A2E5C' : '#E8E6DE'}`,
                     borderRadius: 9, cursor: 'pointer',
                     background: selected === s ? '#EBF4FF' : '#fff',
                   }}>
@@ -301,7 +301,7 @@ function StatusModal({ sample, onClose, onSaved }: { sample: Sample; onClose: ()
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '14px 20px', borderTop: '0.5px solid #E8E6DE' }}>
           <button onClick={onClose} style={{ background: 'transparent', border: '0.5px solid #D3D1C7', color: '#73726C', padding: '7px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>Cancelar</button>
-          <button onClick={handleApply} disabled={!selected || saving} style={{ background: !selected || saving ? '#9C9A92' : '#185FA5', color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: !selected || saving ? 'not-allowed' : 'pointer' }}>
+          <button onClick={handleApply} disabled={!selected || saving} style={{ background: !selected || saving ? '#9C9A92' : '#0A2E5C', color: '#fff', border: 'none', padding: '7px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: !selected || saving ? 'not-allowed' : 'pointer' }}>
             {saving ? 'Aplicando...' : 'Aplicar cambio'}
           </button>
         </div>
@@ -344,7 +344,7 @@ function SampleRow({ sample, onUpdate, canEdit }: { sample: Sample; onUpdate: ()
                 {urgentOmission && ` ⚠ ${hours}h`}
               </span>
               {sample.cold_chain_required && (
-                <span style={{ fontSize: 11, background: '#E6F1FB', color: '#0C447C', padding: '2px 7px', borderRadius: 20 }}>
+                <span style={{ fontSize: 11, background: '#E0F7FA', color: '#007A99', padding: '2px 7px', borderRadius: 20 }}>
                   <i className="ti ti-snowflake" style={{ fontSize: 11, marginRight: 3 }} />Frío
                 </span>
               )}
@@ -361,7 +361,7 @@ function SampleRow({ sample, onUpdate, canEdit }: { sample: Sample; onUpdate: ()
             {canEdit && (
               <button
                 onClick={e => { e.stopPropagation(); setShowStatus(true) }}
-                style={{ fontSize: 11, padding: '4px 10px', background: isOmission ? '#FCEBEB' : '#E6F1FB', color: isOmission ? '#791F1F' : '#0C447C', border: `0.5px solid ${isOmission ? '#F7C1C1' : '#B5D4F4'}`, borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
+                style={{ fontSize: 11, padding: '4px 10px', background: isOmission ? '#FCEBEB' : '#E0F7FA', color: isOmission ? '#791F1F' : '#007A99', border: `0.5px solid ${isOmission ? '#F7C1C1' : '#80DEEA'}`, borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
               >
                 {isOmission ? 'Atender omisión' : 'Cambiar estado'}
               </button>
@@ -381,7 +381,7 @@ function SampleRow({ sample, onUpdate, canEdit }: { sample: Sample; onUpdate: ()
                 {STATUS_FLOW.map((s, i) => {
                   const done   = i < flowIdx
                   const active = i === flowIdx
-                  const dotBg  = done ? '#0F6E56' : active ? '#185FA5' : '#E8E6DE'
+                  const dotBg  = done ? '#00A88A' : active ? '#0A2E5C' : '#E8E6DE'
                   const dotColor = done || active ? '#fff' : '#9C9A92'
                   return (
                     <div key={s} style={{ display: 'flex', alignItems: 'center' }}>
@@ -389,12 +389,12 @@ function SampleRow({ sample, onUpdate, canEdit }: { sample: Sample; onUpdate: ()
                         <div style={{ width: 28, height: 28, borderRadius: '50%', background: dotBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, border: `2px solid ${dotBg}` }}>
                           <i className={`ti ${STATUS_FLOW_ICONS[i]}`} style={{ color: dotColor }} />
                         </div>
-                        <span style={{ fontSize: 10, color: active ? '#185FA5' : done ? '#0F6E56' : '#9C9A92', fontWeight: active ? 500 : 400 }}>
+                        <span style={{ fontSize: 10, color: active ? '#0A2E5C' : done ? '#00A88A' : '#9C9A92', fontWeight: active ? 500 : 400 }}>
                           {STATUS_FLOW_LABELS[i]}
                         </span>
                       </div>
                       {i < STATUS_FLOW.length - 1 && (
-                        <div style={{ width: 32, height: 2, background: done ? '#1D9E75' : '#E8E6DE', margin: '0 2px', marginBottom: 18 }} />
+                        <div style={{ width: 32, height: 2, background: done ? '#00CBA5' : '#E8E6DE', margin: '0 2px', marginBottom: 18 }} />
                       )}
                     </div>
                   )
@@ -491,7 +491,7 @@ export default function TabSamples({ projectId }: { projectId: string }) {
           { label: 'Total muestras',     value: total,     color: '#3D3D3A' },
           { label: 'Pendientes',         value: pending,   color: pending > 0 ? '#854F0B' : '#3D3D3A' },
           { label: 'Omisiones abiertas', value: omissions, color: omissions > 0 ? '#A32D2D' : '#3D3D3A' },
-          { label: 'Completadas',        value: completed, color: completed > 0 ? '#0F6E56' : '#3D3D3A' },
+          { label: 'Completadas',        value: completed, color: completed > 0 ? '#00A88A' : '#3D3D3A' },
         ].map(m => (
           <div key={m.label} style={{ background: '#fff', border: '0.5px solid #E8E6DE', borderRadius: 9, padding: '11px 14px', textAlign: 'center' }}>
             <div style={{ fontSize: 10, color: '#9C9A92', marginBottom: 5 }}>{m.label}</div>
@@ -520,13 +520,13 @@ export default function TabSamples({ projectId }: { projectId: string }) {
             {Object.entries(SAMPLE_TYPE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
           {(fStatus || fType) && (
-            <button onClick={() => { setFStatus(''); setFType('') }} style={{ background: '#E6F1FB', color: '#0C447C', border: 'none', padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
+            <button onClick={() => { setFStatus(''); setFType('') }} style={{ background: '#E0F7FA', color: '#007A99', border: 'none', padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
               <i className="ti ti-x" style={{ fontSize: 11 }} /> Limpiar
             </button>
           )}
         </div>
         {canCreate && (
-          <button onClick={() => setShowModal(true)} style={{ background: '#185FA5', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button onClick={() => setShowModal(true)} style={{ background: '#0A2E5C', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
             <i className="ti ti-plus" style={{ fontSize: 14 }} /> Registrar muestra
           </button>
         )}
@@ -543,7 +543,7 @@ export default function TabSamples({ projectId }: { projectId: string }) {
               {fStatus || fType ? 'Sin muestras con los filtros aplicados' : 'Sin muestras registradas'}
             </div>
             {canCreate && !fStatus && !fType && (
-              <button onClick={() => setShowModal(true)} style={{ background: '#185FA5', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 16px', fontSize: 13, cursor: 'pointer', marginTop: 4 }}>
+              <button onClick={() => setShowModal(true)} style={{ background: '#0A2E5C', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 16px', fontSize: 13, cursor: 'pointer', marginTop: 4 }}>
                 Registrar primera muestra
               </button>
             )}

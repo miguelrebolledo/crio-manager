@@ -180,13 +180,15 @@ export default function SamplesPage() {
       .select('id, project_id, patient_id, sample_type, visit_timepoint, scheduled_date, status, cold_chain_required, notes, created_at, collected_by, project:projects(codigo_proyecto, titulo), collector:users!collected_by(full_name)')
       .order('scheduled_date', { ascending: false })
 
-    if (fPending) {
-      q = q.eq('status', 'PENDING')
-    } else if (fStatus) {
-      q = q.eq('status', fStatus)
-    }
+    
 
     if (fType) q = q.eq('sample_type', fType)
+
+    if (fPending) {
+        q = q.eq('status', 'PENDING')
+      } else if (fStatus) {
+        q = q.eq('status', fStatus)
+      }
 
     if (fMonth) {
       const [year, month] = fMonth.split('-')
@@ -293,6 +295,7 @@ export default function SamplesPage() {
                   placeholder="Paciente o código de proyecto..."
                   style={{ ...selStyle, paddingLeft:30, width:'100%' }} />
               </div>
+            
               <select value={fPending?'PENDING':fStatus} onChange={e=>{
                 if (e.target.value==='PENDING') { setFPending(true); setFStatus('') }
                 else { setFPending(false); setFStatus(e.target.value) }
@@ -305,6 +308,21 @@ export default function SamplesPage() {
                 <option value="">Todos los tipos</option>
                 {Object.entries(SAMPLE_TYPE_LABELS).map(([k,v])=><option key={k} value={k}>{v}</option>)}
               </select>
+              {/* agregar este botón */}
+<button
+  onClick={() => { setFPending(p => !p); setFStatus('') }}
+  style={{
+    padding: '6px 12px', borderRadius: 8, fontSize: 13, cursor: 'pointer',
+    background: fPending ? '#FAEEDA' : '#fff',
+    border: `0.5px solid ${fPending ? '#FAC775' : '#D3D1C7'}`,
+    color: fPending ? '#633806' : '#73726C',
+    fontWeight: fPending ? 500 : 400,
+    display: 'flex', alignItems: 'center', gap: 5,
+  }}
+>
+  <i className="ti ti-clock" style={{ fontSize: 13 }} />
+  Solo pendientes
+</button>
               <input type="month" value={fMonth} onChange={e=>setFMonth(e.target.value)} style={selStyle} />
               {hasFilters && (
                 <button onClick={clearFilters} style={{ background:'#E6F1FB', color:'#0C447C', border:'none', padding:'6px 12px', borderRadius:20, fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>

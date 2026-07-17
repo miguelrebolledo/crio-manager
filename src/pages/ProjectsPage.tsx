@@ -514,6 +514,7 @@ export default function ProjectsPage() {
                 {[
                   { label:'Código',        w:100 },
                   { label:'Título / PI',   w:220 },
+                  { label: 'Sponsor',      w: 130 },
                   { label:'Tipo',          w:130 },
                   { label:'Estado',        w:110 },
                   { label:'Prioridad',     w:90  },
@@ -588,6 +589,9 @@ export default function ProjectsPage() {
                       <div style={{ fontSize:11, color:'#9C9A92', marginTop:2 }}>
                         {(p.principal_investigator as any)?.full_name ?? 'Sin PI asignado'}
                       </div>
+                    </td>
+                    <td style={{ padding:'10px 14px', fontSize:12, color:'#73726C', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                      {(p.client_org as any)?.name ?? '—'}
                     </td>
                     <td style={{ padding:'10px 14px' }}>
                       <span style={{ ...ts, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>

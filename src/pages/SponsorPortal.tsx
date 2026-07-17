@@ -518,35 +518,48 @@ export default function SponsorPortal() {
 
   useEffect(() => {
     const load = async () => {
-  if (!user) return
+      if (!user) return
 
-  // Buscar org_id directamente desde el usuario
-  const { data: userData } = await supabase
-    .from('users')
-    .select('org_id, organizations(id, name)')
-    .eq('id', user.id)
-    .single()
+      // 1. Buscar org_id del usuario
+      const { data: userData } = await supabase
+        .from('users')
+        .select('org_id')
+        .eq('id', user.id)
+        .single()
 
-  const org = (userData as any)?.organizations
-  if (!org) {
-    setLoading(false)
-    return
-  }
+      const orgId = (userData as any)?.org_id
+      if (!orgId) {
+        setLoading(false)
+        return
+      }
 
-  setOrgName(org.name)
+      // 2. Buscar la organización por separado
+      const { data: orgData } = await supabase
+        .from('organizations')
+        .select('id, name')
+        .eq('id', orgId)
+        .single()
 
-  const { data: projData } = await supabase
-    .from('projects')
-    .select('*, principal_investigator:users!principal_investigator_id(full_name, email)')
-    .eq('client_org_id', org.id)
-    .in('status', ['ACTIVE','CONTRACTED','PAUSED','COMPLETED'])
-    .order('created_at', { ascending: false })
+      if (!orgData) {
+        setLoading(false)
+        return
+      }
 
-  const projs = (projData??[]) as SponsorProject[]
-  setProjects(projs)
-  if (projs.length > 0) setSelected(projs[0])
-  setLoading(false)
-}
+      setOrgName(orgData.name)
+
+      // 3. Buscar proyectos de esa organización
+      const { data: projData } = await supabase
+        .from('projects')
+        .select('*, principal_investigator:users!principal_investigator_id(full_name, email)')
+        .eq('client_org_id', orgData.id)
+        .in('status', ['ACTIVE','CONTRACTED','PAUSED','COMPLETED'])
+        .order('created_at', { ascending: false })
+
+      const projs = (projData ?? []) as SponsorProject[]
+      setProjects(projs)
+      if (projs.length > 0) setSelected(projs[0])
+      setLoading(false)
+    }
     load()
   }, [user])
 

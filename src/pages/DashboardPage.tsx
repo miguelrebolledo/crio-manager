@@ -5,7 +5,6 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/index'
 import Layout from '../components/layout/Layout'
 import { CoordinatorDashboard } from './DashboardCoordinator'
-import SponsorPortal from './SponsorPortal'
 
 // ── Types ────────────────────────────────────────────────────
 interface Project {
@@ -83,13 +82,13 @@ function ethicsLabel(date: string|null): {text:string;color:string} {
   const dt = new Date(date)
   return {text:`${dt.getDate()}/${dt.getMonth()+1}/${dt.getFullYear()}`,color:'#9C9A92'}
 }
-function recruitPct(cur:number, target:number|null) {
+function recruitPct(cur: number, target: number|null) {
   if (!target) return 0
-  return Math.round(cur/target*100)
+  return Math.round(cur / target * 100)
 }
-function recruitColor(pct:number) {
+function recruitColor(pct: number) {
   if (pct>=80) return '#0A2E5C'
-  if (pct>=50) return '#00CBA5'
+  if (pct>=50) return '#00A88A'
   if (pct>=30) return '#EF9F27'
   return '#E24B4A'
 }
@@ -102,7 +101,7 @@ const card: React.CSSProperties = {
 const cardHead = (icon: string, title: string, badge?: {text:string;bg:string;color:string}) => (
   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px', borderBottom:'0.5px solid #E8E6DE' }}>
     <div style={{ fontSize:13, fontWeight:500, color:'#73726C', display:'flex', alignItems:'center', gap:6 }}>
-      <i className={`ti ${icon}`} style={{ color:'#0A2E5C', fontSize:15 }} />
+      <i className={`ti ${icon}`} style={{ color:'#00BFFF', fontSize:15 }} />
       {title}
     </div>
     {badge && <span style={{ background:badge.bg, color:badge.color, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>{badge.text}</span>}
@@ -127,12 +126,21 @@ function MiniBarChart({ data, maxVal, color = '#0A2E5C' }: { data: {label:string
   )
 }
 
+// ── COORDINATOR WRAPPER ───────────────────────────────────────
+function CoordinatorWrapper() {
+  return (
+    <Layout>
+      <CoordinatorDashboard />
+    </Layout>
+  )
+}
+
 // ── MAIN PAGE ─────────────────────────────────────────────────
 export default function DashboardPage() {
   const { user } = useAuth()
   const navigate  = useNavigate()
 
-  // data states
+  // data states — siempre se declaran, independiente del rol
   const [projects, setProjects]     = useState<Project[]>([])
   const [alerts, setAlerts]         = useState<Alert[]>([])
   const [monitoringStats, setMonitoringStats] = useState({ total:0, completed:0, scheduled:0, openFindings:0, criticalFindings:0, respondedFindings:0 })
@@ -140,8 +148,17 @@ export default function DashboardPage() {
   const [closingSoon, setClosingSoon] = useState<Project[]>([])
   const [loading, setLoading]       = useState(true)
 
+  // Redirección sponsor — siempre como hook, no condicional
+  useEffect(() => {
+    if (user?.role === 'SPONSOR') {
+      navigate('/sponsor', { replace: true })
+    }
+  }, [user, navigate])
 
   useEffect(() => {
+    // No cargar datos si es sponsor o coordinadora
+    if (!user || user.role === 'SPONSOR' || user.role === 'COORDINATOR') return
+
     const load = async () => {
       // ── 1. Proyectos ──
       const { data: projs } = await supabase
@@ -154,7 +171,6 @@ export default function DashboardPage() {
       // ── 2. Alertas ──
       const newAlerts: Alert[] = []
 
-      // Ética vencida o próxima
       const { data: ethicsData } = await supabase
         .from('ethics_alerts')
         .select('*')
@@ -172,7 +188,6 @@ export default function DashboardPage() {
         })
       })
 
-      // Hallazgos críticos sin respuesta
       const { data: critFindings } = await supabase
         .from('monitoring_findings')
         .select('id, visit_id, monitoring_visits(project_id, projects(codigo_proyecto))')
@@ -187,7 +202,6 @@ export default function DashboardPage() {
         })
       }
 
-      // SAE sin notificaciones completas
       const { data: saePending } = await supabase
         .from('adverse_events')
         .select('id, project_id, projects(codigo_proyecto)')
@@ -203,7 +217,6 @@ export default function DashboardPage() {
         })
       }
 
-      // Reclutamiento bajo meta (<30%)
       const lowRecruitment = allProjs.filter(p =>
         p.status === 'ACTIVE' &&
         p.recruitment_target &&
@@ -235,7 +248,7 @@ export default function DashboardPage() {
         respondedFindings: allFindings.filter((f:any) => f.status === 'RESPONDED').length,
       })
 
-      // ── 4. Historial reclutamiento últimos 6 meses ──
+      // ── 4. Historial reclutamiento ──
       const now = new Date()
       const months: {label:string;value:number}[] = []
       for (let i = 5; i >= 0; i--) {
@@ -269,7 +282,17 @@ export default function DashboardPage() {
       setLoading(false)
     }
     load()
-  }, [])
+  }, [user])
+
+  // ── Rol: Coordinadora ──
+  if (user?.role === 'COORDINATOR') {
+    return <CoordinatorWrapper />
+  }
+
+  // ── Rol: Sponsor — pantalla en blanco mientras redirige ──
+  if (user?.role === 'SPONSOR') {
+    return null
+  }
 
   // computed
   const active   = projects.filter(p => p.status === 'ACTIVE').length
@@ -284,22 +307,7 @@ export default function DashboardPage() {
   const hour = new Date().getHours()
   const greeting = hour<12?'Buenos días':hour<19?'Buenas tardes':'Buenas noches'
   const firstName = user?.full_name?.split(' ')[0] ?? ''
-
   const maxRec = Math.max(...recruitmentHistory.map(m=>m.value), 1)
-
-  // Si es coordinadora, mostrar su dashboard específico
-if (user?.role === 'COORDINATOR') {
-  return (
-    <Layout>
-      <CoordinatorDashboard />
-    </Layout>
-  )
-}
-useEffect(() => {
-  if (user?.role === 'SPONSOR') {
-    navigate('/sponsor')
-  }
-}, [user, navigate])
 
   return (
     <Layout>
@@ -332,7 +340,6 @@ useEffect(() => {
         {/* ── ROW 1: Alerts + Monitoring ── */}
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
 
-          {/* Alertas */}
           <div style={card}>
             {cardHead('ti-alert-triangle', 'Panel de alertas',
               alerts.length>0 ? {text:`${alerts.length} alerta${alerts.length>1?'s':''}`,bg:'#FCEBEB',color:'#A32D2D'} : undefined
@@ -361,7 +368,6 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Monitoreo */}
           <div style={card}>
             {cardHead('ti-eye', 'Monitoreo')}
             <div style={{ padding:'14px 16px' }}>
@@ -390,7 +396,6 @@ useEffect(() => {
         {/* ── ROW 2: Recruitment chart + Closing soon ── */}
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
 
-          {/* Reclutamiento últimos 6 meses */}
           <div style={card}>
             {cardHead('ti-chart-bar', 'Nuevos pacientes por mes')}
             <div style={{ padding:'14px 16px' }}>
@@ -413,7 +418,6 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Proyectos próximos a cerrar */}
           <div style={card}>
             {cardHead('ti-calendar-x', 'Próximos a cerrar',
               closingSoon.length>0 ? {text:`${closingSoon.length} en 90 días`,bg:'#FAEEDA',color:'#633806'} : undefined
@@ -451,14 +455,12 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* ── ROW 3: Distribution by type/disease + Recent projects ── */}
+        {/* ── ROW 3: Distribution + Recent projects ── */}
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1.6fr', gap:12, marginBottom:12 }}>
 
-          {/* Distribución */}
           <div style={card}>
             {cardHead('ti-chart-donut', 'Distribución de estudios')}
             <div style={{ padding:'14px 16px' }}>
-              {/* por tipo */}
               <div style={{ fontSize:11, fontWeight:500, color:'#9C9A92', textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:8 }}>Por tipo</div>
               <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14 }}>
                 {byType.map(([type,count]) => {
@@ -470,7 +472,6 @@ useEffect(() => {
                   )
                 })}
               </div>
-              {/* por enfermedad */}
               <div style={{ fontSize:11, fontWeight:500, color:'#9C9A92', textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:8 }}>Por enfermedad</div>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                 {byDisease.slice(0,5).map(([dis,count]) => {
@@ -488,7 +489,6 @@ useEffect(() => {
                   )
                 })}
               </div>
-              {/* por estado */}
               <div style={{ fontSize:11, fontWeight:500, color:'#9C9A92', textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:8, marginTop:14 }}>Por estado</div>
               <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
                 {byStatus.map(([status,count]) => {
@@ -510,7 +510,6 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Proyectos recientes */}
           <div style={card}>
             {cardHead('ti-folder', 'Proyectos recientes')}
             <div>

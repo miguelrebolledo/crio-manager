@@ -350,14 +350,14 @@ export default function UsersPage() {
     setLoading(true)
     let q = supabase
       .from('users')
-      .select('*, organization:organizations(name)')
+      .select('id, full_name, email, role, specialty, institution, phone, org_id, is_active, created_at, organization:organizations(name)')
       .order('full_name')
 
     if (fRole)  q = q.eq('role', fRole)
     if (search) q = q.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`)
 
     const { data } = await q
-    setUsers((data ?? []) as AppUser[])
+    setUsers((data ?? []) as unknown as AppUser[])
     setLoading(false)
   }, [search, fRole])
 

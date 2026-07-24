@@ -36,9 +36,13 @@ const SAMPLE_TYPE_LABELS: Record<string, string> = {
   OTHER: 'Otro',
 }
 const STATUS_LABELS: Record<string, string> = {
-  PENDING: 'Pendiente', COLLECTED: 'Recolectada',
-  PROCESSING: 'En proceso', STORED: 'Almacenada',
-  SHIPPED: 'Enviada', OMISSION: 'Omisión',
+  PENDING: 'Pendiente', 
+  COLLECTED: 'Recolectada',
+  PROCESSING: 'En proceso', 
+  STORED: 'Almacenada',
+  SHIPPED: 'Enviada procesada', 
+  SHIPPED_UNPROCESSED: 'Enviada sin procesar',  // ← nuevo
+  OMISSION: 'Omisión',
 }
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   PENDING:    { bg: '#FAEEDA', color: '#633806' },
@@ -47,6 +51,7 @@ const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   STORED:     { bg: '#E0F2F1', color: '#005246' },
   SHIPPED:    { bg: '#F1EFE8', color: '#444441' },
   OMISSION:   { bg: '#FCEBEB', color: '#791F1F' },
+  SHIPPED_UNPROCESSED: { bg: '#F3E5F5', color: '#6A1B9A' },  // ← nuevo
 }
 const TYPE_STYLE: Record<string, { bg: string; color: string }> = {
   BLOOD:          { bg: '#FCEBEB', color: '#791F1F' },
@@ -62,9 +67,9 @@ const TYPE_STYLE: Record<string, { bg: string; color: string }> = {
 }
 
 // Estados del flujo en orden
-const STATUS_FLOW = ['PENDING', 'COLLECTED', 'PROCESSING', 'STORED', 'SHIPPED']
-const STATUS_FLOW_LABELS = ['Programada', 'Recolectada', 'Procesando', 'Almacenada', 'Enviada']
-const STATUS_FLOW_ICONS  = ['ti-clock', 'ti-droplet', 'ti-flask', 'ti-snowflake', 'ti-truck']
+const STATUS_FLOW = ['PENDING', 'COLLECTED', 'PROCESSING', 'STORED', 'SHIPPED', 'SHIPPED_UNPROCESSED']
+const STATUS_FLOW_LABELS = ['Programada', 'Recolectada', 'Procesando', 'Almacenada', 'Enviada proc.', 'Enviada s/proc.']
+const STATUS_FLOW_ICONS  = ['ti-clock', 'ti-droplet', 'ti-flask', 'ti-snowflake', 'ti-truck', 'ti-send']
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -256,6 +261,7 @@ export function MultiSampleModal({
                       <option value="COLLECTED">Recolectada</option>
                       <option value="PROCESSING">En proceso</option>
                       <option value="STORED">Almacenada</option>
+                      <option value="SHIPPED_UNPROCESSED">Enviada s/pro.</option>
                       <option value="OMISSION">Omisión</option>
                     </select>
 
@@ -577,11 +583,12 @@ function StatusModal({ sample, onClose, onSaved }: { sample: Sample; onClose: ()
                   }}>
                   <span style={{ ...ss, fontSize: 11, padding: '2px 9px', borderRadius: 20, fontWeight: 500 }}>{STATUS_LABELS[s]}</span>
                   <span style={{ fontSize: 12, color: '#73726C' }}>
-                    {s === 'OMISSION' ? 'No fue posible recolectar en la ventana de tiempo' :
-                     s === 'COLLECTED' ? 'Muestra obtenida del paciente' :
-                     s === 'PROCESSING' ? 'En laboratorio — centrifugación / alicuotado' :
-                     s === 'STORED' ? 'Procesada y conservada según protocolo' :
-                     s === 'SHIPPED' ? 'Despachada al laboratorio central o sponsor' : ''}
+                    { s === 'OMISSION' ? 'No fue posible recolectar en la ventana de tiempo' :
+                      s === 'COLLECTED' ? 'Muestra obtenida del paciente' :
+                      s === 'PROCESSING' ? 'En laboratorio — centrifugación / alicuotado' :
+                      s === 'STORED' ? 'Procesada y conservada según protocolo' :
+                      s === 'SHIPPED' ? 'Procesada y despachada al laboratorio central o sponsor' :
+                      s === 'SHIPPED_UNPROCESSED' ? 'Enviada sin procesar — el sponsor procesa en su laboratorio' : ''}
                   </span>
                 </div>
               )

@@ -76,6 +76,7 @@ function hoursOpen(createdAt: string): number {
 interface SampleRow {
   id: string
   sample_type: string
+  status: string
   volume_quantity: string
   cold_chain_required: boolean
   processing_required: boolean
@@ -86,6 +87,7 @@ function newRow(): SampleRow {
   return {
     id:                  Math.random().toString(36).slice(2),
     sample_type:         'BLOOD',
+    status:              'PENDING',
     volume_quantity:     '',
     cold_chain_required: false,
     processing_required: false,
@@ -143,7 +145,8 @@ export function MultiSampleModal({
       cold_chain_required: row.cold_chain_required,
       processing_required: row.processing_required,
       notes:               row.notes || null,
-      status:              'PENDING',
+      status:             row.status,
+      collected_date: row.status === 'COLLECTED' ? new Date().toISOString().split('T')[0] : null,
     }))
 
     const { error: err } = await supabase.from('sample_collections').insert(records)
@@ -192,10 +195,10 @@ export function MultiSampleModal({
                   <select style={inp} value={visitTimepoint} onChange={e => setVisitTimepoint(e.target.value)}>
                     <option value="">Sin asignar</option>
                     <option>Visita basal (D0)</option>
+                    <option>Semana 1</option>
+                    <option>Semana 2</option>
+                    <option>Semana 3</option>
                     <option>Semana 4</option>
-                    <option>Semana 8</option>
-                    <option>Semana 12</option>
-                    <option>Semana 24</option>
                     <option>Final de estudio</option>
                     <option>Parto</option>
                     <option>Post-parto</option>
@@ -224,7 +227,7 @@ export function MultiSampleModal({
 
               {/* headers */}
               <div style={{ display:'grid', gridTemplateColumns:'160px 110px 1fr 80px 32px', gap:6, marginBottom:6, padding:'0 4px' }}>
-                {['Tipo de muestra','Volumen','Instrucciones especiales','Reqs.',''].map(h => (
+                {['Tipo de muestra','Estado','Volumen','Instrucciones especiales','Reqs.',''].map(h => (
                   <div key={h} style={{ fontSize:10, color:'#9C9A92', fontWeight:500, textTransform:'uppercase', letterSpacing:'0.04em' }}>{h}</div>
                 ))}
               </div>
@@ -233,7 +236,7 @@ export function MultiSampleModal({
               <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
                 {rows.map((row, i) => (
                   <div key={row.id} style={{
-                    display:'grid', gridTemplateColumns:'160px 110px 1fr 80px 32px',
+                    display:'grid', gridTemplateColumns:'160px 120px 100px 1fr 80px 32px',
                     gap:6, alignItems:'center',
                     background: i % 2 === 0 ? '#fff' : '#FAFAF9',
                     border:'0.5px solid #E8E6DE', borderRadius:8, padding:'8px 10px',
@@ -244,6 +247,16 @@ export function MultiSampleModal({
                       {Object.entries(SAMPLE_TYPE_LABELS).map(([k,v]) => (
                         <option key={k} value={k}>{v}</option>
                       ))}
+                    </select>
+
+                    {/* estado */}
+                    <select style={{ ...inp, fontSize:12 }} value={row.status ?? 'PENDING'}
+                      onChange={e => updateRow(row.id, 'status', e.target.value)}>
+                      <option value="PENDING">Programada</option>
+                      <option value="COLLECTED">Recolectada</option>
+                      <option value="PROCESSING">En proceso</option>
+                      <option value="STORED">Almacenada</option>
+                      <option value="OMISSION">Omisión</option>
                     </select>
 
                     {/* volumen */}
@@ -362,6 +375,7 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
   const [form, setForm] = useState({
     patient_id:          '',
     sample_type:         'BLOOD',
+    status:               'PENDING',
     visit_timepoint:     '',
     scheduled_date:      new Date().toISOString().split('T')[0],
     volume_quantity:     '',
@@ -441,10 +455,10 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
                 <select style={inp} value={form.visit_timepoint} onChange={e => setForm(f => ({ ...f, visit_timepoint: e.target.value }))}>
                   <option value="">Sin asignar</option>
                   <option>Visita basal (D0)</option>
+                  <option>Semana 1</option>
+                  <option>Semana 2</option>
+                  <option>Semana 3</option>
                   <option>Semana 4</option>
-                  <option>Semana 8</option>
-                  <option>Semana 12</option>
-                  <option>Semana 24</option>
                   <option>Final de estudio</option>
                 </select>
               </div>

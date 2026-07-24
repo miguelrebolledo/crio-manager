@@ -249,6 +249,7 @@ useEffect(() => {
               </div>
           }
         </div>
+        
         <div style={{ padding:16, display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
           {editing ? (
             <>

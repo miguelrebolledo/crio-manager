@@ -73,6 +73,289 @@ function hoursOpen(createdAt: string): number {
   return Math.round((Date.now() - new Date(createdAt).getTime()) / 3600000)
 }
 
+interface SampleRow {
+  id: string
+  sample_type: string
+  volume_quantity: string
+  cold_chain_required: boolean
+  processing_required: boolean
+  notes: string
+}
+
+function newRow(): SampleRow {
+  return {
+    id:                  Math.random().toString(36).slice(2),
+    sample_type:         'BLOOD',
+    volume_quantity:     '',
+    cold_chain_required: false,
+    processing_required: false,
+    notes:               '',
+  }
+}
+
+const inp: React.CSSProperties = {
+  width:'100%', padding:'6px 9px', border:'0.5px solid #D3D1C7',
+  borderRadius:7, fontSize:13, background:'#F8F7F4',
+  color:'#3D3D3A', fontFamily:'inherit', outline:'none',
+}
+
+export function MultiSampleModal({
+  projectId,
+  onClose,
+  onSaved,
+}: {
+  projectId: string
+  onClose: () => void
+  onSaved: () => void
+}) {
+  const { user } = useAuth()
+
+  const [patientId,     setPatientId]     = useState('')
+  const [visitTimepoint, setVisitTimepoint] = useState('')
+  const [scheduledDate,  setScheduledDate]  = useState(new Date().toISOString().split('T')[0])
+  const [rows,          setRows]          = useState<SampleRow[]>([newRow()])
+  const [saving,        setSaving]        = useState(false)
+  const [error,         setError]         = useState<string|null>(null)
+
+  const addRow = () => setRows(r => [...r, newRow()])
+  const removeRow = (id: string) => {
+    if (rows.length === 1) return // al menos una muestra
+    setRows(r => r.filter(row => row.id !== id))
+  }
+  const updateRow = (id: string, field: keyof SampleRow, value: any) => {
+    setRows(r => r.map(row => row.id === id ? { ...row, [field]: value } : row))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!patientId.trim()) { setError('El ID del paciente es obligatorio.'); return }
+    setSaving(true)
+    setError(null)
+
+    const records = rows.map(row => ({
+      project_id:          projectId,
+      registered_by:       user?.id,
+      patient_id:          patientId.trim(),
+      sample_type:         row.sample_type,
+      visit_timepoint:     visitTimepoint || null,
+      scheduled_date:      scheduledDate,
+      volume_quantity:     row.volume_quantity || null,
+      cold_chain_required: row.cold_chain_required,
+      processing_required: row.processing_required,
+      notes:               row.notes || null,
+      status:              'PENDING',
+    }))
+
+    const { error: err } = await supabase.from('sample_collections').insert(records)
+    setSaving(false)
+    if (err) { setError(err.message); return }
+    onSaved()
+    onClose()
+  }
+
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.35)', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}
+      onClick={e => e.target===e.currentTarget && onClose()}>
+      <div style={{ background:'#fff', borderRadius:12, width:'100%', maxWidth:640, maxHeight:'92vh', overflowY:'auto', boxShadow:'0 8px 32px rgba(0,0,0,0.16)' }}>
+
+        {/* head */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px', borderBottom:'0.5px solid #E8E6DE', position:'sticky', top:0, background:'#fff', zIndex:1 }}>
+          <div style={{ fontSize:15, fontWeight:500, color:'#3D3D3A' }}>
+            <i className="ti ti-test-pipe" style={{ color:'#0A2E5C', marginRight:8, fontSize:15, verticalAlign:-2 }} />
+            Registrar toma de muestras
+          </div>
+          <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#9C9A92', fontSize:18 }}>
+            <i className="ti ti-x" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ padding:20 }}>
+
+            {/* datos comunes del paciente */}
+            <div style={{ background:'#F8F7F4', borderRadius:9, padding:'13px 14px', marginBottom:16 }}>
+              <div style={{ fontSize:11, fontWeight:500, color:'#9C9A92', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:10 }}>
+                Datos del paciente
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12 }}>
+                <div>
+                  <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:4 }}>
+                    ID Paciente <span style={{color:'#A32D2D'}}>*</span>
+                  </label>
+                  <input style={inp} value={patientId}
+                    onChange={e => setPatientId(e.target.value)}
+                    placeholder="Ej: PAC-10334" required />
+                  <div style={{ fontSize:10, color:'#9C9A92', marginTop:3 }}>ID interno — nunca nombre real</div>
+                </div>
+                <div>
+                  <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:4 }}>Visita / Timepoint</label>
+                  <select style={inp} value={visitTimepoint} onChange={e => setVisitTimepoint(e.target.value)}>
+                    <option value="">Sin asignar</option>
+                    <option>Visita basal (D0)</option>
+                    <option>Semana 4</option>
+                    <option>Semana 8</option>
+                    <option>Semana 12</option>
+                    <option>Semana 24</option>
+                    <option>Final de estudio</option>
+                    <option>Parto</option>
+                    <option>Post-parto</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:4 }}>
+                    Fecha programada <span style={{color:'#A32D2D'}}>*</span>
+                  </label>
+                  <input style={inp} type="date" value={scheduledDate}
+                    onChange={e => setScheduledDate(e.target.value)} required />
+                </div>
+              </div>
+            </div>
+
+            {/* tabla de muestras */}
+            <div style={{ marginBottom:12 }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                <div style={{ fontSize:12, fontWeight:500, color:'#3D3D3A' }}>
+                  Muestras a registrar
+                  <span style={{ marginLeft:8, background:'#E0F7FA', color:'#007A99', fontSize:11, padding:'1px 8px', borderRadius:20, fontWeight:500 }}>
+                    {rows.length}
+                  </span>
+                </div>
+              </div>
+
+              {/* headers */}
+              <div style={{ display:'grid', gridTemplateColumns:'160px 110px 1fr 80px 32px', gap:6, marginBottom:6, padding:'0 4px' }}>
+                {['Tipo de muestra','Volumen','Instrucciones especiales','Reqs.',''].map(h => (
+                  <div key={h} style={{ fontSize:10, color:'#9C9A92', fontWeight:500, textTransform:'uppercase', letterSpacing:'0.04em' }}>{h}</div>
+                ))}
+              </div>
+
+              {/* rows */}
+              <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
+                {rows.map((row, i) => (
+                  <div key={row.id} style={{
+                    display:'grid', gridTemplateColumns:'160px 110px 1fr 80px 32px',
+                    gap:6, alignItems:'center',
+                    background: i % 2 === 0 ? '#fff' : '#FAFAF9',
+                    border:'0.5px solid #E8E6DE', borderRadius:8, padding:'8px 10px',
+                  }}>
+                    {/* tipo */}
+                    <select style={{ ...inp, fontSize:12 }} value={row.sample_type}
+                      onChange={e => updateRow(row.id, 'sample_type', e.target.value)}>
+                      {Object.entries(SAMPLE_TYPE_LABELS).map(([k,v]) => (
+                        <option key={k} value={k}>{v}</option>
+                      ))}
+                    </select>
+
+                    {/* volumen */}
+                    <input style={{ ...inp, fontSize:12 }} value={row.volume_quantity}
+                      onChange={e => updateRow(row.id, 'volume_quantity', e.target.value)}
+                      placeholder="Ej: 10 mL" />
+
+                    {/* instrucciones */}
+                    <input style={{ ...inp, fontSize:12 }} value={row.notes}
+                      onChange={e => updateRow(row.id, 'notes', e.target.value)}
+                      placeholder="Instrucciones de manejo..." />
+
+                    {/* checkboxes */}
+                    <div style={{ display:'flex', gap:6, justifyContent:'center' }}>
+                      <div title="Requiere cadena de frío"
+                        onClick={() => updateRow(row.id, 'cold_chain_required', !row.cold_chain_required)}
+                        style={{ cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:2 }}>
+                        <div style={{
+                          width:20, height:20, borderRadius:5,
+                          border:`1.5px solid ${row.cold_chain_required?'#007A99':'#D3D1C7'}`,
+                          background:row.cold_chain_required?'#E0F7FA':'#fff',
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                        }}>
+                          {row.cold_chain_required && <i className="ti ti-snowflake" style={{ fontSize:11, color:'#007A99' }} />}
+                        </div>
+                        <span style={{ fontSize:9, color:'#9C9A92' }}>Frío</span>
+                      </div>
+                      <div title="Requiere procesamiento"
+                        onClick={() => updateRow(row.id, 'processing_required', !row.processing_required)}
+                        style={{ cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:2 }}>
+                        <div style={{
+                          width:20, height:20, borderRadius:5,
+                          border:`1.5px solid ${row.processing_required?'#00A88A':'#D3D1C7'}`,
+                          background:row.processing_required?'#E0F2F1':'#fff',
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                        }}>
+                          {row.processing_required && <i className="ti ti-flask" style={{ fontSize:11, color:'#00A88A' }} />}
+                        </div>
+                        <span style={{ fontSize:9, color:'#9C9A92' }}>Proc.</span>
+                      </div>
+                    </div>
+
+                    {/* eliminar fila */}
+                    <button type="button" onClick={() => removeRow(row.id)}
+                      disabled={rows.length === 1}
+                      style={{
+                        background:'none', border:'none', cursor:rows.length===1?'not-allowed':'pointer',
+                        color:rows.length===1?'#D3D1C7':'#9C9A92', fontSize:16, padding:0,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                      }}>
+                      <i className="ti ti-circle-minus" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* agregar fila */}
+              <button type="button" onClick={addRow}
+                style={{
+                  marginTop:10, width:'100%', background:'none',
+                  border:'1px dashed #D3D1C7', borderRadius:8, padding:'8px',
+                  fontSize:12, color:'#0A2E5C', cursor:'pointer', fontWeight:500,
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                }}>
+                <i className="ti ti-plus" style={{ fontSize:14 }} />
+                Agregar otra muestra
+              </button>
+            </div>
+
+            {/* resumen */}
+            {rows.length > 1 && (
+              <div style={{ background:'#E0F7FA', border:'0.5px solid #80DEEA', borderRadius:8, padding:'9px 13px', fontSize:12, color:'#007A99', marginBottom:12 }}>
+                <i className="ti ti-info-circle" style={{ fontSize:13, marginRight:5 }} />
+                Se crearán <strong>{rows.length} registros</strong> para el paciente {patientId||'—'} en la misma fecha y visita.
+              </div>
+            )}
+
+            {error && (
+              <div style={{ background:'#FCEBEB', border:'0.5px solid #F7C1C1', borderRadius:8, padding:'9px 12px', fontSize:12, color:'#791F1F' }}>
+                <i className="ti ti-alert-circle" style={{ fontSize:13, marginRight:5 }} />{error}
+              </div>
+            )}
+          </div>
+
+          {/* footer */}
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 20px', borderTop:'0.5px solid #E8E6DE', position:'sticky', bottom:0, background:'#fff' }}>
+            <div style={{ fontSize:12, color:'#9C9A92' }}>
+              {rows.length} muestra{rows.length!==1?'s':''} · {patientId||'sin paciente'}
+            </div>
+            <div style={{ display:'flex', gap:8 }}>
+              <button type="button" onClick={onClose} style={{ background:'transparent', border:'0.5px solid #D3D1C7', color:'#73726C', padding:'7px 16px', borderRadius:8, fontSize:13, cursor:'pointer' }}>
+                Cancelar
+              </button>
+              <button type="submit" disabled={saving || !patientId.trim()} style={{
+                background:saving||!patientId.trim()?'#9C9A92':'#0A2E5C',
+                color:'#fff', border:'none', padding:'7px 18px', borderRadius:8,
+                fontSize:13, fontWeight:500,
+                cursor:saving||!patientId.trim()?'not-allowed':'pointer',
+                display:'flex', alignItems:'center', gap:6,
+              }}>
+                <i className="ti ti-send" style={{ fontSize:13 }} />
+                {saving ? 'Registrando...' : `Registrar ${rows.length} muestra${rows.length!==1?'s':''}`}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+
 // ── New sample modal ──────────────────────────────────────────
 function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClose: () => void; onSaved: () => void }) {
   const { user } = useAuth()
@@ -554,7 +837,7 @@ export default function TabSamples({ projectId }: { projectId: string }) {
       </div>
 
       {showModal && (
-        <SampleModal
+        <MultiSampleModal
           projectId={projectId}
           onClose={() => setShowModal(false)}
           onSaved={load}

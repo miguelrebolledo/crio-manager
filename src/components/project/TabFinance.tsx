@@ -756,16 +756,6 @@ export default function TabFinance({ projectId, project }: { projectId: string; 
   const isExternal = project.sponsor_type === 'EXTERNAL'
   const canEdit    = ['FINANCE','ADMIN','PM_CRIO'].includes(user?.role??'')
 
-  if (!canEdit) {
-    return (
-      <div style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, padding:48, textAlign:'center' }}>
-        <i className="ti ti-lock" style={{ fontSize:28, color:'#D3D1C7', display:'block', marginBottom:10 }} />
-        <div style={{ fontSize:14, fontWeight:500, color:'#9C9A92', marginBottom:4 }}>Acceso restringido</div>
-        <div style={{ fontSize:12, color:'#B4B2A9' }}>La información financiera es visible solo para Finanzas, Administrador y PM/CRIO.</div>
-      </div>
-    )
-  }
-
   const load = useCallback(async () => {
     setLoading(true)
     const [{ data: bData }, { data: qData }, { data: iData }, { data: eData }] = await Promise.all([
@@ -790,6 +780,16 @@ export default function TabFinance({ projectId, project }: { projectId: string; 
       supabase.from('invoices').update({ status:'OVERDUE' }).eq('id', i.id).then(()=>load())
     })
   }, [invoices])
+
+  if (!canEdit) {
+    return (
+      <div style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, padding:48, textAlign:'center' }}>
+        <i className="ti ti-lock" style={{ fontSize:28, color:'#D3D1C7', display:'block', marginBottom:10 }} />
+        <div style={{ fontSize:14, fontWeight:500, color:'#9C9A92', marginBottom:4 }}>Acceso restringido</div>
+        <div style={{ fontSize:12, color:'#B4B2A9' }}>La información financiera es visible solo para Finanzas, Administrador y PM/CRIO.</div>
+      </div>
+    )
+  }
 
   if (loading) return <div style={{ padding:32, textAlign:'center', fontSize:13, color:'#9C9A92' }}>Cargando finanzas...</div>
 

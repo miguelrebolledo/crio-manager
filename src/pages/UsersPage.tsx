@@ -139,7 +139,9 @@ function UserModal({ mode, editUser, onClose, onDone }: UserModalProps) {
 
           try {
             await supabase.rpc('confirm_user_email', { user_id: signData.user.id })
-          } catch {}
+          } catch {
+            // best-effort: el usuario puede confirmar su email manualmente si esto falla
+          }
         }
       } else if (data.user) {
         await supabase.from('users').upsert({

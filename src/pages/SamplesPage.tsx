@@ -29,6 +29,13 @@ interface CollectorSummary {
   by_status: Record<string,number>
 }
 
+interface CollectorSampleRow {
+  collected_by: string | null
+  sample_type: string
+  status: string
+  collector: { full_name: string } | null
+}
+
 const SAMPLE_TYPE_LABELS: Record<string,string> = {
   BLOOD:'Sangre', URINE:'Orina', TISSUE:'Tejido',
   BONE_MARROW:'Médula ósea', CSF:'LCR',
@@ -78,7 +85,7 @@ function CollectorSummaryView() {
       .not('status', 'eq', 'PENDING')
       .then(({ data }) => {
         const map: Record<string, CollectorSummary> = {}
-        ;(data ?? []).forEach((s:any) => {
+        ;((data ?? []) as unknown as CollectorSampleRow[]).forEach(s => {
           const key = s.collected_by ?? 'unknown'
           const name = s.collected_by
             ? (s.collector?.full_name ?? 'Sin nombre')
@@ -204,7 +211,7 @@ export default function SamplesPage() {
       const s = search.toLowerCase()
       rows = rows.filter(r =>
         r.patient_id.toLowerCase().includes(s) ||
-        (r.project as any)?.codigo_proyecto?.toLowerCase().includes(s)
+        r.project?.codigo_proyecto?.toLowerCase().includes(s)
       )
     }
 
@@ -264,11 +271,11 @@ export default function SamplesPage() {
 
         {/* tabs */}
         <div style={{ display:'flex', gap:0, marginBottom:12, background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, overflow:'hidden' }}>
-          {[
+          {([
             {key:'list',       label:'Lista de muestras',     icon:'ti-test-pipe'},
             {key:'collectors', label:'Resumen por recolector', icon:'ti-users'},
-          ].map(t=>(
-            <button key={t.key} onClick={()=>setActiveTab(t.key as any)} style={{
+          ] as const).map(t=>(
+            <button key={t.key} onClick={()=>setActiveTab(t.key)} style={{
               flex:1, padding:'9px 16px', fontSize:13, cursor:'pointer',
               background:'none', border:'none',
               color:activeTab===t.key?'#0A2E5C':'#73726C',
@@ -375,7 +382,7 @@ export default function SamplesPage() {
                         <td style={{ padding:'10px 14px' }}>
                           <span onClick={()=>navigate(`/proyectos/${s.project_id}`)}
                             style={{ fontSize:12, fontWeight:500, color:'#0A2E5C', cursor:'pointer', textDecoration:'underline' }}>
-                            {(s.project as any)?.codigo_proyecto??'—'}
+                            {s.project?.codigo_proyecto??'—'}
                           </span>
                         </td>
                         <td style={{ padding:'10px 14px', fontSize:12 }}>{s.patient_id}</td>
@@ -394,7 +401,7 @@ export default function SamplesPage() {
                           </span>
                         </td>
                         <td style={{ padding:'10px 14px', fontSize:12, color:'#73726C', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                          {(s.collector as any)?.full_name??'—'}
+                          {s.collector?.full_name??'—'}
                         </td>
                         <td style={{ padding:'10px 14px' }}>
                           <button onClick={()=>navigate(`/proyectos/${s.project_id}`)}

@@ -210,7 +210,7 @@ function StatusModal({ proc, onClose, onSaved }: { proc:Processing; onClose:()=>
   const [processedBy, setProcessedBy] = useState('')
   const [note, setNote]         = useState('')
   const [saving, setSaving]     = useState(false)
-  const [labUsers, setLabUsers] = useState<any[]>([])
+  const [labUsers, setLabUsers] = useState<{ id: string; full_name: string }[]>([])
 
   useEffect(() => {
     supabase.from('users').select('id, full_name')
@@ -226,7 +226,10 @@ function StatusModal({ proc, onClose, onSaved }: { proc:Processing; onClose:()=>
   const handleApply = async () => {
     if (!selected) return
     setSaving(true)
-    const payload: any = {
+    const payload: {
+      status: string; updated_at: string
+      processed_date?: string; processed_by?: string; notes?: string
+    } = {
       status:     selected,
       updated_at: new Date().toISOString(),
     }
@@ -336,7 +339,7 @@ function ProcessingRow({ proc, onUpdate, canEdit }: { proc:Processing; onUpdate:
               </span>
             </div>
             <div style={{ fontSize:12, color:'#9C9A92' }}>
-              {proc.processed_by ? `Procesado por: ${(proc.processed_by as any).full_name}` : 'Sin procesar aún'}
+              {proc.processed_by ? `Procesado por: ${proc.processed_by?.full_name}` : 'Sin procesar aún'}
               {proc.processed_date && ` · ${formatDate(proc.processed_date)}`}
               {proc.volume_quantity && ` · ${proc.volume_quantity}`}
             </div>
@@ -362,8 +365,8 @@ function ProcessingRow({ proc, onUpdate, canEdit }: { proc:Processing; onUpdate:
               {label:'Fecha programada',  value:formatDate(proc.scheduled_date)},
               {label:'Fecha procesada',   value:proc.processed_date?formatDate(proc.processed_date):'—'},
               {label:'Volumen/cantidad',  value:proc.volume_quantity??'—'},
-              {label:'Procesado por',     value:(proc.processed_by as any)?.full_name??'—'},
-              {label:'Registrado por',    value:(proc.registered_by as any)?.full_name??'—'},
+              {label:'Procesado por',     value:proc.processed_by?.full_name??'—'},
+              {label:'Registrado por',    value:proc.registered_by?.full_name??'—'},
             ].map(f=>(
               <div key={f.label}>
                 <div style={{ fontSize:10, color:'#9C9A92', marginBottom:2 }}>{f.label}</div>

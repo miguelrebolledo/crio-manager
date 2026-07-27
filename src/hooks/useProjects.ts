@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { getErrorMessage } from '../lib/errors'
 import type {
   Project,
   ProjectInsert,
@@ -72,8 +73,8 @@ export function useProjects(filters: ProjectFilters = {}) {
 
       if (err) throw err
       setProjects(data as Project[])
-    } catch (err: any) {
-      setError(err.message ?? 'Error al cargar proyectos')
+    } catch (err) {
+      setError(getErrorMessage(err, 'Error al cargar proyectos'))
     } finally {
       setLoading(false)
     }
@@ -136,8 +137,8 @@ export function useProjectDetail(projectId: string | null) {
 
       if (err) throw err
       setProject(data as Project)
-    } catch (err: any) {
-      setError(err.message ?? 'Error al cargar el proyecto')
+    } catch (err) {
+      setError(getErrorMessage(err, 'Error al cargar el proyecto'))
     } finally {
       setLoading(false)
     }
@@ -169,8 +170,8 @@ export function useProjectMutations() {
 
       if (err) throw err
       return created as Project
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return null
     } finally {
       setLoading(false)
@@ -189,8 +190,8 @@ export function useProjectMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)
@@ -217,8 +218,8 @@ export function useProjectMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)

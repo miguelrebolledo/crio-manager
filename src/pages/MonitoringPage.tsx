@@ -30,6 +30,8 @@ interface Visit {
   project: { codigo_proyecto: string; titulo: string } | null
 }
 
+type FindingWithVisit = Finding & { visit: Visit }
+
 const VISIT_TYPE_LABELS: Record<string,string> = { INITIATION:'Inicio', FOLLOW_UP:'Seguimiento', CLOSE_OUT:'Cierre' }
 const VISIT_STATUS_LABELS: Record<string,string> = { SCHEDULED:'Agendada', COMPLETED:'Realizada', CANCELLED:'Cancelada' }
 const CATEGORY_LABELS: Record<string,string> = { CRITICAL:'Crítico', MAJOR:'Mayor', MINOR:'Menor' }
@@ -77,7 +79,7 @@ export default function MonitoringPage() {
 
   useEffect(() => { load() }, [load])
 
-  const allFindings = visits.flatMap(v =>
+  const allFindings: FindingWithVisit[] = visits.flatMap(v =>
     v.findings.map(f => ({ ...f, visit: v }))
   )
   const openFindings = allFindings.filter(f => ['OPEN','RESPONDED'].includes(f.status))
@@ -128,11 +130,11 @@ export default function MonitoringPage() {
 
         {/* tabs */}
         <div style={{ display: 'flex', gap: 0, marginBottom: 12, background: '#fff', border: '0.5px solid #E8E6DE', borderRadius: 10, overflow: 'hidden' }}>
-          {[
+          {([
             { key: 'visits',   label: 'Visitas',              icon: 'ti-calendar-event' },
             { key: 'findings', label: `Hallazgos abiertos (${openF})`, icon: 'ti-alert-circle' },
-          ].map(t => (
-            <button key={t.key} onClick={() => setActiveTab(t.key as any)} style={{
+          ] as const).map(t => (
+            <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
               flex: 1, padding: '9px 16px', fontSize: 13, cursor: 'pointer',
               background: 'none', border: 'none',
               color: activeTab === t.key ? '#0A2E5C' : '#73726C',
@@ -197,7 +199,7 @@ export default function MonitoringPage() {
                             onClick={e => { e.stopPropagation(); navigate(`/proyectos/${v.project_id}`) }}
                             style={{ fontSize: 11, color: '#0A2E5C', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline' }}
                           >
-                            {(v.project as any)?.codigo_proyecto}
+                            {v.project?.codigo_proyecto}
                           </span>
                           {openVF > 0 && (
                             <span style={{ fontSize: 11, background: '#FCEBEB', color: '#791F1F', padding: '2px 8px', borderRadius: 20, fontWeight: 500 }}>
@@ -208,7 +210,7 @@ export default function MonitoringPage() {
                         <div style={{ fontSize: 12, color: '#9C9A92' }}>
                           {formatDate(v.scheduled_date)}
                           {v.actual_date && ` · Realizada: ${formatDate(v.actual_date)}`}
-                          {' · '}{(v.monitor as any)?.full_name ?? '—'}
+                          {' · '}{v.monitor?.full_name ?? '—'}
                         </div>
                       </div>
                       <i className={`ti ti-chevron-${isExp ? 'up' : 'down'}`} style={{ fontSize: 15, color: '#9C9A92' }} />
@@ -260,7 +262,7 @@ export default function MonitoringPage() {
             ) : openFindings.map((f, i) => {
               const cs = CATEGORY_STYLE[f.category]     ?? {bg:'#F1EFE8',color:'#444441'}
               const fs = FINDING_STATUS_STYLE[f.status] ?? {bg:'#F1EFE8',color:'#444441'}
-              const v  = (f as any).visit as Visit
+              const v  = f.visit
 
               return (
                 <div key={f.id} style={{ padding: '13px 16px', borderBottom: i < openFindings.length - 1 ? '0.5px solid #E8E6DE' : 'none' }}>
@@ -271,10 +273,10 @@ export default function MonitoringPage() {
                       onClick={() => navigate(`/proyectos/${v.project_id}`)}
                       style={{ fontSize: 11, color: '#0A2E5C', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline' }}
                     >
-                      {(v.project as any)?.codigo_proyecto}
+                      {v.project?.codigo_proyecto}
                     </span>
                     <span style={{ fontSize: 11, color: '#9C9A92' }}>
-                      Visita {formatDate(v.scheduled_date)} · {(v.monitor as any)?.full_name}
+                      Visita {formatDate(v.scheduled_date)} · {v.monitor?.full_name}
                     </span>
                   </div>
                   <div style={{ fontSize: 13, color: '#3D3D3A', lineHeight: 1.4 }}>{f.description}</div>

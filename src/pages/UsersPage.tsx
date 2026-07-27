@@ -481,7 +481,7 @@ export default function UsersPage() {
                     {u.institution && ` · ${u.institution}`}
                     {/* Mostrar organización vinculada para sponsors */}
                     {u.role === 'SPONSOR' && u.organization && (
-                      <span style={{ color: '#6A1B9A', fontWeight: 500 }}> · {(u.organization as any).name}</span>
+                      <span style={{ color: '#6A1B9A', fontWeight: 500 }}> · {u.organization?.name}</span>
                     )}
                     {u.role === 'SPONSOR' && !u.org_id && (
                       <span style={{ color: '#854F0B' }}> · Sin organización vinculada</span>

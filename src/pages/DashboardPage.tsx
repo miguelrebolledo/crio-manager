@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/index'
 import Layout from '../components/layout/Layout'
 import { CoordinatorDashboard } from './DashboardCoordinator'
+import type { EthicsAlert } from '../lib/database.types'
 
 // ── Types ────────────────────────────────────────────────────
 interface Project {
@@ -27,6 +28,16 @@ interface Alert {
   detail: string
   projectId?: string
   code?: string
+}
+interface VisitWithFindings {
+  id: string
+  status: string
+  findings: { id: string; category: string; status: string }[]
+}
+interface RecruitmentHistoryRow {
+  period_year: number
+  period_month: number
+  new_this_period: number | null
 }
 
 // ── Label / style maps ────────────────────────────────────────
@@ -175,7 +186,7 @@ export default function DashboardPage() {
         .from('ethics_alerts')
         .select('*')
         .in('renewal_alert_level', ['EXPIRED','URGENT','WARNING'])
-      ;(ethicsData ?? []).forEach((a:any) => {
+      ;((ethicsData ?? []) as EthicsAlert[]).forEach(a => {
         newAlerts.push({
           type: a.renewal_alert_level === 'EXPIRED' ? 'danger' : 'warn',
           icon: 'ti-shield-x',
@@ -237,15 +248,15 @@ export default function DashboardPage() {
       const { data: visits } = await supabase
         .from('monitoring_visits')
         .select('id, status, findings:monitoring_findings(id, category, status)')
-      const visitList = (visits ?? []) as any[]
-      const allFindings = visitList.flatMap((v:any) => v.findings ?? [])
+      const visitList = (visits ?? []) as unknown as VisitWithFindings[]
+      const allFindings = visitList.flatMap(v => v.findings ?? [])
       setMonitoringStats({
         total:             visitList.length,
-        completed:         visitList.filter((v:any) => v.status === 'COMPLETED').length,
-        scheduled:         visitList.filter((v:any) => v.status === 'SCHEDULED').length,
-        openFindings:      allFindings.filter((f:any) => f.status === 'OPEN').length,
-        criticalFindings:  allFindings.filter((f:any) => f.category === 'CRITICAL' && f.status === 'OPEN').length,
-        respondedFindings: allFindings.filter((f:any) => f.status === 'RESPONDED').length,
+        completed:         visitList.filter(v => v.status === 'COMPLETED').length,
+        scheduled:         visitList.filter(v => v.status === 'SCHEDULED').length,
+        openFindings:      allFindings.filter(f => f.status === 'OPEN').length,
+        criticalFindings:  allFindings.filter(f => f.category === 'CRITICAL' && f.status === 'OPEN').length,
+        respondedFindings: allFindings.filter(f => f.status === 'RESPONDED').length,
       })
 
       // ── 4. Historial reclutamiento ──
@@ -259,7 +270,7 @@ export default function DashboardPage() {
         .from('recruitment_updates')
         .select('period_year, period_month, new_this_period')
         .gte('period_year', now.getFullYear() - 1)
-      ;(recHistory ?? []).forEach((r:any) => {
+      ;((recHistory ?? []) as RecruitmentHistoryRow[]).forEach(r => {
         const d = new Date(r.period_year, r.period_month - 1, 1)
         const diffMonths = (now.getFullYear()-d.getFullYear())*12 + now.getMonth()-d.getMonth()
         if (diffMonths >= 0 && diffMonths < 6) {

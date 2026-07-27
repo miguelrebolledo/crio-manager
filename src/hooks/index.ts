@@ -4,11 +4,57 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { getErrorMessage } from '../lib/errors'
 import type {
   RecruitmentUpdate,
   RecruitmentUpdateInsert,
   RecruitmentDashboard,
+  ProjectStatusEnum,
+  TeamRoleEnum,
+  MonitoringVisit,
+  OpenFindingSummary,
+  AdverseEvent,
+  AdverseEventInsert,
+  SampleCollection,
+  SampleCollectionInsert,
+  SampleStatusEnum,
+  Document as ProjectDocument,
+  Organization,
+  CrmInteraction,
 } from '../lib/database.types'
+
+type OrganizationWithInteractions = Organization & { interactions: CrmInteraction[] }
+
+interface CoordinatorProject {
+  id: string
+  codigo_proyecto: string
+  titulo: string
+  recruitment_target: number | null
+  recruited_current: number
+  dropouts_current: number
+  excluded_current: number
+  status: ProjectStatusEnum
+  ethics_renewal_date: string | null
+  team_members: { user_id: string; team_role: TeamRoleEnum }[]
+}
+
+interface DashboardStats {
+  total: number
+  active: number
+  pipeline: number
+  paused: number
+  byStatus: Record<string, number>
+  byType: Record<string, number>
+  byDisease: Record<string, number>
+}
+
+interface DashboardAlert {
+  type: 'danger' | 'warn' | 'info'
+  icon: string
+  title: string
+  detail?: string
+  date?: string
+}
 
 export function useRecruitmentHistory(projectId: string | null) {
   const [history, setHistory]   = useState<RecruitmentUpdate[]>([])
@@ -28,8 +74,8 @@ export function useRecruitmentHistory(projectId: string | null) {
 
       if (err) throw err
       setHistory(data as RecruitmentUpdate[])
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -42,7 +88,7 @@ export function useRecruitmentHistory(projectId: string | null) {
 
 /** Proyectos asignados a la coordinadora actual para reporte mensual */
 export function useCoordinatorProjects() {
-  const [projects, setProjects] = useState<any[]>([])
+  const [projects, setProjects] = useState<CoordinatorProject[]>([])
   const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
@@ -62,7 +108,7 @@ export function useCoordinatorProjects() {
         .in('project_team_members.team_role', ['COORDINATOR_PRINCIPAL', 'COORDINATOR_BACKUP'])
         .not('status', 'in', '("CLOSED","COMPLETED","CANCELLED")')
 
-      setProjects(data ?? [])
+      setProjects((data ?? []) as CoordinatorProject[])
       setLoading(false)
     }
     load()
@@ -88,8 +134,8 @@ export function useRecruitmentMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)
@@ -122,7 +168,7 @@ export function useRecruitmentDashboard() {
 // ============================================================
 
 export function useMonitoringVisits(projectId?: string) {
-  const [visits, setVisits]   = useState<any[]>([])
+  const [visits, setVisits]   = useState<MonitoringVisit[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState<string | null>(null)
 
@@ -142,9 +188,9 @@ export function useMonitoringVisits(projectId?: string) {
 
       const { data, error: err } = await query
       if (err) throw err
-      setVisits(data ?? [])
-    } catch (err: any) {
-      setError(err.message)
+      setVisits((data ?? []) as MonitoringVisit[])
+    } catch (err) {
+      setError(getErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -156,7 +202,7 @@ export function useMonitoringVisits(projectId?: string) {
 }
 
 export function useOpenFindings() {
-  const [findings, setFindings] = useState<any[]>([])
+  const [findings, setFindings] = useState<OpenFindingSummary[]>([])
   const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
@@ -164,7 +210,7 @@ export function useOpenFindings() {
       .from('open_findings_summary')
       .select('*')
       .then(({ data }) => {
-        setFindings(data ?? [])
+        setFindings((data ?? []) as OpenFindingSummary[])
         setLoading(false)
       })
   }, [])
@@ -197,8 +243,8 @@ export function useMonitoringMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)
@@ -228,8 +274,8 @@ export function useMonitoringMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)
@@ -245,7 +291,7 @@ export function useMonitoringMutations() {
 // ============================================================
 
 export function useAdverseEvents(projectId?: string) {
-  const [events, setEvents]   = useState<any[]>([])
+  const [events, setEvents]   = useState<AdverseEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState<string | null>(null)
 
@@ -261,9 +307,9 @@ export function useAdverseEvents(projectId?: string) {
 
       const { data, error: err } = await query
       if (err) throw err
-      setEvents(data ?? [])
-    } catch (err: any) {
-      setError(err.message)
+      setEvents((data ?? []) as AdverseEvent[])
+    } catch (err) {
+      setError(getErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -278,7 +324,7 @@ export function useAdverseEventMutations() {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
 
-  const createEvent = async (data: any): Promise<boolean> => {
+  const createEvent = async (data: Omit<AdverseEventInsert, 'reported_by'>): Promise<boolean> => {
     setLoading(true)
     setError(null)
     try {
@@ -289,8 +335,8 @@ export function useAdverseEventMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)
@@ -308,8 +354,8 @@ export function useAdverseEventMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)
@@ -325,7 +371,7 @@ export function useAdverseEventMutations() {
 // ============================================================
 
 export function useSamples(projectId?: string) {
-  const [samples, setSamples] = useState<any[]>([])
+  const [samples, setSamples] = useState<SampleCollection[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState<string | null>(null)
 
@@ -341,9 +387,9 @@ export function useSamples(projectId?: string) {
 
       const { data, error: err } = await query
       if (err) throw err
-      setSamples(data ?? [])
-    } catch (err: any) {
-      setError(err.message)
+      setSamples((data ?? []) as SampleCollection[])
+    } catch (err) {
+      setError(getErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -358,7 +404,7 @@ export function useSampleMutations() {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
 
-  const createSample = async (data: any): Promise<boolean> => {
+  const createSample = async (data: Omit<SampleCollectionInsert, 'registered_by'>): Promise<boolean> => {
     setLoading(true)
     setError(null)
     try {
@@ -369,8 +415,8 @@ export function useSampleMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)
@@ -379,14 +425,14 @@ export function useSampleMutations() {
 
   const updateStatus = async (
     id: string,
-    status: string,
+    status: SampleStatusEnum,
     notes?: string
   ): Promise<boolean> => {
     setLoading(true)
     setError(null)
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      const payload: any = {
+      const payload: Partial<SampleCollection> = {
         status,
         updated_by: user?.id,
         updated_at: new Date().toISOString(),
@@ -401,8 +447,8 @@ export function useSampleMutations() {
 
       if (err) throw err
       return true
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err))
       return false
     } finally {
       setLoading(false)
@@ -418,8 +464,8 @@ export function useSampleMutations() {
 // ============================================================
 
 export function useDashboard() {
-  const [stats, setStats]       = useState<any>(null)
-  const [alerts, setAlerts]     = useState<any[]>([])
+  const [stats, setStats]       = useState<DashboardStats | null>(null)
+  const [alerts, setAlerts]     = useState<DashboardAlert[]>([])
   const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
@@ -464,7 +510,7 @@ export function useDashboard() {
       })
 
       // consolidar alertas del panel
-      const allAlerts: any[] = []
+      const allAlerts: DashboardAlert[] = []
 
       ethicsAlerts?.forEach(a => {
         allAlerts.push({
@@ -568,7 +614,7 @@ export function useRequireRole(allowedRoles: UserRoleEnum[]) {
 // ============================================================
 
 export function useDocuments(projectId: string) {
-  const [docs, setDocs]       = useState<any[]>([])
+  const [docs, setDocs]       = useState<ProjectDocument[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetch = useCallback(async () => {
@@ -579,7 +625,7 @@ export function useDocuments(projectId: string) {
       .eq('project_id', projectId)
       .order('created_at', { ascending: false })
 
-    setDocs(data ?? [])
+    setDocs((data ?? []) as ProjectDocument[])
     setLoading(false)
   }, [projectId])
 
@@ -643,7 +689,7 @@ export function useDocuments(projectId: string) {
 // ============================================================
 
 export function useOrganizations() {
-  const [orgs, setOrgs]       = useState<any[]>([])
+  const [orgs, setOrgs]       = useState<OrganizationWithInteractions[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -653,7 +699,7 @@ export function useOrganizations() {
       .eq('is_active', true)
       .order('name')
       .then(({ data }) => {
-        setOrgs(data ?? [])
+        setOrgs((data ?? []) as OrganizationWithInteractions[])
         setLoading(false)
       })
   }, [])

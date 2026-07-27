@@ -240,7 +240,7 @@ function FindingRow({ finding, onUpdate }: { finding: Finding; onUpdate: () => v
 // ── QA Visit modal ────────────────────────────────────────────
 function QAVisitModal({ projectId, onClose, onSaved }: { projectId:string; onClose:()=>void; onSaved:()=>void }) {
   const { user } = useAuth()
-  const [qaUsers, setQaUsers] = useState<any[]>([])
+  const [qaUsers, setQaUsers] = useState<{ id: string; full_name: string; email: string }[]>([])
   const [form, setForm] = useState({
     monitor_id:     '',
     visit_type:     'FOLLOW_UP',
@@ -466,7 +466,7 @@ function VisitCard({ visit, onUpdate }: { visit:Visit; onUpdate:()=>void }) {
             {visit.actual_date&&` · Realizada: ${formatDate(visit.actual_date)}`}
             {' · '}
             <i className="ti ti-user" style={{ fontSize:12, marginRight:4 }} />
-            {(visit.monitor as any)?.full_name ?? '—'}
+            {visit.monitor?.full_name ?? '—'}
           </div>
         </div>
         <div style={{ display:'flex', gap:6, alignItems:'center', flexShrink:0 }}>

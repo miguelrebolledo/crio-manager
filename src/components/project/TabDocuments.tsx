@@ -1,6 +1,7 @@
 // src/components/project/TabDocuments.tsx
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
+import { getErrorMessage } from '../../lib/errors'
 import { useAuth } from '../../hooks/index'
 
 // ── Types ────────────────────────────────────────────────────
@@ -141,8 +142,8 @@ function UploadModal({
       setProgress(100)
 
       setTimeout(() => { onUploaded(); onClose() }, 300)
-    } catch (err: any) {
-      setError(err.message ?? 'Error al subir el archivo.')
+    } catch (err) {
+      setError(getErrorMessage(err, 'Error al subir el archivo.'))
       setUploading(false)
       setProgress(0)
     }
@@ -518,7 +519,7 @@ function DocRow({
         <div style={{ fontSize: 11, color: '#9C9A92', marginTop: 2 }}>
           {formatDate(doc.created_at)}
           {doc.file_size_bytes && ` · ${formatBytes(doc.file_size_bytes)}`}
-          {doc.uploader && ` · ${(doc.uploader as any).full_name}`}
+          {doc.uploader && ` · ${doc.uploader.full_name}`}
         </div>
       </div>
 

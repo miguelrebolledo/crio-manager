@@ -440,7 +440,7 @@ function ExpensesSection({ projectId, expenses, onUpdate }: { projectId:string; 
                 <div style={{ fontSize:11, color:'#9C9A92' }}>
                   {formatDate(e.expense_date)}
                   {e.vendor && ` · ${e.vendor}`}
-                  {e.registered_by && ` · Registrado por: ${(e.registered_by as any).full_name}`}
+                  {e.registered_by && ` · Registrado por: ${e.registered_by.full_name}`}
                 </div>
               </div>
               <div style={{ fontSize:13, fontWeight:600, color:'#3D3D3A', flexShrink:0 }}>
@@ -621,7 +621,7 @@ function InvoicesSection({ projectId, invoices, quotations, onUpdate }: { projec
 
   const updateStatus = async (id:string, status:string) => {
     setUpdatingId(id)
-    const payload: any = { status }
+    const payload: { status: string; paid_date?: string } = { status }
     if (status==='PAID') payload.paid_date = new Date().toISOString().split('T')[0]
     await supabase.from('invoices').update(payload).eq('id', id)
     setUpdatingId(null)

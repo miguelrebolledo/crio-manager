@@ -300,7 +300,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
     { key: 'pi_notified_at',      label: 'Notificación al PI',             value: ae.pi_notified_at,      deadline: '24h' },
     { key: 'sponsor_notified_at', label: 'Notificación al sponsor',        value: ae.sponsor_notified_at, deadline: '24h (SAE)' },
     { key: 'ethics_notified_at',  label: 'Notificación al Comité de Ética', value: ae.ethics_notified_at, deadline: '24h (SAE)' },
-  ]
+  ] as const
 
   return (
     <div style={{ background: '#F8F7F4', borderTop: '0.5px solid #E8E6DE', padding: 16 }}>
@@ -315,7 +315,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
             {[
               { label: 'Relación con tratamiento', value: RELATION_LABELS[ae.relation_to_treatment] },
               { label: 'Fecha de detección', value: formatDate(ae.detection_date) },
-              { label: 'Reportado por', value: (ae.reporter as any)?.full_name ?? '—' },
+              { label: 'Reportado por', value: ae.reporter?.full_name ?? '—' },
               { label: 'Registrado', value: formatDateTime(ae.created_at) },
             ].map(f => (
               <div key={f.label}>
@@ -358,7 +358,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
                 </div>
                 {!n.value && canEdit && (isSAE || n.key === 'pi_notified_at') && (
                   <button
-                    onClick={() => markNotification(n.key as any)}
+                    onClick={() => markNotification(n.key)}
                     disabled={saving}
                     style={{ fontSize: 11, padding: '3px 8px', background: '#E0F7FA', color: '#007A99', border: '0.5px solid #80DEEA', borderRadius: 6, cursor: 'pointer', fontWeight: 500, flexShrink: 0 }}
                   >

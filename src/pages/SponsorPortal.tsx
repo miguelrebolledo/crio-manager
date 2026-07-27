@@ -206,7 +206,7 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
     {key:'monitoring', label:'Monitoreo',  icon:'ti-eye'},
     {key:'documents',  label:`Documentos (${documents.length})`, icon:'ti-files'},
     {key:'finance',    label:'Facturas',   icon:'ti-receipt'},
-  ]
+  ] as const
 
   return (
     <div>
@@ -249,7 +249,7 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
           {[
             {label:'Inicio', value:formatDate(project.start_date)},
             {label:'Cierre estimado', value:project.estimated_end_date?formatDate(project.estimated_end_date):'—'},
-            {label:'PI', value:(project.principal_investigator as any)?.full_name??'—'},
+            {label:'PI', value:project.principal_investigator?.full_name??'—'},
           ].map(f=>(
             <div key={f.label}>
               <div style={{ fontSize:10, color:'#9C9A92', marginBottom:2 }}>{f.label}</div>
@@ -262,7 +262,7 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
       {/* tabs */}
       <div style={{ display:'flex', gap:0, marginBottom:12, background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, overflow:'hidden' }}>
         {TABS.map(t=>(
-          <button key={t.key} onClick={()=>setActiveTab(t.key as any)} style={{
+          <button key={t.key} onClick={()=>setActiveTab(t.key)} style={{
             flex:1, padding:'9px 8px', fontSize:12, cursor:'pointer',
             background:'none', border:'none',
             color:activeTab===t.key?'#00BFFF':'#73726C',
@@ -380,7 +380,7 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
                     <div style={{ fontSize:12, color:'#9C9A92' }}>
                       {formatDate(v.scheduled_date)}
                       {v.actual_date&&` · Realizada: ${formatDate(v.actual_date)}`}
-                      {v.monitor&&` · ${(v.monitor as any).full_name}`}
+                      {v.monitor&&` · ${v.monitor.full_name}`}
                     </div>
                   </div>
                 </div>
@@ -527,7 +527,7 @@ export default function SponsorPortal() {
         .eq('id', user.id)
         .single()
 
-      const orgId = (userData as any)?.org_id
+      const orgId = (userData as { org_id: string | null } | null)?.org_id
       if (!orgId) {
         setLoading(false)
         return

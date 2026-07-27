@@ -147,8 +147,8 @@ export default function TabNotes({ projectId }: { projectId: string }) {
             <div style={{ fontSize: 12, color: '#B4B2A9', marginTop: 4 }}>Las notas que agregues aparecerán aquí</div>
           </div>
         ) : notes.map((note, i) => {
-          const authorName = (note.author as any)?.full_name ?? 'Usuario'
-          const authorRole = (note.author as any)?.role ?? ''
+          const authorName = note.author?.full_name ?? 'Usuario'
+          const authorRole = note.author?.role ?? ''
           const color = AVATAR_COLORS[i % AVATAR_COLORS.length]
 
           return (

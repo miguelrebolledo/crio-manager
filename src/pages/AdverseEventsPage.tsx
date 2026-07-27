@@ -79,7 +79,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
   const updateStatus = async (status: string) => {
     if (status === 'CLOSED' && !confirm('¿Marcar este evento como cerrado?')) return
     setSaving(true)
-    const payload: any = { status }
+    const payload: { status: string; closed_at?: string } = { status }
     if (status === 'CLOSED') payload.closed_at = new Date().toISOString()
     await supabase.from('adverse_events').update(payload).eq('id', ae.id)
     setSaving(false)
@@ -102,7 +102,7 @@ function AEDetail({ ae, onUpdate }: { ae: AdverseEvent; onUpdate: () => void }) 
           {[
             { label: 'Relación con tratamiento', value: RELATION_LABELS[ae.relation_to_treatment] },
             { label: 'Fecha detección', value: formatDate(ae.detection_date) },
-            { label: 'Reportado por', value: (ae.reporter as any)?.full_name ?? '—' },
+            { label: 'Reportado por', value: ae.reporter?.full_name ?? '—' },
             { label: 'Registrado', value: formatDateTime(ae.created_at) },
           ].map(f => (
             <div key={f.label}>
@@ -203,7 +203,7 @@ export default function AdverseEventsPage() {
       rows = rows.filter(e =>
         e.description.toLowerCase().includes(s) ||
         e.patient_id.toLowerCase().includes(s) ||
-        (e.project as any)?.codigo_proyecto?.toLowerCase().includes(s)
+        e.project?.codigo_proyecto?.toLowerCase().includes(s)
       )
     }
 
@@ -348,7 +348,7 @@ export default function AdverseEventsPage() {
                           onClick={e => { e.stopPropagation(); navigate(`/proyectos/${ae.project_id}`) }}
                           style={{ fontSize: 11, color: '#0A2E5C', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline' }}
                         >
-                          {(ae.project as any)?.codigo_proyecto}
+                          {ae.project?.codigo_proyecto}
                         </span>
                         <span style={{ fontSize: 11, color: '#9C9A92' }}>
                           {ae.patient_id} · {formatDate(ae.detection_date)}

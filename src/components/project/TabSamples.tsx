@@ -129,7 +129,7 @@ export function MultiSampleModal({
     if (rows.length === 1) return // al menos una muestra
     setRows(r => r.filter(row => row.id !== id))
   }
-  const updateRow = (id: string, field: keyof SampleRow, value: any) => {
+  const updateRow = (id: string, field: keyof SampleRow, value: SampleRow[keyof SampleRow]) => {
     setRows(r => r.map(row => row.id === id ? { ...row, [field]: value } : row))
   }
 
@@ -482,19 +482,19 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
                 placeholder="Nombre de quien recolectó la muestra" />
             </div>
             <div style={{ display: 'flex', gap: 16 }}>
-              {[
+              {([
                 { key: 'cold_chain_required', label: 'Requiere cadena de frío' },
                 { key: 'processing_required', label: 'Requiere procesamiento' },
-              ].map(opt => (
+              ] as const).map(opt => (
                 <div key={opt.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
-                  onClick={() => setForm(f => ({ ...f, [opt.key]: !(f as any)[opt.key] }))}>
+                  onClick={() => setForm(f => ({ ...f, [opt.key]: !f[opt.key] }))}>
                   <div style={{
                     width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                    border: `1.5px solid ${(form as any)[opt.key] ? '#0A2E5C' : '#D3D1C7'}`,
-                    background: (form as any)[opt.key] ? '#0A2E5C' : '#fff',
+                    border: `1.5px solid ${form[opt.key] ? '#0A2E5C' : '#D3D1C7'}`,
+                    background: form[opt.key] ? '#0A2E5C' : '#fff',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    {(form as any)[opt.key] && <i className="ti ti-check" style={{ fontSize: 11, color: '#fff' }} />}
+                    {form[opt.key] && <i className="ti ti-check" style={{ fontSize: 11, color: '#fff' }} />}
                   </div>
                   <span style={{ fontSize: 13, color: '#3D3D3A' }}>{opt.label}</span>
                 </div>
@@ -538,7 +538,10 @@ function StatusModal({ sample, onClose, onSaved }: { sample: Sample; onClose: ()
   const handleApply = async () => {
     if (!selected) return
     setSaving(true)
-    const payload: any = {
+    const payload: {
+      status: string; updated_by?: string; updated_at: string
+      collected_date?: string; notes?: string
+    } = {
       status:     selected,
       updated_by: user?.id,
       updated_at: new Date().toISOString(),

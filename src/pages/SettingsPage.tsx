@@ -176,15 +176,15 @@ function SectionPassword() {
       </div>
       <div style={{ padding: 18 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
-          {[
+          {([
             { key: 'current', label: 'Contraseña actual',   placeholder: '••••••••' },
             { key: 'next',    label: 'Nueva contraseña',    placeholder: 'Mínimo 8 caracteres' },
             { key: 'confirm', label: 'Confirmar contraseña', placeholder: 'Repetir nueva contraseña' },
-          ].map(f => (
+          ] as const).map(f => (
             <div key={f.key}>
               <label style={labelStyle}>{f.label}</label>
               <input style={{ ...inp, borderColor: f.key === 'confirm' && form.confirm && form.next !== form.confirm ? '#E24B4A' : '#D3D1C7' }}
-                type="password" value={(form as any)[f.key]}
+                type="password" value={form[f.key]}
                 onChange={e => setForm(fm => ({ ...fm, [f.key]: e.target.value }))}
                 placeholder={f.placeholder} />
             </div>
@@ -312,7 +312,7 @@ function SectionNotifications() {
     { key: 'sample_omission',   label: 'Omisión de muestra sin atender',           desc: 'Cuando una muestra supera el umbral de horas sin actualización' },
     { key: 'finding_open',      label: 'Hallazgo de monitoreo sin respuesta',      desc: 'Recordatorio cuando un hallazgo lleva días sin respuesta' },
     { key: 'recruitment_report', label: 'Recordatorio reporte mensual reclutamiento', desc: 'Aviso al inicio de cada mes para enviar el reporte' },
-  ]
+  ] as const
 
   const save = async () => {
     setSaving(true)
@@ -335,14 +335,14 @@ function SectionNotifications() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
           {notifs.map(n => (
             <div key={n.key} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '10px 12px', background: '#F8F7F4', borderRadius: 8, cursor: 'pointer' }}
-              onClick={() => setPrefs(p => ({ ...p, [n.key]: !p[n.key as keyof typeof p] }))}>
+              onClick={() => setPrefs(p => ({ ...p, [n.key]: !p[n.key] }))}>
               <div style={{
                 width: 20, height: 20, borderRadius: 5, flexShrink: 0, marginTop: 1,
-                border: `1.5px solid ${(prefs as any)[n.key] ? '#0A2E5C' : '#D3D1C7'}`,
-                background: (prefs as any)[n.key] ? '#0A2E5C' : '#fff',
+                border: `1.5px solid ${prefs[n.key] ? '#0A2E5C' : '#D3D1C7'}`,
+                background: prefs[n.key] ? '#0A2E5C' : '#fff',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                {(prefs as any)[n.key] && <i className="ti ti-check" style={{ fontSize: 12, color: '#fff' }} />}
+                {prefs[n.key] && <i className="ti ti-check" style={{ fontSize: 12, color: '#fff' }} />}
               </div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: '#3D3D3A' }}>{n.label}</div>

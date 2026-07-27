@@ -194,7 +194,7 @@ useEffect(() => {
 
   const handleSave = async () => {
     setSaving(true)
-    const payload: any = { ...form }
+    const payload: Partial<typeof form> & { client_org_id?: string | null } = { ...form }
     if (!payload.estimated_end_date)          delete payload.estimated_end_date
     if (!payload.first_patient_recruited_date) delete payload.first_patient_recruited_date
     if (!payload.ethics_approval_date)        delete payload.ethics_approval_date
@@ -374,7 +374,7 @@ function TabTeam({ projectId }: { projectId: string }) {
   const [members, setMembers] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
-  const [users, setUsers]     = useState<any[]>([])
+  const [users, setUsers]     = useState<{ id: string; full_name: string; email: string; role: string }[]>([])
   const [newUserId,   setNewUserId]   = useState('')
   const [newTeamRole, setNewTeamRole] = useState('OTHER')
   const [saving, setSaving] = useState(false)
@@ -618,17 +618,17 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
                   Ingresa el total acumulado desde el inicio del estudio, no solo los nuevos del mes.
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12, marginBottom:12 }}>
-                  {[
+                  {([
                     { key:'enrolled_total', label:'Enrolados (total)', req:true },
                     { key:'dropouts_total', label:'Abandonos (total)', req:false },
                     { key:'excluded_total', label:'Excluidos (total)', req:false },
-                  ].map(f => (
+                  ] as const).map(f => (
                     <div key={f.key}>
                       <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:3 }}>
                         {f.label}{f.req && <span style={{color:'#A32D2D'}}> *</span>}
                       </label>
                       <input style={inp} type="number" min="0"
-                        value={(form as any)[f.key]}
+                        value={form[f.key]}
                         onChange={e=>setForm(fm=>({...fm,[f.key]:e.target.value}))}
                         placeholder={f.req ? 'Obligatorio' : '0'}
                       />
@@ -678,7 +678,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
                   <td style={{ padding:'9px 14px', color:'#854F0B' }}>{r.dropouts_total}</td>
                   <td style={{ padding:'9px 14px', color:'#A32D2D' }}>{r.excluded_total}</td>
                   <td style={{ padding:'9px 14px' }}>{r.new_this_period != null ? (r.new_this_period > 0 ? `+${r.new_this_period}` : r.new_this_period) : '—'}</td>
-                  <td style={{ padding:'9px 14px', color:'#9C9A92', fontSize:12 }}>{(r.reporter as any)?.full_name ?? '—'}</td>
+                  <td style={{ padding:'9px 14px', color:'#9C9A92', fontSize:12 }}>{r.reporter?.full_name ?? '—'}</td>
                   <td style={{ padding:'9px 14px', color:'#9C9A92', fontSize:12, maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{r.notes ?? '—'}</td>
                 </tr>
               ))}

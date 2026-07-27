@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { getErrorMessage } from '../lib/errors'
 import { useAuth } from '../hooks/index'
 import Layout from '../components/layout/Layout'
 
@@ -171,7 +172,12 @@ function NewProjectModal({ onClose, onCreated }: { onClose:()=>void; onCreated:(
     setLoading(true)
     setError(null)
     try {
-      const payload: any = {
+      const payload: {
+        codigo_proyecto: string; titulo: string; study_type: string; project_type: string
+        status: string; priority: string; sponsor_type: string; start_date: string
+        trial_phase: string; disease: string
+        recruitment_target?: number; estimated_end_date?: string
+      } = {
         codigo_proyecto: form.codigo_proyecto,
         titulo:          form.titulo,
         study_type:      form.study_type,
@@ -204,8 +210,8 @@ function NewProjectModal({ onClose, onCreated }: { onClose:()=>void; onCreated:(
       }
 
       onCreated(data.id)
-    } catch (err: any) {
-      setError(err.message ?? 'Error al crear el proyecto')
+    } catch (err) {
+      setError(getErrorMessage(err, 'Error al crear el proyecto'))
     } finally {
       setLoading(false)
     }
@@ -587,11 +593,11 @@ export default function ProjectsPage() {
                         {p.titulo}
                       </div>
                       <div style={{ fontSize:11, color:'#9C9A92', marginTop:2 }}>
-                        {(p.principal_investigator as any)?.full_name ?? 'Sin PI asignado'}
+                        {p.principal_investigator?.full_name ?? 'Sin PI asignado'}
                       </div>
                     </td>
                     <td style={{ padding:'10px 14px', fontSize:12, color:'#73726C', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                      {(p.client_org as any)?.name ?? '—'}
+                      {p.client_org?.name ?? '—'}
                     </td>
                     <td style={{ padding:'10px 14px' }}>
                       <span style={{ ...ts, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>

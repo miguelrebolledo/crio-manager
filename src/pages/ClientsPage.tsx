@@ -252,12 +252,12 @@ function ClientDetail({ org, onUpdate }: { org: Organization; onUpdate: ()=>void
 
       {/* subtabs */}
       <div style={{ display:'flex', gap:0, marginBottom:14, background:'#F8F7F4', borderRadius:8, padding:3 }}>
-        {[
+        {([
           { key:'overview',      label:'Resumen' },
           { key:'interactions',  label:`Interacciones (${interactions.length})` },
           { key:'projects',      label:`Proyectos (${projects.length})` },
-        ].map(t => (
-          <button key={t.key} onClick={() => setActiveTab(t.key as any)} style={{
+        ] as const).map(t => (
+          <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
             flex:1, padding:'6px 12px', fontSize:12, cursor:'pointer',
             background: activeTab===t.key ? '#fff' : 'transparent',
             border:'none', borderRadius:6, color: activeTab===t.key ? '#0A2E5C' : '#73726C',
@@ -335,7 +335,7 @@ function ClientDetail({ org, onUpdate }: { org: Organization; onUpdate: ()=>void
           ) : interactions.map((n, i) => (
             <div key={n.id} style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, padding:14, marginBottom:8, borderLeft:`3px solid ${AVATAR_COLORS[i % AVATAR_COLORS.length]}` }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
-                <span style={{ fontSize:12, fontWeight:500, color:'#007A99' }}>{(n.author as any)?.full_name ?? '—'}</span>
+                <span style={{ fontSize:12, fontWeight:500, color:'#007A99' }}>{n.author?.full_name ?? '—'}</span>
                 <span style={{ fontSize:11, color:'#9C9A92' }}>{formatDate(n.interaction_date)}</span>
               </div>
               <div style={{ fontSize:13, color:'#3D3D3A', lineHeight:1.5 }}>{n.notes}</div>

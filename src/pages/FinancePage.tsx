@@ -148,11 +148,11 @@ export default function FinancePage() {
 
         {/* tabs */}
         <div style={{ display:'flex', gap:0, marginBottom:12, background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, overflow:'hidden' }}>
-          {[
+          {([
             {key:'invoices',   label:`Facturas (${invoices.length})`,    icon:'ti-receipt'},
             {key:'quotations', label:`Cotizaciones (${quotations.length})`, icon:'ti-file-invoice'},
-          ].map(t=>(
-            <button key={t.key} onClick={()=>setActiveTab(t.key as any)} style={{
+          ] as const).map(t=>(
+            <button key={t.key} onClick={()=>setActiveTab(t.key)} style={{
               flex:1, padding:'9px 16px', fontSize:13, cursor:'pointer',
               background:'none', border:'none',
               color:activeTab===t.key?'#0A2E5C':'#73726C',
@@ -207,7 +207,7 @@ export default function FinancePage() {
                         <span style={{ fontSize:13, fontWeight:600, color:isOverdue?'#A32D2D':'#0A2E5C' }}>{formatAmount(inv.amount,inv.currency)}</span>
                         <span onClick={()=>navigate(`/proyectos/${inv.project_id}`)}
                           style={{ fontSize:11, color:'#0A2E5C', fontWeight:500, cursor:'pointer', textDecoration:'underline' }}>
-                          {(inv.project as any)?.codigo_proyecto}
+                          {inv.project?.codigo_proyecto}
                         </span>
                         {daysLeft!==null && !['PAID','CANCELLED'].includes(inv.status) && (
                           <span style={{ fontSize:11, color:daysLeft<0?'#A32D2D':daysLeft<=7?'#854F0B':'#9C9A92', fontWeight:daysLeft<0?600:400 }}>
@@ -257,7 +257,7 @@ export default function FinancePage() {
                         <span style={{ fontSize:13, fontWeight:600, color:'#0A2E5C' }}>{formatAmount(q.amount,q.currency)}</span>
                         <span onClick={()=>navigate(`/proyectos/${q.project_id}`)}
                           style={{ fontSize:11, color:'#0A2E5C', fontWeight:500, cursor:'pointer', textDecoration:'underline' }}>
-                          {(q.project as any)?.codigo_proyecto}
+                          {q.project?.codigo_proyecto}
                         </span>
                       </div>
                       <div style={{ fontSize:12, color:'#9C9A92' }}>Emitida: {formatDate(q.issue_date)}</div>

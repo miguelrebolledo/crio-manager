@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/index'
+import { getErrorMessage } from '../lib/errors'
 
 export default function LoginPage() {
   const { signIn } = useAuth()
@@ -17,9 +18,8 @@ export default function LoginPage() {
     try {
       await signIn(email, password)
       navigate('/')
-    } catch (err: any) {
-      setError(err.message) // muestra el error exacto de Supabase
-      // //setError('Credenciales incorrectas. Verifica tu email y contraseña.')
+    } catch (err) {
+      setError(getErrorMessage(err)) // muestra el error exacto de Supabase
     } finally {
       setLoading(false)
     }

@@ -50,6 +50,28 @@ interface UpcomingVisit {
   monitor_name: string
 }
 
+interface TeamMemberRow { project_id: string }
+interface RecruitmentReportRow { project_id: string; report_date: string }
+interface ProjectRow {
+  id: string
+  codigo_proyecto: string
+  titulo: string
+  status: string
+  recruited_current: number
+  recruitment_target: number | null
+}
+interface JoinedProject { codigo_proyecto: string }
+interface MonitoringVisitRow { id: string; project_id: string; scheduled_date: string; projects: JoinedProject | null }
+interface FindingRow { id: string; description: string; category: string; visit_id: string }
+interface SampleRow {
+  id: string; patient_id: string; sample_type: string; scheduled_date: string
+  status: string; created_at: string; project_id: string; projects: JoinedProject | null
+}
+interface UpcomingVisitRow {
+  id: string; visit_type: string; scheduled_date: string; monitoring_type: string
+  project_id: string; monitor: { full_name: string } | null; projects: JoinedProject | null
+}
+
 const CATEGORY_STYLE: Record<string,{bg:string;color:string}> = {
   CRITICAL:{bg:'#FCEBEB',color:'#791F1F'},
   MAJOR:   {bg:'#FAEEDA',color:'#633806'},
@@ -110,7 +132,7 @@ export function CoordinatorDashboard() {
         .eq('user_id', user.id)
         .eq('is_active', true)
 
-      const projectIds = (memberData ?? []).map((m:any) => m.project_id)
+      const projectIds = ((memberData ?? []) as TeamMemberRow[]).map(m => m.project_id)
 
       if (projectIds.length === 0) {
         setLoading(false)
@@ -133,11 +155,12 @@ export function CoordinatorDashboard() {
         .eq('period_year', thisYear)
         .eq('period_month', thisMonth)
 
-      const reportedIds = new Set((reports ?? []).map((r:any) => r.project_id))
+      const reportRows = (reports ?? []) as RecruitmentReportRow[]
+      const reportedIds = new Set(reportRows.map(r => r.project_id))
       const lastReportMap: Record<string,string> = {}
-      ;(reports ?? []).forEach((r:any) => { lastReportMap[r.project_id] = r.report_date })
+      reportRows.forEach(r => { lastReportMap[r.project_id] = r.report_date })
 
-      const coordProjects: CoordProject[] = (projData ?? []).map((p:any) => ({
+      const coordProjects: CoordProject[] = ((projData ?? []) as ProjectRow[]).map(p => ({
         id:                p.id,
         codigo_proyecto:   p.codigo_proyecto,
         titulo:            p.titulo,
@@ -155,9 +178,10 @@ export function CoordinatorDashboard() {
         .select('id, project_id, scheduled_date, projects(codigo_proyecto)')
         .in('project_id', projectIds)
 
-      const visitIds = (visitsData ?? []).map((v:any) => v.id)
-      const visitMap: Record<string,any> = {}
-      ;(visitsData ?? []).forEach((v:any) => { visitMap[v.id] = v })
+      const visitRows = (visitsData ?? []) as unknown as MonitoringVisitRow[]
+      const visitIds = visitRows.map(v => v.id)
+      const visitMap: Record<string, MonitoringVisitRow> = {}
+      visitRows.forEach(v => { visitMap[v.id] = v })
 
       if (visitIds.length > 0) {
         const { data: findingsData } = await supabase
@@ -166,14 +190,14 @@ export function CoordinatorDashboard() {
           .in('visit_id', visitIds)
           .eq('status', 'OPEN')
 
-        const findings: PendingFinding[] = (findingsData ?? []).map((f:any) => {
+        const findings: PendingFinding[] = ((findingsData ?? []) as FindingRow[]).map(f => {
           const visit = visitMap[f.visit_id]
           return {
             id:           f.id,
             description:  f.description,
             category:     f.category,
             project_id:   visit?.project_id,
-            project_code: (visit?.projects as any)?.codigo_proyecto ?? '—',
+            project_code: visit?.projects?.codigo_proyecto ?? '—',
             visit_date:   visit?.scheduled_date ?? '',
           }
         })
@@ -188,14 +212,14 @@ export function CoordinatorDashboard() {
         .in('status', ['PENDING','OMISSION'])
         .order('scheduled_date')
 
-      const samples: PendingSample[] = (samplesData ?? []).map((s:any) => ({
+      const samples: PendingSample[] = ((samplesData ?? []) as unknown as SampleRow[]).map(s => ({
         id:             s.id,
         patient_id:     s.patient_id,
         sample_type:    s.sample_type,
         scheduled_date: s.scheduled_date,
         status:         s.status,
         project_id:     s.project_id,
-        project_code:   (s.projects as any)?.codigo_proyecto ?? '—',
+        project_code:   s.projects?.codigo_proyecto ?? '—',
         hours_open:     Math.round((Date.now() - new Date(s.created_at).getTime()) / 3600000),
       }))
       setPendingSamples(samples)
@@ -213,14 +237,14 @@ export function CoordinatorDashboard() {
         .lte('scheduled_date', in30)
         .order('scheduled_date')
 
-      const upcoming: UpcomingVisit[] = (visitsUpcoming ?? []).map((v:any) => ({
+      const upcoming: UpcomingVisit[] = ((visitsUpcoming ?? []) as unknown as UpcomingVisitRow[]).map(v => ({
         id:              v.id,
         visit_type:      v.visit_type,
         scheduled_date:  v.scheduled_date,
         monitoring_type: v.monitoring_type,
         project_id:      v.project_id,
-        project_code:    (v.projects as any)?.codigo_proyecto ?? '—',
-        monitor_name:    (v.monitor as any)?.full_name ?? '—',
+        project_code:    v.projects?.codigo_proyecto ?? '—',
+        monitor_name:    v.monitor?.full_name ?? '—',
       }))
       setUpcomingVisits(upcoming)
 

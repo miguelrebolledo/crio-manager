@@ -618,9 +618,18 @@ function StatusModal({ sample, onClose, onSaved }: { sample: Sample; onClose: ()
 }
 
 // ── Sample row ────────────────────────────────────────────────
-function SampleRow({ sample, onUpdate, canEdit }: { sample: Sample; onUpdate: () => void; canEdit: boolean }) {
+function SampleRow({ sample, onUpdate, canEdit, canDelete }: { sample: Sample; onUpdate: () => void; canEdit: boolean; canDelete: boolean }) {
   const [expanded, setExpanded]     = useState(false)
   const [showStatus, setShowStatus] = useState(false)
+  const [deleting, setDeleting]     = useState(false)
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!confirm(`¿Eliminar la muestra de ${sample.patient_id} (${SAMPLE_TYPE_LABELS[sample.sample_type]})?`)) return
+    setDeleting(true)
+    await supabase.from('sample_collections').delete().eq('id', sample.id)
+    onUpdate()
+  }
 
   const ss = STATUS_STYLE[sample.status] ?? { bg: '#F1EFE8', color: '#444441' }
   const ts = TYPE_STYLE[sample.sample_type] ?? { bg: '#F1EFE8', color: '#444441' }
@@ -671,6 +680,16 @@ function SampleRow({ sample, onUpdate, canEdit }: { sample: Sample; onUpdate: ()
                 style={{ fontSize: 11, padding: '4px 10px', background: isOmission ? '#FCEBEB' : '#E0F7FA', color: isOmission ? '#791F1F' : '#007A99', border: `0.5px solid ${isOmission ? '#F7C1C1' : '#80DEEA'}`, borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
               >
                 {isOmission ? 'Atender omisión' : 'Cambiar estado'}
+              </button>
+            )}
+            {canDelete && (
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                title="Eliminar muestra"
+                style={{ fontSize: 13, padding: '4px 7px', background: 'none', color: deleting ? '#D3D1C7' : '#B4B2A9', border: '0.5px solid #E8E6DE', borderRadius: 6, cursor: deleting ? 'not-allowed' : 'pointer' }}
+              >
+                <i className="ti ti-trash" />
               </button>
             )}
             <i className={`ti ti-chevron-${expanded ? 'up' : 'down'}`} style={{ fontSize: 14, color: '#9C9A92' }} />
@@ -756,9 +775,11 @@ export default function TabSamples({ projectId }: { projectId: string }) {
   const [showModal, setShowModal] = useState(false)
   const [fStatus, setFStatus]   = useState('')
   const [fType, setFType]       = useState('')
+  const [groupBy, setGroupBy]   = useState<'none'|'patient'|'visit'>('none')
 
   const canEdit   = ['ADMIN','PM_CRIO','COORDINATOR','LAB'].includes(user?.role ?? '')
   const canCreate = ['ADMIN','PM_CRIO','COORDINATOR'].includes(user?.role ?? '')
+  const canDelete = ['ADMIN','PM_CRIO','COORDINATOR'].includes(user?.role ?? '')
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -831,6 +852,11 @@ export default function TabSamples({ projectId }: { projectId: string }) {
               <i className="ti ti-x" style={{ fontSize: 11 }} /> Limpiar
             </button>
           )}
+          <select value={groupBy} onChange={e => setGroupBy(e.target.value as any)} style={{ ...selStyle, borderLeft: '2px solid #E8E6DE', marginLeft: 4 }}>
+            <option value="none">Sin agrupar</option>
+            <option value="patient">Agrupar por paciente</option>
+            <option value="visit">Agrupar por visita</option>
+          </select>
         </div>
         {canCreate && (
           <button onClick={() => setShowModal(true)} style={{ background: '#0A2E5C', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -855,9 +881,41 @@ export default function TabSamples({ projectId }: { projectId: string }) {
               </button>
             )}
           </div>
-        ) : (
-          samples.map(s => <SampleRow key={s.id} sample={s} onUpdate={load} canEdit={canEdit} />)
-        )}
+        ) : groupBy === 'none' ? (
+          samples.map(s => <SampleRow key={s.id} sample={s} onUpdate={load} canEdit={canEdit} canDelete={canDelete} />)
+        ) : (() => {
+          // Agrupar por paciente o visita
+          const key = groupBy === 'patient' ? 'patient_id' : 'visit_timepoint'
+          const groups = samples.reduce((acc, s) => {
+            const k = (s as any)[key] ?? '— Sin asignar'
+            if (!acc[k]) acc[k] = []
+            acc[k].push(s)
+            return acc
+          }, {} as Record<string, Sample[]>)
+
+          return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0])).map(([groupKey, groupSamples]) => (
+            <div key={groupKey}>
+              <div style={{ padding: '8px 16px', background: '#F8F7F4', borderBottom: '0.5px solid #E8E6DE', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#0A2E5C' }}>
+                  {groupBy === 'patient' ? (
+                    <><i className="ti ti-user" style={{ fontSize: 12, marginRight: 5 }} />{groupKey}</>
+                  ) : (
+                    <><i className="ti ti-flag" style={{ fontSize: 12, marginRight: 5 }} />{groupKey}</>
+                  )}
+                </span>
+                <span style={{ fontSize: 11, background: '#E0F7FA', color: '#007A99', padding: '1px 8px', borderRadius: 20, fontWeight: 500 }}>
+                  {groupSamples.length} muestra{groupSamples.length !== 1 ? 's' : ''}
+                </span>
+                <span style={{ fontSize: 11, color: '#9C9A92', marginLeft: 4 }}>
+                  {Object.entries(
+                    groupSamples.reduce((a, s) => { a[s.sample_type] = (a[s.sample_type] ?? 0) + 1; return a }, {} as Record<string,number>)
+                  ).map(([t, n]) => `${SAMPLE_TYPE_LABELS[t] ?? t}${n > 1 ? ` ×${n}` : ''}`).join(' · ')}
+                </span>
+              </div>
+              {groupSamples.map(s => <SampleRow key={s.id} sample={s} onUpdate={load} canEdit={canEdit} canDelete={canDelete} />)}
+            </div>
+          ))
+        })()}
       </div>
 
       {showModal && (

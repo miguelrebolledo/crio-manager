@@ -852,7 +852,7 @@ export default function TabSamples({ projectId }: { projectId: string }) {
               <i className="ti ti-x" style={{ fontSize: 11 }} /> Limpiar
             </button>
           )}
-          <select value={groupBy} onChange={e => setGroupBy(e.target.value as any)} style={{ ...selStyle, borderLeft: '2px solid #E8E6DE', marginLeft: 4 }}>
+          <select value={groupBy} onChange={e => setGroupBy(e.target.value as 'none' | 'patient' | 'visit')} style={{ ...selStyle, borderLeft: '2px solid #E8E6DE', marginLeft: 4 }}>
             <option value="none">Sin agrupar</option>
             <option value="patient">Agrupar por paciente</option>
             <option value="visit">Agrupar por visita</option>
@@ -885,9 +885,9 @@ export default function TabSamples({ projectId }: { projectId: string }) {
           samples.map(s => <SampleRow key={s.id} sample={s} onUpdate={load} canEdit={canEdit} canDelete={canDelete} />)
         ) : (() => {
           // Agrupar por paciente o visita
-          const key = groupBy === 'patient' ? 'patient_id' : 'visit_timepoint'
+          const key: keyof Sample = groupBy === 'patient' ? 'patient_id' : 'visit_timepoint'
           const groups = samples.reduce((acc, s) => {
-            const k = (s as any)[key] ?? '— Sin asignar'
+            const k = s[key] ?? '— Sin asignar'
             if (!acc[k]) acc[k] = []
             acc[k].push(s)
             return acc

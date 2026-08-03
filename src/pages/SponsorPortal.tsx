@@ -271,10 +271,11 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
   const TABS: {key:TabKey; label:string; icon:string}[] = [
     {key:'overview',   label:'Resumen',                          icon:'ti-info-circle'},
     {key:'milestones', label:'Hitos',                            icon:'ti-flag'},
+    {key:'samples',    label:`Muestras (${samples.length})`,     icon:'ti-test-pipe'},
     {key:'monitoring', label:'Monitoreo',                        icon:'ti-eye'},
     {key:'documents',  label:`Documentos (${documents.length})`, icon:'ti-files'},
     {key:'finance',    label:'Facturas',                         icon:'ti-receipt'},
-    {key:'samples',    label:`Muestras (${samples.length})`,     icon:'ti-test-pipe'},
+    
   ]
 
   return (

@@ -200,10 +200,10 @@ export function MultiSampleModal({
                   <select style={inp} value={visitTimepoint} onChange={e => setVisitTimepoint(e.target.value)}>
                     <option value="">Sin asignar</option>
                     <option>Visita basal (D0)</option>
-                    <option>Semana 1</option>
-                    <option>Semana 2</option>
-                    <option>Semana 3</option>
-                    <option>Semana 4</option>
+                    <option>Visita 1</option>
+                    <option>Visita 2</option>
+                    <option>Visita 3</option>
+                    <option>Visita 4</option>
                     <option>Final de estudio</option>
                     <option>Parto</option>
                     <option>Post-parto</option>
@@ -461,10 +461,10 @@ function SampleModal({ projectId, onClose, onSaved }: { projectId: string; onClo
                 <select style={inp} value={form.visit_timepoint} onChange={e => setForm(f => ({ ...f, visit_timepoint: e.target.value }))}>
                   <option value="">Sin asignar</option>
                   <option>Visita basal (D0)</option>
-                  <option>Semana 1</option>
-                  <option>Semana 2</option>
-                  <option>Semana 3</option>
-                  <option>Semana 4</option>
+                  <option>Visita 1</option>
+                  <option>Visita 2</option>
+                  <option>Visita 3</option>
+                  <option>Visita 4</option>
                   <option>Final de estudio</option>
                 </select>
               </div>

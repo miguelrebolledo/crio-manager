@@ -5,3 +5,4 @@ dist
 .env.*.local
 *.patch
 supabase/.temp
+*.sql

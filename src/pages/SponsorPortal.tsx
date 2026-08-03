@@ -1,6 +1,5 @@
 // src/pages/SponsorPortal.tsx
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/index'
 import Layout from '../components/layout/Layout'
@@ -20,7 +19,6 @@ interface SponsorProject {
   ethics_renewal_date: string | null
   principal_investigator: { full_name: string; email: string } | null
 }
-
 interface Milestone {
   id: string
   name: string
@@ -28,7 +26,6 @@ interface Milestone {
   status: string
   completed_date: string | null
 }
-
 interface Document {
   id: string
   name: string
@@ -38,7 +35,6 @@ interface Document {
   mime_type: string | null
   created_at: string
 }
-
 interface Finding {
   id: string
   description: string
@@ -47,7 +43,6 @@ interface Finding {
   created_at: string
   response_text: string | null
 }
-
 interface Visit {
   id: string
   visit_type: string
@@ -57,7 +52,6 @@ interface Visit {
   findings: Finding[]
   monitor: { full_name: string } | null
 }
-
 interface Invoice {
   id: string
   number: string
@@ -69,7 +63,6 @@ interface Invoice {
   paid_date: string | null
   status: string
 }
-
 interface Quotation {
   id: string
   number: string
@@ -78,6 +71,16 @@ interface Quotation {
   currency: string
   issue_date: string
   status: string
+}
+interface Sample {
+  id: string
+  patient_id: string
+  sample_type: string
+  visit_timepoint: string | null
+  scheduled_date: string
+  volume_quantity: string | null
+  status: string
+  notes: string | null
 }
 
 // ── Label maps ───────────────────────────────────────────────
@@ -127,7 +130,40 @@ const DOC_TYPE_LABELS: Record<string,string> = {
   CRF:'CRF', SAFETY_REPORT:'Informe seguridad',
   MONITORING_REPORT:'Informe monitoreo', CONTRACT:'Contrato', OTHER:'Otro',
 }
+const SAMPLE_TYPE_LABELS: Record<string,string> = {
+  BLOOD:'Sangre periférica', URINE:'Orina', TISSUE:'Tejido',
+  BONE_MARROW:'Médula ósea', CSF:'LCR', PLACENTA:'Placenta',
+  CORD_BLOOD:'Sangre de cordón', UMBILICAL_CORD:'Cordón umbilical',
+  SALIVA:'Saliva', OTHER:'Otro',
+}
+const SAMPLE_STATUS_LABELS: Record<string,string> = {
+  PENDING:'Pendiente', COLLECTED:'Recolectada', PROCESSING:'En proceso',
+  STORED:'Almacenada', SHIPPED:'Enviada procesada',
+  SHIPPED_UNPROCESSED:'Enviada sin procesar', OMISSION:'Omisión',
+}
+const SAMPLE_STATUS_STYLE: Record<string,{bg:string;color:string}> = {
+  PENDING:            {bg:'#FAEEDA',color:'#633806'},
+  COLLECTED:          {bg:'#E0F7FA',color:'#007A99'},
+  PROCESSING:         {bg:'#F3E5F5',color:'#6A1B9A'},
+  STORED:             {bg:'#E0F2F1',color:'#005246'},
+  SHIPPED:            {bg:'#F1EFE8',color:'#444441'},
+  SHIPPED_UNPROCESSED:{bg:'#F3E5F5',color:'#6A1B9A'},
+  OMISSION:           {bg:'#FCEBEB',color:'#791F1F'},
+}
+const SAMPLE_TYPE_STYLE: Record<string,{bg:string;color:string}> = {
+  BLOOD:         {bg:'#FCEBEB',color:'#791F1F'},
+  URINE:         {bg:'#E0F7FA',color:'#007A99'},
+  TISSUE:        {bg:'#FAEEDA',color:'#633806'},
+  BONE_MARROW:   {bg:'#F3E5F5',color:'#6A1B9A'},
+  CSF:           {bg:'#E0F2F1',color:'#005246'},
+  PLACENTA:      {bg:'#FAEEDA',color:'#854F0B'},
+  CORD_BLOOD:    {bg:'#FCEBEB',color:'#633806'},
+  UMBILICAL_CORD:{bg:'#F1EFE8',color:'#444441'},
+  SALIVA:        {bg:'#E0F7FA',color:'#6A1B9A'},
+  OTHER:         {bg:'#F1EFE8',color:'#444441'},
+}
 
+// ── Helpers ──────────────────────────────────────────────────
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'})
 }
@@ -153,14 +189,44 @@ const cardHead = (icon:string, title:string) => (
   </div>
 )
 
+// ── Sample read-only row ──────────────────────────────────────
+function SampleReadRow({ sample, isLast }: { sample: Sample; isLast: boolean }) {
+  const ss = SAMPLE_STATUS_STYLE[sample.status] ?? {bg:'#F1EFE8',color:'#444441'}
+  const ts = SAMPLE_TYPE_STYLE[sample.sample_type] ?? {bg:'#F1EFE8',color:'#444441'}
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', borderBottom:isLast?'none':'0.5px solid #E8E6DE' }}>
+      <div style={{ flex:1 }}>
+        <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:4 }}>
+          <span style={{ ...ts, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>
+            {SAMPLE_TYPE_LABELS[sample.sample_type] ?? sample.sample_type}
+          </span>
+          <span style={{ ...ss, fontSize:11, padding:'2px 8px', borderRadius:20, fontWeight:500 }}>
+            {SAMPLE_STATUS_LABELS[sample.status] ?? sample.status}
+          </span>
+        </div>
+        <div style={{ fontSize:11, color:'#9C9A92' }}>
+          {sample.patient_id}
+          {sample.visit_timepoint && ` · ${sample.visit_timepoint}`}
+          {' · '}{formatDate(sample.scheduled_date)}
+          {sample.volume_quantity && ` · ${sample.volume_quantity}`}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Project detail view ───────────────────────────────────────
+type TabKey = 'overview' | 'milestones' | 'monitoring' | 'documents' | 'finance' | 'samples'
+
 function ProjectDetail({ project }: { project: SponsorProject }) {
-  const [activeTab, setActiveTab] = useState<'overview'|'milestones'|'monitoring'|'documents'|'finance'>('overview')
+  const [activeTab, setActiveTab] = useState<TabKey>('overview')
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [visits, setVisits]         = useState<Visit[]>([])
   const [documents, setDocuments]   = useState<Document[]>([])
   const [invoices, setInvoices]     = useState<Invoice[]>([])
   const [quotations, setQuotations] = useState<Quotation[]>([])
+  const [samples, setSamples]       = useState<Sample[]>([])
+  const [groupBy, setGroupBy]       = useState<'none'|'patient'|'visit'>('none')
   const [downloading, setDownloading] = useState<string|null>(null)
   const [confirmingId, setConfirmingId] = useState<string|null>(null)
 
@@ -178,6 +244,8 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
       .then(({data}) => setInvoices((data??[]) as Invoice[]))
     supabase.from('quotations').select('*').eq('project_id', project.id).order('issue_date', { ascending: false })
       .then(({data}) => setQuotations((data??[]) as Quotation[]))
+    supabase.from('sample_collections').select('*').eq('project_id', project.id).order('scheduled_date', { ascending: false })
+      .then(({data}) => setSamples((data??[]) as Sample[]))
   }, [project.id])
 
   const handleDownload = async (doc: Document) => {
@@ -200,13 +268,14 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
   const pctColor = pct>=80?'#0A2E5C':pct>=50?'#00CBA5':pct>=30?'#EF9F27':'#E24B4A'
   const ss = STATUS_STYLE[project.status]??{bg:'#F1EFE8',color:'#444441'}
 
-  const TABS = [
-    {key:'overview',   label:'Resumen',    icon:'ti-info-circle'},
-    {key:'milestones', label:'Hitos',      icon:'ti-flag'},
-    {key:'monitoring', label:'Monitoreo',  icon:'ti-eye'},
+  const TABS: {key:TabKey; label:string; icon:string}[] = [
+    {key:'overview',   label:'Resumen',                          icon:'ti-info-circle'},
+    {key:'milestones', label:'Hitos',                            icon:'ti-flag'},
+    {key:'monitoring', label:'Monitoreo',                        icon:'ti-eye'},
     {key:'documents',  label:`Documentos (${documents.length})`, icon:'ti-files'},
-    {key:'finance',    label:'Facturas',   icon:'ti-receipt'},
-  ] as const
+    {key:'finance',    label:'Facturas',                         icon:'ti-receipt'},
+    {key:'samples',    label:`Muestras (${samples.length})`,     icon:'ti-test-pipe'},
+  ]
 
   return (
     <div>
@@ -238,18 +307,16 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
             </div>
           )}
         </div>
-
         {project.recruitment_target && (
           <div style={{ height:6, background:'#F1EFE8', borderRadius:3, overflow:'hidden', marginBottom:10 }}>
             <div style={{ height:'100%', width:`${Math.min(pct,100)}%`, background:pctColor, borderRadius:3 }} />
           </div>
         )}
-
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
           {[
-            {label:'Inicio', value:formatDate(project.start_date)},
-            {label:'Cierre estimado', value:project.estimated_end_date?formatDate(project.estimated_end_date):'—'},
-            {label:'PI', value:project.principal_investigator?.full_name??'—'},
+            {label:'Inicio',           value:formatDate(project.start_date)},
+            {label:'Cierre estimado',  value:project.estimated_end_date?formatDate(project.estimated_end_date):'—'},
+            {label:'PI',               value:project.principal_investigator?.full_name??'—'},
           ].map(f=>(
             <div key={f.label}>
               <div style={{ fontSize:10, color:'#9C9A92', marginBottom:2 }}>{f.label}</div>
@@ -278,7 +345,6 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
       {/* OVERVIEW */}
       {activeTab==='overview' && (
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-          {/* Ethics */}
           <div style={card}>
             {cardHead('ti-shield-check','Comité de Ética')}
             <div style={{ padding:14 }}>
@@ -299,14 +365,13 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
               )}
             </div>
           </div>
-          {/* Recruitment summary */}
           <div style={card}>
             {cardHead('ti-users-group','Reclutamiento')}
             <div style={{ padding:14 }}>
               {[
-                {label:'Meta total',     value:project.recruitment_target??'N/A', color:'#0A2E5C'},
-                {label:'Enrolados',      value:project.recruited_current,         color:'#00A88A'},
-                {label:'% completado',   value:project.recruitment_target?`${pct}%`:'—', color:pctColor},
+                {label:'Meta total',   value:project.recruitment_target??'N/A', color:'#0A2E5C'},
+                {label:'Enrolados',    value:project.recruited_current,         color:'#00A88A'},
+                {label:'% completado', value:project.recruitment_target?`${pct}%`:'—', color:pctColor},
               ].map(m=>(
                 <div key={m.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
                   <span style={{ fontSize:12, color:'#73726C' }}>{m.label}</span>
@@ -335,8 +400,7 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:13, fontWeight:500, color:'#3D3D3A' }}>{m.name}</div>
                   <div style={{ fontSize:11, color:'#9C9A92', marginTop:2 }}>
-                    {m.due_date}
-                    {m.completed_date&&` · Completado: ${m.completed_date}`}
+                    {m.due_date}{m.completed_date&&` · Completado: ${m.completed_date}`}
                   </div>
                 </div>
                 <span style={{
@@ -392,7 +456,7 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
                         <div key={f.id} style={{ background:'#F8F7F4', borderRadius:8, padding:'9px 12px', marginBottom:6, fontSize:12 }}>
                           <div style={{ display:'flex', gap:6, marginBottom:4 }}>
                             <span style={{ ...cs, fontSize:10, padding:'1px 7px', borderRadius:20, fontWeight:500 }}>
-                              {{CRITICAL:'Crítico',MAJOR:'Mayor',MINOR:'Menor'}[f.category]}
+                              {{CRITICAL:'Crítico',MAJOR:'Mayor',MINOR:'Menor'}[f.category as 'CRITICAL'|'MAJOR'|'MINOR']}
                             </span>
                             <span style={{ fontSize:10, background:'#E0F2F1', color:'#005246', padding:'1px 7px', borderRadius:20, fontWeight:500 }}>Resuelto</span>
                           </div>
@@ -441,8 +505,7 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
       {/* FINANCE */}
       {activeTab==='finance' && (
         <div>
-          {/* Quotations */}
-          <div style={{ ...card }}>
+          <div style={card}>
             {cardHead('ti-file-invoice','Cotizaciones')}
             {quotations.length===0 ? (
               <div style={{ padding:24, textAlign:'center', fontSize:13, color:'#9C9A92' }}>Sin cotizaciones registradas.</div>
@@ -462,8 +525,6 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
               </div>
             ))}
           </div>
-
-          {/* Invoices */}
           <div style={card}>
             {cardHead('ti-receipt','Facturas')}
             {invoices.length===0 ? (
@@ -504,6 +565,90 @@ function ProjectDetail({ project }: { project: SponsorProject }) {
           </div>
         </div>
       )}
+
+      {/* SAMPLES */}
+      {activeTab==='samples' && (
+        <div style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, overflow:'hidden' }}>
+          {cardHead('ti-test-pipe', 'Toma de muestras')}
+
+          {/* stats */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, padding:'12px 14px', borderBottom:'0.5px solid #E8E6DE' }}>
+            {[
+              {label:'Total',        value:samples.length,                                                                 color:'#3D3D3A'},
+              {label:'Recolectadas', value:samples.filter(s=>s.status==='COLLECTED').length,                               color:'#007A99'},
+              {label:'Almacenadas',  value:samples.filter(s=>s.status==='STORED').length,                                  color:'#005246'},
+              {label:'Enviadas',     value:samples.filter(s=>['SHIPPED','SHIPPED_UNPROCESSED'].includes(s.status)).length, color:'#0A2E5C'},
+            ].map(m=>(
+              <div key={m.label} style={{ textAlign:'center' }}>
+                <div style={{ fontSize:10, color:'#9C9A92', marginBottom:3 }}>{m.label}</div>
+                <div style={{ fontSize:18, fontWeight:600, color:m.color }}>{m.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* agrupación */}
+          <div style={{ padding:'10px 14px', borderBottom:'0.5px solid #E8E6DE', display:'flex', gap:8, alignItems:'center' }}>
+            <span style={{ fontSize:11, color:'#9C9A92' }}>Agrupar por:</span>
+            {(['none','patient','visit'] as const).map(g => (
+              <button key={g} onClick={()=>setGroupBy(g)} style={{
+                fontSize:11, padding:'3px 10px', borderRadius:20, cursor:'pointer', border:'none',
+                background:groupBy===g?'#0A2E5C':'#F1EFE8',
+                color:groupBy===g?'#fff':'#73726C', fontWeight:groupBy===g?500:400,
+              }}>
+                {g==='none'?'Sin agrupar':g==='patient'?'Paciente':'Visita'}
+              </button>
+            ))}
+          </div>
+
+          {/* lista */}
+          {samples.length===0 ? (
+            <div style={{ padding:32, textAlign:'center', fontSize:13, color:'#9C9A92' }}>
+              Sin muestras registradas para este proyecto.
+            </div>
+          ) : groupBy==='none' ? (
+            <div>
+              {samples.map((s,i) => (
+                <SampleReadRow key={s.id} sample={s} isLast={i===samples.length-1} />
+              ))}
+            </div>
+          ) : (
+            <div>
+              {Object.entries(
+                samples.reduce((acc, s) => {
+                  const k = groupBy==='patient'
+                    ? (s.patient_id ?? '—')
+                    : (s.visit_timepoint ?? '— Sin asignar')
+                  if (!acc[k]) acc[k] = []
+                  acc[k].push(s)
+                  return acc
+                }, {} as Record<string, Sample[]>)
+              ).sort((a,b) => a[0].localeCompare(b[0])).map(([gKey, gSamples]) => (
+                <div key={gKey}>
+                  <div style={{ padding:'7px 14px', background:'#F8F7F4', borderBottom:'0.5px solid #E8E6DE', display:'flex', alignItems:'center', gap:8 }}>
+                    <i className={groupBy==='patient'?'ti ti-user':'ti ti-flag'} style={{ fontSize:12, color:'#0A2E5C' }} />
+                    <span style={{ fontSize:12, fontWeight:600, color:'#0A2E5C' }}>{gKey}</span>
+                    <span style={{ fontSize:11, background:'#E0F7FA', color:'#007A99', padding:'1px 8px', borderRadius:20, fontWeight:500 }}>
+                      {gSamples.length} muestra{gSamples.length!==1?'s':''}
+                    </span>
+                    <span style={{ fontSize:11, color:'#9C9A92' }}>
+                      {Object.entries(
+                        gSamples.reduce((a, s) => {
+                          a[s.sample_type] = (a[s.sample_type] ?? 0) + 1
+                          return a
+                        }, {} as Record<string, number>)
+                      ).map(([t, n]) => `${SAMPLE_TYPE_LABELS[t] ?? t}${n > 1 ? ` x${n}` : ''}`).join(' · ')}
+                    </span>
+                  </div>
+                  {gSamples.map((s, i) => (
+                    <SampleReadRow key={s.id} sample={s} isLast={i===gSamples.length-1} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
     </div>
   )
 }
@@ -520,34 +665,19 @@ export default function SponsorPortal() {
     const load = async () => {
       if (!user) return
 
-      // 1. Buscar org_id del usuario
       const { data: userData } = await supabase
-        .from('users')
-        .select('org_id')
-        .eq('id', user.id)
-        .single()
+        .from('users').select('org_id').eq('id', user.id).single()
 
       const orgId = (userData as { org_id: string | null } | null)?.org_id
-      if (!orgId) {
-        setLoading(false)
-        return
-      }
+      if (!orgId) { setLoading(false); return }
 
-      // 2. Buscar la organización por separado
       const { data: orgData } = await supabase
-        .from('organizations')
-        .select('id, name')
-        .eq('id', orgId)
-        .single()
+        .from('organizations').select('id, name').eq('id', orgId).single()
 
-      if (!orgData) {
-        setLoading(false)
-        return
-      }
+      if (!orgData) { setLoading(false); return }
 
       setOrgName(orgData.name)
 
-      // 3. Buscar proyectos de esa organización
       const { data: projData } = await supabase
         .from('projects')
         .select('*, principal_investigator:users!principal_investigator_id(full_name, email)')
@@ -570,8 +700,6 @@ export default function SponsorPortal() {
   return (
     <Layout>
       <div style={{ padding:'24px 28px' }}>
-
-        {/* Header */}
         <div style={{ marginBottom:20 }}>
           <div style={{ fontSize:17, fontWeight:600, color:'#0A2E5C' }}>{greeting}, {firstName}</div>
           <div style={{ fontSize:12, color:'#9C9A92', marginTop:3 }}>
@@ -591,15 +719,13 @@ export default function SponsorPortal() {
           </div>
         ) : (
           <div style={{ display:'grid', gridTemplateColumns:'220px 1fr', gap:14 }}>
-
-            {/* Project list */}
             <div style={{ background:'#fff', border:'0.5px solid #E8E6DE', borderRadius:10, overflow:'hidden', height:'fit-content' }}>
               <div style={{ padding:'10px 14px', borderBottom:'0.5px solid #E8E6DE', fontSize:11, fontWeight:500, color:'#9C9A92', textTransform:'uppercase', letterSpacing:'0.05em' }}>
                 Mis proyectos ({projects.length})
               </div>
               {projects.map((p,i)=>{
                 const isSelected = selected?.id===p.id
-                const ss = STATUS_STYLE[p.status]??{bg:'#F1EFE8',color:'#444441'}
+                const ps = STATUS_STYLE[p.status]??{bg:'#F1EFE8',color:'#444441'}
                 return (
                   <div key={p.id} onClick={()=>setSelected(p)}
                     style={{
@@ -613,13 +739,11 @@ export default function SponsorPortal() {
                   >
                     <div style={{ fontSize:11, fontWeight:600, color:'#00BFFF', marginBottom:3 }}>{p.codigo_proyecto}</div>
                     <div style={{ fontSize:12, color:'#3D3D3A', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', marginBottom:5 }}>{p.titulo}</div>
-                    <span style={{ ...ss, fontSize:10, padding:'1px 7px', borderRadius:20, fontWeight:500 }}>{STATUS_LABELS[p.status]}</span>
+                    <span style={{ ...ps, fontSize:10, padding:'1px 7px', borderRadius:20, fontWeight:500 }}>{STATUS_LABELS[p.status]}</span>
                   </div>
                 )
               })}
             </div>
-
-            {/* Project detail */}
             <div>
               {selected && <ProjectDetail key={selected.id} project={selected} />}
             </div>

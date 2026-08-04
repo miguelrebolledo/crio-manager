@@ -558,7 +558,24 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
     setError(null)
     const { error: err } = await supabase.from('recruitment_updates').delete().eq('id', r.id)
     if (err) { setError(err.message); return }
-    setHistory(h => h.filter(x => x.id !== r.id))
+
+    const remaining = history.filter(x => x.id !== r.id)
+    setHistory(remaining)
+
+    // el trigger que sincroniza projects.recruited_current solo corre al
+    // crear/actualizar un reporte, no al borrarlo — recalculamos acá a
+    // partir del reporte más reciente que quede (o en 0 si no queda ninguno)
+    const latest = [...remaining].sort((a, b) =>
+      b.period_year - a.period_year || b.period_month - a.period_month
+    )[0]
+    const { error: syncErr } = await supabase.from('projects').update({
+      recruited_current:        latest?.enrolled_total ?? 0,
+      dropouts_current:         latest?.dropouts_total ?? 0,
+      excluded_current:         latest?.excluded_total ?? 0,
+      recruitment_last_updated: latest?.report_date ?? null,
+    }).eq('id', project.id)
+    if (syncErr) setError(`Reporte eliminado, pero no se pudo actualizar el resumen del proyecto: ${syncErr.message}`)
+
     onUpdate()
   }
 

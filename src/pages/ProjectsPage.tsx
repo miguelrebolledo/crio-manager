@@ -407,7 +407,7 @@ export default function ProjectsPage() {
         principal_investigator:users!principal_investigator_id(full_name),
         client_org:organizations(name)
       `)
-      .order('created_at', { ascending: false })
+      .order('status').order('codigo_proyecto', { ascending: true })
 
     if (fStatus)   q = q.eq('status', fStatus)
     if (fType)     q = q.eq('study_type', fType)

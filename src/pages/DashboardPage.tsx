@@ -32,12 +32,20 @@ interface Alert {
 interface VisitWithFindings {
   id: string
   status: string
+  project_id: string
   findings: { id: string; category: string; status: string }[]
 }
 interface RecruitmentHistoryRow {
   period_year: number
   period_month: number
   new_this_period: number | null
+  project_id: string
+}
+interface CriticalFindingRow {
+  monitoring_visits: { project_id: string } | null
+}
+interface SaeRow {
+  project_id: string
 }
 
 // ── Label / style maps ────────────────────────────────────────
@@ -171,13 +179,22 @@ export default function DashboardPage() {
     if (!user || user.role === 'SPONSOR' || user.role === 'COORDINATOR') return
 
     const load = async () => {
+      const isInvestigator = user.role === 'INVESTIGATOR'
+
       // ── 1. Proyectos ──
-      const { data: projs } = await supabase
+      let projQuery = supabase
         .from('projects')
         .select('id,codigo_proyecto,titulo,status,study_type,priority,recruited_current,recruitment_target,ethics_renewal_date,estimated_end_date,disease')
         .order('created_at', { ascending: false })
+      if (isInvestigator) {
+        projQuery = projQuery.or(`principal_investigator_id.eq.${user.id},co_investigator_id.eq.${user.id}`)
+      }
+      const { data: projs } = await projQuery
       const allProjs = (projs ?? []) as Project[]
       setProjects(allProjs)
+      // ámbito de datos: investigador solo ve sus propios proyectos
+      const projectIds = new Set(allProjs.map(p => p.id))
+      const inScope = (projectId: string | null | undefined) => !isInvestigator || (!!projectId && projectIds.has(projectId))
 
       // ── 2. Alertas ──
       const newAlerts: Alert[] = []
@@ -186,25 +203,28 @@ export default function DashboardPage() {
         .from('ethics_alerts')
         .select('*')
         .in('renewal_alert_level', ['EXPIRED','URGENT','WARNING'])
-      ;((ethicsData ?? []) as EthicsAlert[]).forEach(a => {
-        newAlerts.push({
-          type: a.renewal_alert_level === 'EXPIRED' ? 'danger' : 'warn',
-          icon: 'ti-shield-x',
-          title: a.renewal_alert_level === 'EXPIRED'
-            ? `Comité de Ética vencido — ${a.codigo_proyecto}`
-            : `Renovación ética en ${a.days_until_renewal} días — ${a.codigo_proyecto}`,
-          detail: a.titulo ?? '',
-          projectId: a.id,
-          code: a.codigo_proyecto,
+      ;((ethicsData ?? []) as EthicsAlert[])
+        .filter(a => inScope(a.id))
+        .forEach(a => {
+          newAlerts.push({
+            type: a.renewal_alert_level === 'EXPIRED' ? 'danger' : 'warn',
+            icon: 'ti-shield-x',
+            title: a.renewal_alert_level === 'EXPIRED'
+              ? `Comité de Ética vencido — ${a.codigo_proyecto}`
+              : `Renovación ética en ${a.days_until_renewal} días — ${a.codigo_proyecto}`,
+            detail: a.titulo ?? '',
+            projectId: a.id,
+            code: a.codigo_proyecto,
+          })
         })
-      })
 
       const { data: critFindings } = await supabase
         .from('monitoring_findings')
         .select('id, visit_id, monitoring_visits(project_id, projects(codigo_proyecto))')
         .eq('category', 'CRITICAL')
         .eq('status', 'OPEN')
-      const critCount = (critFindings ?? []).length
+      const critCount = ((critFindings ?? []) as unknown as CriticalFindingRow[])
+        .filter(f => inScope(f.monitoring_visits?.project_id)).length
       if (critCount > 0) {
         newAlerts.push({
           type: 'danger', icon: 'ti-message-x',
@@ -219,7 +239,8 @@ export default function DashboardPage() {
         .eq('event_type', 'SAE')
         .neq('status', 'CLOSED')
         .or('pi_notified_at.is.null,sponsor_notified_at.is.null,ethics_notified_at.is.null')
-      const saeCount = (saePending ?? []).length
+      const saeCount = ((saePending ?? []) as unknown as SaeRow[])
+        .filter(s => inScope(s.project_id)).length
       if (saeCount > 0) {
         newAlerts.push({
           type: 'danger', icon: 'ti-alert-circle',
@@ -247,8 +268,9 @@ export default function DashboardPage() {
       // ── 3. Monitoreo stats ──
       const { data: visits } = await supabase
         .from('monitoring_visits')
-        .select('id, status, findings:monitoring_findings(id, category, status)')
-      const visitList = (visits ?? []) as unknown as VisitWithFindings[]
+        .select('id, status, project_id, findings:monitoring_findings(id, category, status)')
+      const visitList = ((visits ?? []) as unknown as VisitWithFindings[])
+        .filter(v => inScope(v.project_id))
       const allFindings = visitList.flatMap(v => v.findings ?? [])
       setMonitoringStats({
         total:             visitList.length,
@@ -268,15 +290,17 @@ export default function DashboardPage() {
       }
       const { data: recHistory } = await supabase
         .from('recruitment_updates')
-        .select('period_year, period_month, new_this_period')
+        .select('period_year, period_month, new_this_period, project_id')
         .gte('period_year', now.getFullYear() - 1)
-      ;((recHistory ?? []) as RecruitmentHistoryRow[]).forEach(r => {
-        const d = new Date(r.period_year, r.period_month - 1, 1)
-        const diffMonths = (now.getFullYear()-d.getFullYear())*12 + now.getMonth()-d.getMonth()
-        if (diffMonths >= 0 && diffMonths < 6) {
-          months[5 - diffMonths].value += (r.new_this_period ?? 0)
-        }
-      })
+      ;((recHistory ?? []) as RecruitmentHistoryRow[])
+        .filter(r => inScope(r.project_id))
+        .forEach(r => {
+          const d = new Date(r.period_year, r.period_month - 1, 1)
+          const diffMonths = (now.getFullYear()-d.getFullYear())*12 + now.getMonth()-d.getMonth()
+          if (diffMonths >= 0 && diffMonths < 6) {
+            months[5 - diffMonths].value += (r.new_this_period ?? 0)
+          }
+        })
       setRecruitmentHistory(months)
 
       // ── 5. Proyectos próximos a cerrar ──

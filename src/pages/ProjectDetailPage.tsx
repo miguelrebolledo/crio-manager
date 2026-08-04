@@ -56,7 +56,8 @@ interface TeamMember {
   team_role: string
   assigned_date: string
   is_active: boolean
-  user: { id: string; full_name: string; email: string; specialty: string | null }
+  // puede venir null si el usuario actual no tiene permiso de leer ese perfil (RLS)
+  user: { id: string; full_name: string; email: string; specialty: string | null } | null
 }
 
 interface Milestone {
@@ -476,15 +477,15 @@ function TabTeam({ projectId }: { projectId: string }) {
             display:'flex', alignItems:'center', gap:12,
             padding:'10px 16px', borderBottom: i < members.length-1 ? '0.5px solid #E8E6DE' : 'none',
           }}>
-            <Avatar name={m.user.full_name} color={AVATAR_COLORS[i % AVATAR_COLORS.length]} />
+            <Avatar name={m.user?.full_name ?? '—'} color={AVATAR_COLORS[i % AVATAR_COLORS.length]} />
             <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontSize:13, fontWeight:500, color:'#3D3D3A' }}>{m.user.full_name}</div>
+              <div style={{ fontSize:13, fontWeight:500, color:'#3D3D3A' }}>{m.user?.full_name ?? 'Usuario'}</div>
               <div style={{ fontSize:11, color:'#9C9A92', marginTop:2 }}>
                 {TEAM_ROLE_LABELS[m.team_role] ?? m.team_role}
-                {m.user.specialty && ` · ${m.user.specialty}`}
+                {m.user?.specialty && ` · ${m.user.specialty}`}
               </div>
             </div>
-            <div style={{ fontSize:11, color:'#9C9A92' }}>{m.user.email}</div>
+            <div style={{ fontSize:11, color:'#9C9A92' }}>{m.user?.email ?? ''}</div>
             {canEdit && (
               <button onClick={()=>handleRemove(m.id)} style={{ background:'none', border:'0.5px solid #E8E6DE', borderRadius:6, padding:'3px 8px', fontSize:12, cursor:'pointer', color:'#9C9A92' }}
                 title="Remover del proyecto">

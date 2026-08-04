@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { to: '/efectos-adversos', icon: 'ti-alert-triangle',   label: 'Ef. adversos',  hideForSponsor: true },
   { section: 'Gestión',      hideForSponsor: true },
   { to: '/monitoreo-qa',     icon: 'ti-shield-check',     label: 'Calidad (QA)',  hideForSponsor: true },
-  { to: '/clientes',         icon: 'ti-building',         label: 'Clientes',      hideForSponsor: true, hideForCoordinator: true },
+  { to: '/clientes',         icon: 'ti-building',         label: 'Clientes',      hideForSponsor: true, hideForCoordinator: true, hideForInvestigator: true },
   { to: '/finanzas',         icon: 'ti-cash',             label: 'Finanzas',      hideForSponsor: true, hideForCoordinator: true },
   { to: '/usuarios',         icon: 'ti-users',            label: 'Usuarios',      hideForSponsor: true, hideForCoordinator: true },
   { to: '/configuracion',    icon: 'ti-settings',         label: 'Configuración', hideForSponsor: true },
@@ -49,6 +49,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const isSponsor = user?.role === 'SPONSOR'
   const isCoordinator = user?.role === 'COORDINATOR'
+  const isInvestigator = user?.role === 'INVESTIGATOR'
 
   const initials = user?.full_name
     ?.split(' ')
@@ -71,6 +72,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       return false
     }
     if (isCoordinator && 'hideForCoordinator' in item) return false
+    if (isInvestigator && 'hideForInvestigator' in item) return false
     // Resto de roles no ven el portal del sponsor
     if ('sponsorOnly' in item) return false
     return true

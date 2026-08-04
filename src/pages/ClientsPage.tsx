@@ -390,6 +390,7 @@ export default function ClientsPage() {
   const [search, setSearch]     = useState('')
 
   const canCreate = ['ADMIN','PM_CRIO'].includes(user?.role ?? '')
+  const canView   = user?.role !== 'INVESTIGATOR'
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -400,7 +401,19 @@ export default function ClientsPage() {
     setLoading(false)
   }, [search])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => { if (canView) load() }, [load, canView])
+
+  if (!canView) {
+    return (
+      <Layout>
+        <div style={{ padding:48, textAlign:'center' }}>
+          <i className="ti ti-lock" style={{ fontSize:32, color:'#D3D1C7', display:'block', marginBottom:12 }} />
+          <div style={{ fontSize:15, fontWeight:500, color:'#9C9A92', marginBottom:4 }}>Acceso restringido</div>
+          <div style={{ fontSize:13, color:'#B4B2A9' }}>No tienes permisos para ver el módulo de clientes.</div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout>

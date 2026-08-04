@@ -555,7 +555,9 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
 
   const handleDelete = async (r: RecruitmentUpdate) => {
     if (!confirm(`¿Eliminar el reporte de ${MONTH_NAMES[r.period_month-1]} ${r.period_year}? Esta acción no se puede deshacer.`)) return
-    await supabase.from('recruitment_updates').delete().eq('id', r.id)
+    setError(null)
+    const { error: err } = await supabase.from('recruitment_updates').delete().eq('id', r.id)
+    if (err) { setError(err.message); return }
     setHistory(h => h.filter(x => x.id !== r.id))
     onUpdate()
   }
@@ -664,6 +666,9 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
       )}
 
       {/* historial */}
+      {error && !showForm && (
+        <div style={{ fontSize:12, color:'#791F1F', background:'#FCEBEB', border:'0.5px solid #F7C1C1', borderRadius:7, padding:'7px 10px', marginBottom:10 }}>{error}</div>
+      )}
       <div style={cardStyle}>
         <div style={cardHeadStyle}>
           <span><i className="ti ti-history" style={{ color:'#0A2E5C', marginRight:6 }} />Historial de reportes</span>

@@ -181,13 +181,26 @@ export default function DashboardPage() {
     const load = async () => {
       const isInvestigator = user.role === 'INVESTIGATOR'
 
+      // ── 0. Proyectos donde el investigador es PI o co-investigador ──
+      // (se define vía project_team_members, no por columnas en projects)
+      let investigatorProjectIds: string[] | null = null
+      if (isInvestigator) {
+        const { data: teamRows } = await supabase
+          .from('project_team_members')
+          .select('project_id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .in('team_role', ['PRINCIPAL_INVESTIGATOR', 'CO_INVESTIGATOR'])
+        investigatorProjectIds = ((teamRows ?? []) as { project_id: string }[]).map(r => r.project_id)
+      }
+
       // ── 1. Proyectos ──
       let projQuery = supabase
         .from('projects')
         .select('id,codigo_proyecto,titulo,status,study_type,priority,recruited_current,recruitment_target,ethics_renewal_date,estimated_end_date,disease')
         .order('created_at', { ascending: false })
-      if (isInvestigator) {
-        projQuery = projQuery.or(`principal_investigator_id.eq.${user.id},co_investigator_id.eq.${user.id}`)
+      if (investigatorProjectIds) {
+        projQuery = projQuery.in('id', investigatorProjectIds.length > 0 ? investigatorProjectIds : ['__none__'])
       }
       const { data: projs } = await projQuery
       const allProjs = (projs ?? []) as Project[]

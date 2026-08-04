@@ -509,6 +509,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
   const [error, setError]   = useState<string|null>(null)
 
   const canReport = ['ADMIN','PM_CRIO','COORDINATOR'].includes(user?.role ?? '')
+  const canDelete = user?.role === 'ADMIN'
   const pct = project.recruitment_target
     ? Math.round(project.recruited_current / project.recruitment_target * 100)
     : 0
@@ -550,6 +551,13 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
       .order('period_year', { ascending: false })
       .order('period_month', { ascending: false })
     setHistory((data ?? []) as RecruitmentUpdate[])
+  }
+
+  const handleDelete = async (r: RecruitmentUpdate) => {
+    if (!confirm(`¿Eliminar el reporte de ${MONTH_NAMES[r.period_month-1]} ${r.period_year}? Esta acción no se puede deshacer.`)) return
+    await supabase.from('recruitment_updates').delete().eq('id', r.id)
+    setHistory(h => h.filter(x => x.id !== r.id))
+    onUpdate()
   }
 
   const inp: React.CSSProperties = {
@@ -669,6 +677,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
                 {['Período','Enrolados','Abandonos','Excluidos','Nuevos','Reportado por','Observaciones'].map(h=>(
                   <th key={h} style={{ padding:'7px 14px', textAlign:'left', fontSize:11, fontWeight:500, color:'#9C9A92', borderBottom:'0.5px solid #E8E6DE' }}>{h}</th>
                 ))}
+                {canDelete && <th style={{ borderBottom:'0.5px solid #E8E6DE' }} />}
               </tr>
             </thead>
             <tbody>
@@ -681,6 +690,14 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
                   <td style={{ padding:'9px 14px' }}>{r.new_this_period != null ? (r.new_this_period > 0 ? `+${r.new_this_period}` : r.new_this_period) : '—'}</td>
                   <td style={{ padding:'9px 14px', color:'#9C9A92', fontSize:12 }}>{r.reporter?.full_name ?? '—'}</td>
                   <td style={{ padding:'9px 14px', color:'#9C9A92', fontSize:12, maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{r.notes ?? '—'}</td>
+                  {canDelete && (
+                    <td style={{ padding:'9px 14px' }}>
+                      <button onClick={()=>handleDelete(r)} title="Eliminar reporte"
+                        style={{ background:'none', border:'0.5px solid #E8E6DE', borderRadius:6, padding:'3px 8px', fontSize:12, cursor:'pointer', color:'#A32D2D' }}>
+                        <i className="ti ti-trash" />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

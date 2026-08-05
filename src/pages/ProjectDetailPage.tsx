@@ -169,6 +169,7 @@ function TabInfo({ project, onUpdate }: { project: Project; onUpdate: () => void
     disease:          project.disease ?? 'OTHER',
     therapeutic_area: project.therapeutic_area ?? '',
     primary_endpoint: project.primary_endpoint ?? '',
+    sponsor_type:     project.sponsor_type,
     client_org_id: project.client_org?.id ?? '',
     start_date:       project.start_date,
     estimated_end_date: project.estimated_end_date ?? '',
@@ -291,7 +292,14 @@ useEffect(() => {
                 <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:3 }}>Endpoint primario</label>
                 <input style={inp} value={form.primary_endpoint} onChange={e=>setForm(f=>({...f,primary_endpoint:e.target.value}))} placeholder="Ej: Tasa de respuesta global (ORR) a 6 meses" />
               </div>
-              <div style={{ gridColumn: 'span 2' }}>
+              <div>
+                <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:3 }}>Tipo de sponsor</label>
+                <select style={inp} value={form.sponsor_type} onChange={e=>setForm(f=>({...f,sponsor_type:e.target.value}))}>
+                  <option value="EXTERNAL">Externo</option>
+                  <option value="INTERNAL">Interno</option>
+                </select>
+              </div>
+              <div>
                 <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:3 }}>
                   Sponsor / Cliente externo
                 </label>

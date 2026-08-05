@@ -512,12 +512,17 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
   const { user } = useAuth()
   const [history, setHistory] = useState<RecruitmentUpdate[]>([])
   const [showForm, setShowForm] = useState(false)
-  const [form, setForm] = useState({ enrolled_total:'', dropouts_total:'', excluded_total:'', notes:'' })
+  const now = new Date()
+  const currentPeriod = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`
+  const [form, setForm] = useState({ period: currentPeriod, enrolled_total:'', dropouts_total:'', excluded_total:'', notes:'' })
   const [saving, setSaving] = useState(false)
   const [error, setError]   = useState<string|null>(null)
 
   const canReport = ['ADMIN','PM_CRIO','COORDINATOR'].includes(user?.role ?? '')
   const canDelete = user?.role === 'ADMIN'
+  // solo ADMIN puede reportar meses pasados (carga retroactiva); PM/coordinadora
+  // siempre reportan el mes en curso, para no equivocarse de período
+  const canPickMonth = user?.role === 'ADMIN'
   const pct = project.recruitment_target
     ? Math.round(project.recruited_current / project.recruitment_target * 100)
     : 0
@@ -532,33 +537,55 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
       .then(({ data }) => setHistory((data ?? []) as RecruitmentUpdate[]))
   }, [project.id])
 
+  // el trigger que sincroniza projects.recruited_current solo aplica los
+  // valores del reporte que se acaba de insertar/actualizar/borrar; si ese
+  // no es el período más reciente (ej. carga retroactiva de un mes atrasado),
+  // recalculamos acá a partir del reporte más reciente que exista
+  const resyncProjectTotals = async (rows: RecruitmentUpdate[]) => {
+    const latest = [...rows].sort((a, b) =>
+      b.period_year - a.period_year || b.period_month - a.period_month
+    )[0]
+    const { error: syncErr } = await supabase.from('projects').update({
+      recruited_current:        latest?.enrolled_total ?? 0,
+      dropouts_current:         latest?.dropouts_total ?? 0,
+      excluded_current:         latest?.excluded_total ?? 0,
+      recruitment_last_updated: latest?.report_date ?? null,
+    }).eq('id', project.id)
+    return syncErr
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.enrolled_total) { setError('El campo enrolados es obligatorio.'); return }
     setSaving(true); setError(null)
-    const now = new Date()
+    // PM/coordinadora siempre reportan el mes en curso; solo ADMIN puede elegir otro
+    const period = canPickMonth ? form.period : currentPeriod
+    const [periodYear, periodMonth] = period.split('-').map(Number)
     const { error: err } = await supabase.from('recruitment_updates').upsert({
       project_id:      project.id,
       reported_by:     user?.id,
-      period_year:     now.getFullYear(),
-      period_month:    now.getMonth() + 1,
+      period_year:     periodYear,
+      period_month:    periodMonth,
       report_date:     now.toISOString().split('T')[0],
       enrolled_total:  parseInt(form.enrolled_total),
       dropouts_total:  parseInt(form.dropouts_total || '0'),
       excluded_total:  parseInt(form.excluded_total || '0'),
       notes:           form.notes || null,
     }, { onConflict: 'project_id,period_year,period_month' })
-    setSaving(false)
-    if (err) { setError(err.message); return }
+    if (err) { setSaving(false); setError(err.message); return }
     setShowForm(false)
-    setForm({ enrolled_total:'', dropouts_total:'', excluded_total:'', notes:'' })
-    onUpdate()
+    setForm({ period: currentPeriod, enrolled_total:'', dropouts_total:'', excluded_total:'', notes:'' })
     const { data } = await supabase.from('recruitment_updates')
       .select('*, reporter:users(full_name)')
       .eq('project_id', project.id)
       .order('period_year', { ascending: false })
       .order('period_month', { ascending: false })
-    setHistory((data ?? []) as RecruitmentUpdate[])
+    const rows = (data ?? []) as RecruitmentUpdate[]
+    setHistory(rows)
+    const syncErr = await resyncProjectTotals(rows)
+    setSaving(false)
+    if (syncErr) setError(`Reporte guardado, pero no se pudo actualizar el resumen del proyecto: ${syncErr.message}`)
+    onUpdate()
   }
 
   const handleDelete = async (r: RecruitmentUpdate) => {
@@ -570,18 +597,7 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
     const remaining = history.filter(x => x.id !== r.id)
     setHistory(remaining)
 
-    // el trigger que sincroniza projects.recruited_current solo corre al
-    // crear/actualizar un reporte, no al borrarlo — recalculamos acá a
-    // partir del reporte más reciente que quede (o en 0 si no queda ninguno)
-    const latest = [...remaining].sort((a, b) =>
-      b.period_year - a.period_year || b.period_month - a.period_month
-    )[0]
-    const { error: syncErr } = await supabase.from('projects').update({
-      recruited_current:        latest?.enrolled_total ?? 0,
-      dropouts_current:         latest?.dropouts_total ?? 0,
-      excluded_current:         latest?.excluded_total ?? 0,
-      recruitment_last_updated: latest?.report_date ?? null,
-    }).eq('id', project.id)
+    const syncErr = await resyncProjectTotals(remaining)
     if (syncErr) setError(`Reporte eliminado, pero no se pudo actualizar el resumen del proyecto: ${syncErr.message}`)
 
     onUpdate()
@@ -641,17 +657,34 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
               <i className="ti ti-plus" style={{ fontSize:14 }} />
               Reportar mes actual
             </button>
-          ) : (
+          ) : (() => {
+            const effectivePeriod = canPickMonth ? form.period : currentPeriod
+            const [py, pm] = effectivePeriod.split('-')
+            return (
             <div style={{ ...cardStyle }}>
               <div style={cardHeadStyle}>
                 <span><i className="ti ti-edit" style={{ color:'#0A2E5C', marginRight:6 }} />
-                  Reporte — {MONTH_NAMES[new Date().getMonth()]} {new Date().getFullYear()}
+                  Reporte — {MONTH_NAMES[Number(pm)-1]} {py}
                 </span>
               </div>
               <form onSubmit={handleSubmit} style={{ padding:16 }}>
                 <div style={{ background:'#E0F7FA', border:'0.5px solid #80DEEA', borderRadius:8, padding:'8px 11px', fontSize:12, color:'#007A99', marginBottom:14 }}>
                   <i className="ti ti-info-circle" style={{ fontSize:13, verticalAlign:-1, marginRight:4 }} />
                   Ingresa el total acumulado desde el inicio del estudio, no solo los nuevos del mes.
+                </div>
+                <div style={{ marginBottom:12, maxWidth:200 }}>
+                  <label style={{ fontSize:11, color:'#9C9A92', fontWeight:500, display:'block', marginBottom:3 }}>
+                    Mes del reporte {canPickMonth && <span style={{color:'#A32D2D'}}>*</span>}
+                  </label>
+                  {canPickMonth ? (
+                    <input style={inp} type="month" max={currentPeriod} required
+                      value={form.period}
+                      onChange={e=>setForm(f=>({...f,period:e.target.value}))} />
+                  ) : (
+                    <div style={{ ...inp, background:'#F1EFE8', color:'#73726C' }}>
+                      {MONTH_NAMES[Number(pm)-1]} {py} (mes en curso)
+                    </div>
+                  )}
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12, marginBottom:12 }}>
                   {([
@@ -686,7 +719,8 @@ function TabRecruitment({ project, onUpdate }: { project: Project; onUpdate: () 
                 </div>
               </form>
             </div>
-          )}
+            )
+          })()}
         </div>
       )}
 
